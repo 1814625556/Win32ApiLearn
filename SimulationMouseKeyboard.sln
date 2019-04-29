@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.539
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationMouseKeyboard", "SimulationMouseKeyboard\SimulationMouseKeyboard.csproj", "{38C753F3-470B-41DE-A76E-82CCB05EC25A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationMouseKeyboardForm", "SimulationMouseKeyboardForm\SimulationMouseKeyboardForm.csproj", "{47D5CA01-E506-4075-9C54-B6F5B9910982}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{38C753F3-470B-41DE-A76E-82CCB05EC25A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38C753F3-470B-41DE-A76E-82CCB05EC25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38C753F3-470B-41DE-A76E-82CCB05EC25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38C753F3-470B-41DE-A76E-82CCB05EC25A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D5CA01-E506-4075-9C54-B6F5B9910982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D5CA01-E506-4075-9C54-B6F5B9910982}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D5CA01-E506-4075-9C54-B6F5B9910982}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D5CA01-E506-4075-9C54-B6F5B9910982}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F7F28609-AEC8-4799-8A48-11C0DDB018F1}
+	EndGlobalSection
+EndGlobal
