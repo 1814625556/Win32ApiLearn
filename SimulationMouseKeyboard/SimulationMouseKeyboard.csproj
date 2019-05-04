@@ -52,6 +52,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShuiPanTest.cs" />
     <Compile Include="Win32Stuff.cs" />
     <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Form1.resx">

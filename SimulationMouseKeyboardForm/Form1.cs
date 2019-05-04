@@ -23,7 +23,40 @@ namespace SimulationMouseKeyboardForm
 
         private void label3_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("click label3");
+        }
 
+        private void Form1Name_Load(object sender, EventArgs e)
+        {
+            //MessageBox.Show("你点击了窗体");
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("label2···");
+        }
+
+        private void ccPanel_Paint(object sender, PaintEventArgs e)
+        {
+            
+        }
+
+        private void ccPanel_Click(object sender, EventArgs e)
+        {
+            Point formPoint = this.PointToClient(Control.MousePosition);
+            var point = Control.MousePosition;
+            this.textBox1.Text += $"\r\n(point.x:{point.X}, point.y:{point.Y})-" +
+                                  $"-point.x-formPoint.x={point.X-formPoint.X} ; point.y-formPoint.y={point.Y-formPoint.Y}";
+            this.textBox1.Text += $"(formPoint.x : {formPoint.X}, formPoint.y : {formPoint.Y})\r\n";
+
+            //MessageBox.Show($"PanelClick--> (x : {formPoint.X}, y : {formPoint.Y})");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var form2 = new Form2();
+            form2.ShowDialog();//这种方式必须关闭form2,才能返回form1
+            //form2.Show();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 //引用新命名空间
 using System.Runtime.InteropServices;
@@ -17,7 +18,18 @@ namespace SimulationMouseKeyboard
 {
     public partial class CCForm1 : Form
     {
+        #region 属性
 
+        private static int MOUSEEVENTF_MOVE = 0x0001;      //移动鼠标 
+        private static int MOUSEEVENTF_LEFTDOWN = 0x0002; //模拟鼠标左键按下 
+        private static int MOUSEEVENTF_LEFTUP = 0x0004; //模拟鼠标左键抬起 
+        private static int MOUSEEVENTF_RIGHTDOWN = 0x0008; //模拟鼠标右键按下 
+        private static int MOUSEEVENTF_RIGHTUP = 0x0010; //模拟鼠标右键抬起 
+        private static int MOUSEEVENTF_MIDDLEDOWN = 0x0020; //模拟鼠标中键按下 
+        private static int MOUSEEVENTF_MIDDLEUP = 0x0040; //模拟鼠标中键抬起 
+        private static int MOUSEEVENTF_ABSOLUTE = 0x8000; //标示是否采用绝对坐标 
+
+        #endregion
 
         #region  ============方法===================================================
         /// <summary>
@@ -31,6 +43,19 @@ namespace SimulationMouseKeyboard
             WinApi.GetWindowText(hander, sb, 255);
             return sb.ToString();
         }
+
+        /// <summary>
+        /// 获取窗体内容
+        /// </summary>
+        /// <param name="hander"></param>
+        /// <returns></returns>
+        private string GetText(IntPtr hander)
+        {
+            StringBuilder sb = new StringBuilder(255);
+            WinApi.GetWindowTextW(hander, sb, 255);
+            return sb.ToString();
+        }
+
         /// <summary>
         /// 设置标题
         /// </summary>
@@ -48,6 +73,7 @@ namespace SimulationMouseKeyboard
         private void sendMessage(IntPtr hWnd)
         {
             WinApi.SendMessage(hWnd, 0x0C, IntPtr.Zero, "测试发送数据");
+
         }
         #endregion
 
@@ -56,15 +82,7 @@ namespace SimulationMouseKeyboard
         {
             InitializeComponent();
         }
-        //结构体布局 本机位置
-        [StructLayout(LayoutKind.Sequential)]
-        struct NativeRECT
-        {
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
-        }
+       
 
         //将枚举作为位域处理
         [Flags]
@@ -104,8 +122,7 @@ namespace SimulationMouseKeyboard
         static extern void mouse_event(MouseEventFlag flags, int dx, int dy,
             uint data, UIntPtr extraInfo); //UIntPtr指针多句柄类型
         
-        [DllImport("user32.dll")]
-        static extern bool GetWindowRect(HandleRef hwnd, out NativeRECT rect);
+        
 
         [DllImport("user32.dll", EntryPoint = "SendMessageA")]
         private static extern int SendMessage(IntPtr hwnd, uint wMsg, int wParam, int lParam);
@@ -141,8 +158,15 @@ namespace SimulationMouseKeyboard
                 return;
             }
             SendMessage(ptrStartBtn, 0xF5, 0, 0);
+
+            Thread.Sleep(1000);
+            SendMessage(WinApi.FindWindow(null, "CCMessageBox"), 0x10, 0, 0);
             Thread.Sleep(2000);
-            SendMessage(ptrTaskbar, 0x10, 0, 0);//关闭窗体
+            SendMessage(WinApi.FindWindow(null, "Form2"), 0x10, 0, 0);//关闭窗体
+            Thread.Sleep(2000);
+            //关闭窗体--这个时候一旦关闭了，
+            //顶层父类窗体，生成的子窗体也会自动关闭
+            SendMessage(ptrTaskbar, 0x10, 0, 0);
         }
 
         /// <summary>
@@ -220,10 +244,202 @@ namespace SimulationMouseKeyboard
                 MessageBox.Show("No windows found!");
                 return;
             }
-            NativeRECT rect;
+            WinApi.NativeRECT rect;
             HandleRef ptrT = new HandleRef(null,ptrTaskbar);
-            GetWindowRect(ptrT, out rect);
+            WinApi.GetWindowRect(ptrT, out rect);
             var width = rect.right - rect.left;
+        }
+        /// <summary>
+        /// 模拟鼠标
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button6_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                Thread.Sleep(5000);
+
+                
+                //WinApi.SetCursorPos(840, 350);
+                WinApi.mouse_event(2, 640, 360, 0, 0);
+
+                WinApi.mouse_event(4, 640, 640, 0, 0);
+                //Thread.Sleep(300);
+                //WinApi.mouse_event(16, i * 20, i * 20, 0, 0);
+            }
+        }
+        /// <summary>
+        /// 获取窗体相对位置，点击该位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button7_Click(object sender, EventArgs e)
+        {
+            var hxBar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427");
+            var toolBar = WinApi.FindWindowEx(hxBar, IntPtr.Zero, null, null);
+
+            WinApi.ClickLocation(toolBar, 40, 29);
+            Thread.Sleep(1000);
+            WinApi.ClickLocation(toolBar, 110, 29);
+            Thread.Sleep(1000);
+            //WinApi.ClickLocation(toolBar, 190, 29);
+            var flag = WinApi.ClickLocation(toolBar, 190, 29);
+            //var flag1 = WinApi.ClickLocation(ptrTaskbar, 421, 89);
+        }
+
+
+        /// <summary>
+        /// 点击红字测试成功
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button8_Click(object sender, EventArgs e)
+        {
+            // 测试红字
+            //var barInt = 2230240;
+            //var bar = (IntPtr) barInt;
+            //Thread.Sleep(1000);
+            //WinApi.ClickLocation(bar, 471, 25);
+            //Thread.Sleep(1000);
+            //WinApi.ClickLocation(bar, 481, 25);
+            //Thread.Sleep(1000);
+            //WinApi.ClickLocation(bar, 491, 25);
+            //Thread.Sleep(1000);
+
+
+            //
+            WinApi.NativeRECT rect;
+            HandleRef ptrT = new HandleRef(null, (IntPtr)262822);
+            WinApi.GetWindowRect(ptrT, out rect);
+            var width = rect.right - rect.left;
+            WinApi.ClickLocation((IntPtr)262822, width-435, 25);
+        }
+        /// <summary>
+        /// 测试开票软件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button9_Click(object sender, EventArgs e)
+        {
+            
+            
+            var bar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427");
+
+            WinApi.ShowWindow(bar, 2);//最小
+            Thread.Sleep(1000);
+            WinApi.ShowWindow(bar, 3);//最大
+
+            //bool flag = WinApi.SetForegroundWindow(bar);
+            int fpglHw = WinApi.getHwByTitle((int)bar, "发票管理");
+
+            
+
+            int fpglHw1 = (int)WinApi.FindWindowEx((IntPtr)fpglHw, IntPtr.Zero, null, null);
+            int fpglHw2 = (int)WinApi.FindWindowEx((IntPtr)fpglHw1, IntPtr.Zero, null, null);
+            int fpglHw3 = (int)WinApi.FindWindowEx((IntPtr)fpglHw1, (IntPtr)fpglHw2, null, null);
+            //WinApi.SetForegroundWindow(bar);
+            Thread.Sleep(100);
+            //点击发票填开
+            WinApi.leftClick(fpglHw3);
+
+
+
+            //KeyBoardDown((IntPtr)fpglHw1, 0x100);
+
+            //return;
+
+
+            Thread.Sleep(500);
+            keybd_event(Keys.Down, 0, 0, 0);
+            keybd_event(Keys.Down, 0, 2, 0);
+
+            Thread.Sleep(500);
+            keybd_event(Keys.Down, 0, 0, 0);
+            keybd_event(Keys.Down, 0, 2, 0);
+
+            Thread.Sleep(500);
+            keybd_event(Keys.Down, 0, 0, 0);
+            keybd_event(Keys.Down, 0, 2, 0);
+
+            Thread.Sleep(500);
+            keybd_event(Keys.Enter, 0, 0, 0);
+            keybd_event(Keys.Enter, 0, 2, 0);
+
+            Thread.Sleep(1000);
+            var form1 = WinApi.FindWindow(null, "发票号码确认");
+            Thread.Sleep(1000);
+            var confirm = WinApi.FindWindowEx(form1, IntPtr.Zero, null, "确认");
+            WinApi.leftClick((int)confirm);
+        }
+
+        private void KeyBoardDown(IntPtr intPtr, int key)
+        {
+            Thread.Sleep(1000);
+            WinApi.PostMessage(intPtr, 0x100, key, 0);
+            Thread.Sleep(1000);
+            WinApi.PostMessage(intPtr, 0x100, key, 0);
+            Thread.Sleep(1000);
+            WinApi.PostMessage(intPtr, 0x100, key, 0);
+            Thread.Sleep(1000);
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            //ShuiPanTest.InputText();
+            ShuiPanTest.SelectTest();
+        }
+        /// <summary>
+        /// 操作下拉框--成功
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button11_Click(object sender, EventArgs e)
+        {
+            string selectStr = "";
+            IntPtr bar = (IntPtr) 132678;
+
+            //var control = Control.FromHandle((IntPtr)198216);
+
+
+            //通过索引设置下拉框选项
+            int selected = WinApi.SendMessage(bar, 0x014e, (IntPtr)9, "");
+            //通过索引获取下拉框选项
+            Thread.Sleep(1000);
+            string selectedStr = GetText(bar);
+
+            //获得选项数量
+            int count = SendMessage(bar, 0x0146, 0, 0);
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            string text = GetText((IntPtr)1508892);
+        }
+        /// <summary>
+        /// 临时
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button13_Click(object sender, EventArgs e)
+        {
+            //关闭窗体
+            var bar = WinApi.FindWindow(null, "开具增值税电子普通发票");
+
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(1000);
+                var closeBar = WinApi.FindWindow(null, "SysMessageBox");
+                var noBar = WinApi.getHwByTitle((int)closeBar, "是");
+                WinApi.leftClick(noBar);
+                //MessageBox.Show($"closeBar:{closeBar}; noBar:{noBar}");
+
+            });
+            SendMessage(bar, 0x10, 0, 0);
+            Thread.Sleep(100);
+            //MessageBox.Show("哈哈~，关闭开具增值税电子普通发票fail");
+            //var closeBar = WinApi.FindWindow(null, "SysMessageBox");
+            //var noBar = WinApi.FindWindow(null, "否");
         }
     }
 }

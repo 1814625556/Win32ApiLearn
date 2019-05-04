@@ -10,6 +10,15 @@ namespace SimulationMouseKeyboard
 {
     public class WinApi
     {
+        //结构体布局 本机位置
+        [StructLayout(LayoutKind.Sequential)]
+        public struct NativeRECT
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+        }
 
         internal const int WmGettext = 0x000D;
         internal const int WmSettext = 0x000C;
@@ -26,6 +35,58 @@ namespace SimulationMouseKeyboard
         internal const int MouseeventfLeftup = 0x0004; //模拟鼠标左键抬起
 
         internal const uint VbKeyZ = 90;
+
+        //public delegate bool CallBack(IntPtr hwnd, int lParam);
+
+        [DllImport("user32.dll", EntryPoint = "ShowWindow", CharSet = CharSet.Auto)]
+        public static extern int ShowWindow(IntPtr hwnd, int nCmdShow);
+
+        /// <summary>
+        /// 模拟键盘输入
+        /// </summary>
+        /// <param name="bVk"></param>
+        /// <param name="bScan"></param>
+        /// <param name="dwFlags"></param>
+        /// <param name="dwExtraInfo"></param>
+
+        [DllImport("user32.dll", EntryPoint = "keybd_event")]
+
+        public static extern void keybd_event(
+
+            byte bVk,    //虚拟键值
+
+            byte bScan,// 一般为0
+
+            int dwFlags,  //这里是整数类型  0 为按下，2为释放
+
+            int dwExtraInfo  //这里是整数类型 一般情况下设成为 0
+
+        );
+
+        /// <summary>
+        /// 设置鼠标位置
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        public static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32")]
+        public static extern bool mouse_event(int dwFlags, int dx, int dy, int cButtons, 
+            int dwExtraInfo);
+
+        /// <summary>
+        /// 根据句柄获取大小位置
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="rect"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(HandleRef hwnd, out NativeRECT rect);
 
         /// <summary>
         /// 获取窗体的句柄
@@ -46,7 +107,7 @@ namespace SimulationMouseKeyboard
             string strClass, string strWindow);
 
         /// <summary>
-        /// 给Text发送信息
+        /// 给Text发送信息0x0C，操作下拉框0x014e
         /// </summary>
         /// <param name="hWnd">文本控件句柄</param>
         /// <param name="Msg">0x0C固定</param>
@@ -55,6 +116,9 @@ namespace SimulationMouseKeyboard
         /// <returns></returns>
         [DllImport("USER32.DLL", EntryPoint = "SendMessage")]
         internal static extern int SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, string lParam);
+
+
+
 
         /// <summary>
         /// 获取窗体标题名称
@@ -78,7 +142,7 @@ namespace SimulationMouseKeyboard
 
 
         /// <summary>
-        /// 设置窗体类名称
+        /// 获取窗体类名称
         /// </summary>
         /// <param name="hwnd"></param>
         /// <param name="lpstring"></param>
@@ -121,6 +185,13 @@ namespace SimulationMouseKeyboard
         [DllImport("USER32.DLL", EntryPoint = "PostMessage", SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern bool PostMessage(IntPtr hwnd, UInt32 wMsg, int wParam, int lParam);
 
+        /// <summary>
+        /// 获取父类句柄
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetParent(IntPtr hWnd);
 
         /// <summary>
         /// 截图
@@ -169,18 +240,80 @@ namespace SimulationMouseKeyboard
         /// <summary>
         /// 鼠标点击某窗体,相对位置
         /// </summary>
-        public static bool ClickLocation(int hWnd, int x, int y)
+        public static bool ClickLocation(IntPtr hWnd, int x, int y)
         {
             Point point = new Point(x, y);
-            var btDownResult = WinApi.PostMessage((IntPtr)hWnd, WmLbuttondown, 0, MAKEPARAM(point.X, point.Y));
+            var btDownResult = WinApi.PostMessage(hWnd, WmLbuttondown, 0, MAKEPARAM(point.X, point.Y));
             Thread.Sleep(50);
-            var btUpResult = WinApi.PostMessage((IntPtr)hWnd, WmLbuttonup, 0, MAKEPARAM(point.X, point.Y));
+            var btUpResult = WinApi.PostMessage(hWnd, WmLbuttonup, 0, MAKEPARAM(point.X, point.Y));
             return btDownResult && btUpResult;
+        }
+
+        public static int getHwByTitle(int loginHw, string title)
+        {
+            List<WindowInfo> list = EnumChildWindowsCallback((IntPtr)loginHw);
+            foreach (WindowInfo item in list)
+            {
+                string szWindowName = item.szWindowName;
+                IntPtr hWnd = item.hWnd;
+                if (title.Equals(szWindowName))
+                {
+                    return (int)hWnd;
+                }
+            }
+            return (int)IntPtr.Zero;
+        }
+        /// <summary>
+        /// 获取子控件句柄
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
+        public static List<WindowInfo> EnumChildWindowsCallback(IntPtr handle)
+        {
+            List<WindowInfo> wndList = new List<WindowInfo>();
+            EnumChildWindows(handle, delegate (IntPtr hWnd, int lParam)
+            {
+                WindowInfo wnd = new WindowInfo();
+                StringBuilder sb = new StringBuilder(256);
+                wnd.hWnd = hWnd;
+                GetWindowTextW(hWnd, sb, sb.Capacity);
+                wnd.szWindowName = sb.ToString();
+                GetClassName(hWnd, sb, sb.Capacity);
+                wnd.szClassName = sb.ToString();
+                wnd.parentHWnd = GetParent(hWnd);
+                wnd.id = (int)hWnd;
+                wndList.Add(wnd);
+                return true;
+            }, 0);
+            return wndList;
+        }
+        /// <summary>
+        /// 鼠标左击
+        /// </summary>
+        /// <param name="hWnd1"></param>
+        public static void leftClick(int hWnd1)
+        {
+            IntPtr hWnd = (IntPtr)hWnd1;
+            if (hWnd != IntPtr.Zero)
+            {
+                PostMessage(hWnd, WmLbuttondown, 0, 0);
+                Thread.Sleep(10);
+                PostMessage(hWnd, WmLbuttonup, 0, 0);
+            }
         }
 
         internal static int MAKEPARAM(int l, int h)
         {
             return ((l & 0xffff) | (h << 0x10));
         }
+    }
+    public struct WindowInfo
+    {
+        internal int id;
+        public IntPtr hWnd;
+        internal IntPtr parentHWnd;
+        public string szWindowName;
+        public string szClassName;
+        internal string szTextName;
     }
 }
