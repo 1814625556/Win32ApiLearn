@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -440,6 +442,26 @@ namespace SimulationMouseKeyboard
             //MessageBox.Show("哈哈~，关闭开具增值税电子普通发票fail");
             //var closeBar = WinApi.FindWindow(null, "SysMessageBox");
             //var noBar = WinApi.FindWindow(null, "否");
+        }
+        /// <summary>
+        /// 截图操作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button14_Click(object sender, EventArgs e)
+        {
+            var jpg = WinApi.GetWindowCapture(WinApi.FindWindow(null, "Form1Text"));
+            var name = $"Form1{GetTimeStamp()}.png";
+            jpg.Save(Path.Combine(@"C:\MyDatas\公司\Pictures",name),ImageFormat.Png);
+        }
+        /// <summary> 
+        /// 获取时间戳 
+        /// </summary> 
+        /// <returns></returns> 
+        public static string GetTimeStamp()
+        {
+            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds).ToString();
         }
     }
 }
