@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace User32Test
 {
@@ -12,9 +13,68 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
-            SelectTaxDemo();
+            //SelectTaxDemo();
+            //TianXieShuiShouFenLeiBianMa();
+            Thread.Sleep(3000);
+            GuiGeXingHao();
             Console.ReadKey();
         }
+
+
+
+        //点击button按钮获取 文本框,title------------需要测试获取文本信息
+        static void GetControlTest()
+        {
+            var bar = WinApi.FindWindow(null, "发票号码确认");
+            var child = WinApi.FindWindowEx(bar, IntPtr.Zero, null, "确认");
+            //WinApi.LeftClick(child);
+            //WinApi.SendMessage(child, 0x00F5, IntPtr.Zero, "");//按钮点击事件--亲测可行
+            WinApi.PostMessage(child, 0x00F5, 5,5);//按钮点击事件
+        }
+
+        /// <summary>
+        /// 操作规格型号
+        /// </summary>
+        static void GuiGeXingHao()
+        {
+            var spflbmBar = WinApi.FindWindow(null, "商品编码添加");
+            var guiGebar = WinApi.FindWindowEx(spflbmBar, IntPtr.Zero, null, "规格型号");
+            var guiGeSelectBar = WinApi.FindWindowEx(spflbmBar, guiGebar, null, null);
+            WinApi.ClickLocation(guiGeSelectBar, 10, 10);
+            SendKeys.SendWait("{UP}");
+            Thread.Sleep(1000);
+            SendKeys.SendWait("{ENTER}");
+            //int selected = WinApi.SendMessage(guiGeSelectBar, 0x014e, (IntPtr)0, null);
+
+            Thread.Sleep(2000);
+
+            var jianma = WinApi.FindWindowEx(spflbmBar, IntPtr.Zero, null, "简码");
+            var temp = WinApi.FindWindowEx(spflbmBar, jianma, null, null);
+            temp = WinApi.FindWindowEx(spflbmBar, temp, null, null);
+            temp = WinApi.FindWindowEx(spflbmBar, temp, null, null);
+            //var selected1 = WinApi.SendMessage(temp, 0x014e, (IntPtr)1, null);
+            WinApi.ClickLocation(temp, 10, 10);
+            SendKeys.SendWait("{UP}");
+            Thread.Sleep(1000);
+            SendKeys.SendWait("{ENTER}");
+        }
+
+        //填写税收分类编码--填写text文本
+        static void TianXieShuiShouFenLeiBianMa()
+        {
+            var spflbmBar = WinApi.FindWindow(null, "商品编码添加");
+            var ssflName = WinApi.FindWindowEx(spflbmBar, IntPtr.Zero, null, "税收分类名称");
+            var temp1 = WinApi.FindWindowEx(spflbmBar, ssflName, null, null);
+            var temp2 = WinApi.FindWindowEx(temp1, IntPtr.Zero, null, null);
+            var ssflBar = WinApi.FindWindowEx(temp1, temp2, null, null);                //获取税收分类编码句柄
+            //Console.WriteLine($"spflbmBar:{spflbmBar},child:{child},child1:{child1},child2:{child2},child3:child3");
+            WinApi.SendMessage(ssflBar, 0x0C, IntPtr.Zero, "110");
+        }
+
+
+        /// <summary>
+        /// 根据索引选中下拉框
+        /// </summary>
         static void SelectTaxDemo()
         {
             var bar = WinApi.FindWindow(null, "商品编码添加");
@@ -22,7 +82,7 @@ namespace User32Test
             var child1 = WinApi.FindWindowEx(bar, child, null, null);
             Console.WriteLine($"bar:{bar},child:{child},child1:{child1}");
             //通过索引设置下拉框选项
-            int selected = WinApi.SendMessage(child1, 0x014e, (IntPtr)3, "");
+            int selected = WinApi.SendMessage(child1, 0x014e, (IntPtr)6, "");
 
         }
         static void JieTuCeShi()
