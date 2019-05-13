@@ -5,20 +5,12 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace User32Test
 {
     public static class WinApi
     {
-        public const int VK_UP = 0x26; // UP ARROW 键
-        public const int VK_RIGHT = 0x27; // RIGHT ARROW 键
-        public const int VK_DOWN = 0x28; // DOWN ARROW 键
-        public const int VK_TAB = 0x09; // TAB 键
-        public const int VK_ENTER = 0x0D; // ENTER 键
-        public const int WM_KEYDOWN = 0x100; // DOWN 鼠标事件
-        public const int WM_KEYUP = 0x101; // UP 鼠标事件
-        public const int WM_SYSKEYDOWN = 0x104; // DOWN 鼠标事件
-        public const int WM_SYSKEYUP = 0x105; // UP 鼠标事件
         /// <summary>
         /// 获取窗体的句柄
         /// </summary>
@@ -37,6 +29,8 @@ namespace User32Test
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter,
             string strClass, string strWindow);
 
+
+        //发送消息
         [DllImport("USER32.DLL", EntryPoint = "PostMessage", SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern bool PostMessage(IntPtr hwnd, UInt32 wMsg, int wParam, int lParam);
 
@@ -50,6 +44,16 @@ namespace User32Test
         public static extern bool GetWindowRect(HandleRef hwnd, out RECT rect);
 
         /// <summary>
+        /// 获取窗体标题名称
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="lpString"></param>
+        /// <param name="nMaxCount"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        internal static extern int GetWindowText(IntPtr hwnd, StringBuilder lpString, int nMaxCount);
+
+        /// <summary>
         /// 给Text发送信息0x0C，操作下拉框0x014e
         /// </summary>
         /// <param name="hWnd">文本控件句柄</param>
@@ -61,15 +65,45 @@ namespace User32Test
         internal static extern int SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, string lParam);
 
         /// <summary>
+        /// 获取文本文件操作
+        /// </summary>
+        /// <param name="hDlg"></param>
+        /// <param name="nIDDlgItem"></param>
+        /// <param name="lpString"></param>
+        /// <param name="nMaxCount"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll", EntryPoint = "GetDlgItemTextA")]
+        public static extern int GetDlgItemText(IntPtr hDlg, int nIDDlgItem, [Out]StringBuilder lpString, int nMaxCount);
+
+        /// <summary>
         /// 向直定句柄的窗体发送键盘键值
+        /// 所对应的的键盘值：  https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes
         /// </summary>
         internal static void SendKey(IntPtr intPtr, int key)
         {
-            WinApi.PostMessage(intPtr, WinApi.WM_KEYDOWN, key, 0);
-            Thread.Sleep(20);
-            WinApi.PostMessage(intPtr, WinApi.WM_KEYUP, key, 0);
-            Thread.Sleep(20);
+            //这种方式发送的是双字符
+            WinApi.PostMessage(intPtr, KeySnap.WM_KEYDOWN, key, 0);
+            WinApi.PostMessage(intPtr, KeySnap.WM_KEYUP, key, 0);
+
+            //这种方式发送的是单字符
+            //WinApi.PostMessage(intPtr, KeySnap.WM_SYSKEYDOWN, key, 0);
+            //WinApi.PostMessage(intPtr, KeySnap.WM_SYSKEYUP, key, 0);
         }
+
+        //模拟键盘按键
+        [DllImport("user32.dll", EntryPoint = "keybd_event", SetLastError = true)]
+        public static extern void keybd_event(Keys bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+
+        /// <summary>
+        /// 组合按键
+        /// </summary>
+        /// <param name="bVk"></param>
+        /// <param name="bScan"></param>
+        /// <param name="dwFlags"></param>
+        /// <param name="dwExtraInfo"></param>
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
 
         #region 截图 winapi
         [DllImport("user32.dll", EntryPoint = "GetDesktopWindow")]
@@ -90,6 +124,7 @@ namespace User32Test
         [DllImport("gdi32.dll", EntryPoint = "DeleteDC")]
         public static extern bool DeleteDC([In] IntPtr hdc);
         #endregion
+
         /// <summary>
         /// 截图Method
         /// </summary>
@@ -170,6 +205,28 @@ namespace User32Test
         public int bottom;
     }
 
+    public class KeySnap
+    {
+        public const int VK_CAPITAL = 0x14;//Caps按键
+
+        public const int VK_SHIFT = 0x10;// shift按键
+        public const int VK_UP = 0x26; // UP ARROW 键
+        public const int VK_RIGHT = 0x27; // RIGHT ARROW 键
+        public const int VK_DOWN = 0x28; // DOWN ARROW 键
+        public const int VK_TAB = 0x09; // TAB 键
+        public const int VK_ENTER = 0x0D; // ENTER 键
+        public const int WM_KEYDOWN = 0x100; // DOWN 鼠标事件
+        public const int WM_KEYUP = 0x101; // UP 鼠标事件
+        public const int WM_SYSKEYDOWN = 0x104; // DOWN 鼠标事件
+        public const int WM_SYSKEYUP = 0x105; // UP 鼠标事件
+        //下面是字母按键
+        public const int VK_A = 0x41;
+        public const int VK_B = 0x42;
+        public const int VK_C = 0x43;
+
+        public const int VK_a = 0x61;
+    }
+
     #region  知识点总结
     //修改下拉框
     //int selected = WinApi.SendMessage(guiGeSelectBar, 0x014e, (IntPtr)0, "");
@@ -179,7 +236,7 @@ namespace User32Test
     //SendKeys.SendWait("{ENTER}")
 
 
-    /// doc: https://docs.microsoft.com/zh-cn/windows/desktop/Controls/bm-click
+    /// doc:  https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes
     /// public const int VK_LEFT = 0x25; // LEFT ARROW 键
     //public const int VK_UP = 0x26; // UP ARROW 键
     //public const int VK_RIGHT = 0x27; // RIGHT ARROW 键

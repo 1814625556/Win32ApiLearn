@@ -13,10 +13,11 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
+
+
             //SelectTaxDemo();
             //TianXieShuiShouFenLeiBianMa();
-            Thread.Sleep(3000);
-            GuiGeXingHao();
+            GetText();
             Console.ReadKey();
         }
 
@@ -211,5 +212,95 @@ namespace User32Test
             }
             return "0";
         }
+
+
+        #region 2019年5月13日发送键盘值
+        static void SendKey()
+        {
+            var bar = WinApi.FindWindow(null, "Form1Text");
+            var btnBar = WinApi.FindWindowEx(bar, IntPtr.Zero, null, "button1");
+            var txtBar = WinApi.FindWindowEx(bar, btnBar, null,null);
+
+            //WinApi.SendKey(txtBar, KeySnap.VK_CAPITAL);
+            //Thread.Sleep(500);
+            WinApi.SendKey(txtBar, KeySnap.VK_A);
+            Thread.Sleep(1000);
+            WinApi.SendKey(txtBar, KeySnap.VK_B);
+            Thread.Sleep(1000);
+            WinApi.SendKey(txtBar, KeySnap.VK_C);
+        }
+        /// <summary>
+        /// 模拟键盘操作
+        /// </summary>
+        static void SimulationKeyBoard()
+        {
+            WinApi.keybd_event(Keys.Shift, 0, 0, 0);
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.A, 0, 0, 0);
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.B, 0, 0, 0);
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.C, 0, 0, 0);
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.Shift, 0, 2, 0);
+        }
+
+        /// <summary>
+        /// 模拟键盘组合键
+        /// </summary>
+        static void SimulationKeyBoard2()
+        {
+            Thread.Sleep(2000);
+
+            WinApi.keybd_event(VBKEY.vbKeyShift, 0, 0, 0);
+
+            for (var i = 0; i < 10; i++)
+            {
+                #region 测试通过
+                //WinApi.keybd_event(VBKEY.vbKeyA, 0, 0, 0);
+                //WinApi.keybd_event(VBKEY.vbKeyA, 0, 2, 0);
+
+                //WinApi.keybd_event(VBKEY.vbKeyB, 0, 0, 0);
+                //WinApi.keybd_event(VBKEY.vbKeyB, 0, 2, 0);
+
+                //WinApi.keybd_event(VBKEY.vbKeyTab, 0, 0, 0);
+                //WinApi.keybd_event(VBKEY.vbKeyTab, 0, 2, 0);
+                #endregion
+
+
+                Thread.Sleep(1000);
+
+            }
+
+            WinApi.keybd_event(VBKEY.vbKeyShift, 0, 2, 0);
+        }
+        /// <summary>
+        /// 改变文本文件的内容
+        /// </summary>
+        static void ChangeText()
+        {
+            var bar = WinApi.FindWindow(null, "Form1Text");
+            var btnBar = WinApi.FindWindowEx(bar, IntPtr.Zero, null, "button1");
+            var txtBar = WinApi.FindWindowEx(bar, btnBar, null, null);
+            WinApi.SendMessage(txtBar, 0x0C, IntPtr.Zero, "AKKJJCCBBDDEE"); //对文本框进行赋值
+        }
+
+        /// <summary>
+        /// 尚未成功
+        /// </summary>
+        static void GetText()
+        {
+            var bar = WinApi.FindWindow(null, "Form1Text");
+            var btnBar = WinApi.FindWindowEx(bar, IntPtr.Zero, null, "button1");
+            var txtBar = WinApi.FindWindowEx(bar, btnBar, null, null);
+
+            StringBuilder sb = new StringBuilder();
+            WinApi.GetDlgItemText(bar, (int)txtBar, sb, 255);
+            Console.WriteLine(sb.ToString());
+
+            WinApi.GetWindowText(txtBar, sb, 255);//获取标题
+            Console.WriteLine(sb.ToString());
+        }
+        #endregion
     }
 }
