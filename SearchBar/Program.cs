@@ -1,27 +1,202 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace User32Test
 {
+    public class Student
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
+            var stu1 = new Student()
+            {
+                Name = "cc",
+                Age = 26
+            };
 
+            var stu3 = stu1;
+            stu1.Age = 35;
+            Console.WriteLine(JsonConvert.SerializeObject(stu3));
 
-            //SelectTaxDemo();
-            //TianXieShuiShouFenLeiBianMa();
-            GetText();
+            ChangeStu(stu1);
+            Console.WriteLine(JsonConvert.SerializeObject(stu3));
+            
+            ChangeStu(ref stu1);
+            Console.WriteLine(JsonConvert.SerializeObject(stu3));
+
             Console.ReadKey();
         }
 
 
+        static void ChangeStu(Student stu)
+        {
+            stu.Age = 48;
+        }
+
+        static void ChangeStu(ref Student stu)
+        {
+            stu.Age = 48;
+        }
+
+        static void Change1(ref int age)
+        {
+            age = 18;
+        }
+
+        static void JuanPiaoCuoWuMingXi()
+        {
+            var bar = WinApi.FindWindow(null, "SysMessageBox");
+            if (bar != IntPtr.Zero)
+            {
+                var list = WinApi.EnumChildWindowsCallback((IntPtr)bar);
+                throw new Exception(list[4].szWindowName);
+            }
+        }
+
+        /// <summary>
+        /// 操作税收分类编码
+        /// </summary>
+        static void CaoZuoShuiShouFenLeiBianMa()
+        {
+            //int goodNoSettingHw = (int)WinApi.FindWindow(null, "税收分类编码设置");
+
+            var bar = WinApi.FindWindow(null, "SysMessageBox");
+            var child = (int)WinApi.FindWindowEx(bar, IntPtr.Zero, null, null);
+            for (var i = 0; i < 2; i++)
+            {
+                child = (int)WinApi.FindWindowEx((IntPtr)child, IntPtr.Zero, null, null);
+            }
+            var child1 = (int)WinApi.FindWindowEx((IntPtr)child, IntPtr.Zero, null, null);
+            var child2 = (int)WinApi.FindWindowEx((IntPtr)child, (IntPtr)child1, null, null);
+
+            var child3 = (int)WinApi.FindWindowEx((IntPtr)child2, IntPtr.Zero, null, null);
+
+            WinApi.LeftClick((IntPtr)child3);
+
+            //var stripHw = WinApi.FindWindowEx((IntPtr)goodNoSettingHw, IntPtr.Zero, null, "toolStrip1");
+            //Thread.Sleep(200);
+            //WinApi.ClickLocation(stripHw, 40, 15); //点击保存
+
+
+            //修改实际传入的税率
+            //var child = WinApi.FindWindowEx((IntPtr)goodNoSettingHw, IntPtr.Zero, null, "*使用税率");
+            //var suilvBar = WinApi.FindWindowEx((IntPtr)goodNoSettingHw, child, null, null);
+
+            ////通过索引设置下拉框选项
+            //var index = 9;
+            //Thread.Sleep(1000);
+            //WinApi.SendMessage(suilvBar, 0x014E, (IntPtr)index, ""); //调整税率为传入税率
+
+            //
+
+            //var child = WinApi.FindWindowEx((IntPtr)goodNoSettingHw, IntPtr.Zero, null, "享受优惠政策");
+            //var yhzcBar = WinApi.FindWindowEx((IntPtr)goodNoSettingHw, child, null, null);
+            //WinApi.LeftClick(yhzcBar);
+            //WinApi.SendKey(yhzcBar, 0x26);
+            //Thread.Sleep(30);
+            //WinApi.SendKey(yhzcBar, 0x0D);
+
+            //Thread.Sleep(300);
+
+            //int index = 2;
+            ////设置优惠政策内容
+            //var ssflbmBar = WinApi.FindWindowEx((IntPtr)goodNoSettingHw, IntPtr.Zero, null, "税收分类编码");
+            //var yhlxBar = WinApi.FindWindowEx((IntPtr)goodNoSettingHw, ssflbmBar, null, null);
+            //WinApi.LeftClick(yhlxBar);
+            //for (var i = 0; i < index; i++)
+            //{
+            //    WinApi.SendKey(yhlxBar, 0x28);
+            //    Thread.Sleep(300);
+            //}
+            //WinApi.SendKey(yhlxBar, 0x0D);
+
+            //ReadFile();
+        }
+
+        /// <summary>
+        /// 获取卷票明细中的错误
+        /// </summary>
+        static void JuanPiaomingxi()
+        {
+            var bar = WinApi.FindWindow(null, "SysMessageBox");
+            IntPtr child = WinApi.FindWindowEx(bar, IntPtr.Zero, null, null);
+            for (var i = 0; i < 4; i++)
+            {
+                child = WinApi.FindWindowEx(child, IntPtr.Zero, null, null);
+            }
+            StringBuilder sb = new StringBuilder();
+            WinApi.GetWindowText(child, sb, 1024);
+            Console.WriteLine(sb.ToString());
+        }
+
+        static void JuanPiaoLuoJi()
+        {
+            var bar = WinApi.FindWindow(null, "开具增值税普通发票(卷票)");
+            var child = WinApi.FindWindowEx(bar, IntPtr.Zero, null, "FPtiankai_new");
+            var child1 = WinApi.FindWindowEx(child, IntPtr.Zero, null, null);
+            var child2 = WinApi.FindWindowEx(child, child1, null, null);
+
+            RECT rect;
+            HandleRef ptrT = new HandleRef(null, child2);
+            WinApi.GetWindowRect(ptrT, out rect);
+
+            for (var i = 0; i < 5; i++)
+            {
+                WinApi.ClickLocation(child2, rect.right - rect.left - 230, 25); //增加行
+                Thread.Sleep(1000);
+                WinApi.ClickLocation(child2, rect.right - rect.left - 230, 25); //增加行
+                Thread.Sleep(1000);
+                WinApi.ClickLocation(child2, rect.right - rect.left - 230, 25); //增加行
+                Thread.Sleep(1000);
+                WinApi.ClickLocation(child2, rect.right - rect.left - 230, 25); //增加行
+                Thread.Sleep(1000);
+                WinApi.ClickLocation(child2, rect.right - rect.left - 170, 25); //减少行
+                Thread.Sleep(1000);
+                WinApi.ClickLocation(child2, rect.right - rect.left - 170, 25); //减少行
+                Thread.Sleep(1000);
+                WinApi.ClickLocation(child2, rect.right - rect.left - 170, 25); //减少行
+                Thread.Sleep(1000);
+                WinApi.ClickLocation(child2, rect.right - rect.left - 170, 25); //减少行
+                Thread.Sleep(1000);
+            }
+
+
+            //收款员测试
+            var cc1 = (int)WinApi.FindWindowEx(child1, IntPtr.Zero, null, null);
+            //var cc2 = (int)WinApi.FindWindowEx((IntPtr)cc1, IntPtr.Zero, null, null);
+            var fpdm = (int)WinApi.FindWindowEx((IntPtr)cc1, IntPtr.Zero, null, "发票代码：");
+            var cc3 = (int)WinApi.FindWindowEx((IntPtr)cc1, (IntPtr)fpdm, null, null);
+            var cc4 = (int)WinApi.FindWindowEx((IntPtr)cc1, (IntPtr)cc3, null, null);
+            var cc5 = (int)WinApi.FindWindowEx((IntPtr)cc4, IntPtr.Zero, null, null);
+
+            WinApi.SendMessage((IntPtr)cc4, 0x0C, (IntPtr)0, "管理员"); //调整税率为传入税率
+        }
+
+        //文件读取
+        static void ReadFile()
+        {
+            string result = "";
+            StreamReader sr = new StreamReader("cc.txt");
+            while (!sr.EndOfStream)
+            {
+                string str = sr.ReadLine();
+                result += "\"" + str + "\",";
+            }
+            Console.WriteLine(result);
+        }
 
         //点击button按钮获取 文本框,title------------需要测试获取文本信息
         static void GetControlTest()

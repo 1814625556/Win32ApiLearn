@@ -34,6 +34,16 @@ namespace User32Test
         [DllImport("USER32.DLL", EntryPoint = "PostMessage", SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern bool PostMessage(IntPtr hwnd, UInt32 wMsg, int wParam, int lParam);
 
+
+        /// <summary>
+        /// 窗体最大最小化
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="nCmdShow"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll", EntryPoint = "ShowWindow", CharSet = CharSet.Auto)]
+        public static extern int ShowWindow(IntPtr hwnd, int nCmdShow);
+
         /// <summary>
         /// 根据句柄获取大小位置
         /// </summary>
@@ -194,6 +204,86 @@ namespace User32Test
         {
             return ((l & 0xffff) | (h << 0x10));
         }
+
+        #region 获取子控件句柄
+        //获取窗口Text 
+        [DllImport("user32.dll")]
+        internal static extern int GetWindowTextW(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpString, int nMaxCount);
+
+        /// <summary>
+        /// 获取窗体类名称
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="lpstring"></param>
+        /// <param name="nMaxCount"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        internal static extern int GetClassName(IntPtr hwnd, StringBuilder lpstring, int nMaxCount);
+
+        /// <summary>
+        /// 获取父类句柄
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetParent(IntPtr hWnd);
+        /// <summary>
+        /// 获取子控件句柄
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
+        public static List<WindowInfo> EnumChildWindowsCallback(IntPtr handle)
+        {
+            List<WindowInfo> wndList = new List<WindowInfo>();
+            EnumChildWindows(handle, delegate (IntPtr hWnd, int lParam)
+            {
+                WindowInfo wnd = new WindowInfo();
+                StringBuilder sb = new StringBuilder(256);
+                wnd.hWnd = hWnd;
+                GetWindowTextW(hWnd, sb, sb.Capacity);
+                wnd.szWindowName = sb.ToString();
+                GetClassName(hWnd, sb, sb.Capacity);
+                wnd.szClassName = sb.ToString();
+                wnd.parentHWnd = GetParent(hWnd);
+                wnd.id = (int)hWnd;
+                wndList.Add(wnd);
+                return true;
+            }, 0);
+            return wndList;
+        }
+
+        /// <summary>
+        /// 获取所有子控件的句柄
+        /// </summary>
+        public static List<IntPtr> EnumChilWindowsIntptr(IntPtr intPtr)
+        {
+            var intPtrs = new List<IntPtr>();
+            EnumChildWindows(intPtr, delegate (IntPtr hWnd, int lParam)
+            {
+                intPtrs.Add(hWnd);
+                return true;
+            }, 0);
+
+            return intPtrs;
+        }
+        /// <summary>
+        /// 获取子控件回调函数
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        internal delegate bool CallBack(IntPtr hwnd, int lParam);
+        /// <summary>
+        /// 获取子控件api
+        /// </summary>
+        /// <param name="hWndParent">窗体句柄</param>
+        /// <param name="lpfn">回调函数</param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        [DllImport("USER32.DLL")]
+        internal static extern int EnumChildWindows(IntPtr hWndParent, CallBack lpfn, int lParam);
+        #endregion
+
     }
     //结构体布局 本机位置
     [StructLayout(LayoutKind.Sequential)]
@@ -225,6 +315,15 @@ namespace User32Test
         public const int VK_C = 0x43;
 
         public const int VK_a = 0x61;
+    }
+    public struct WindowInfo
+    {
+        internal int id;
+        public IntPtr hWnd;
+        internal IntPtr parentHWnd;
+        public string szWindowName;
+        public string szClassName;
+        internal string szTextName;
     }
 
     #region  知识点总结

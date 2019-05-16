@@ -72,6 +72,7 @@ namespace SimulationMouseKeyboard
         [DllImport("user32.dll")]
         public static extern bool SetCursorPos(int X, int Y);
 
+        
         [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
@@ -150,23 +151,6 @@ namespace SimulationMouseKeyboard
         /// <returns></returns>
         [DllImport("user32.dll")]
         internal static extern int GetClassName(IntPtr hwnd, StringBuilder lpstring, int nMaxCount);
-
-        /// <summary>
-        /// 获取子控件回调函数
-        /// </summary>
-        /// <param name="hwnd"></param>
-        /// <param name="lParam"></param>
-        /// <returns></returns>
-        internal delegate bool CallBack(IntPtr hwnd, int lParam);
-        /// <summary>
-        /// 获取子控件api
-        /// </summary>
-        /// <param name="hWndParent">窗体句柄</param>
-        /// <param name="lpfn">回调函数</param>
-        /// <param name="lParam"></param>
-        /// <returns></returns>
-        [DllImport("USER32.DLL")]
-        internal static extern int EnumChildWindows(IntPtr hWndParent, CallBack lpfn, int lParam);
 
         //获取窗口Text 
         [DllImport("user32.dll")]
@@ -263,6 +247,8 @@ namespace SimulationMouseKeyboard
             }
             return (int)IntPtr.Zero;
         }
+
+        #region 获取子控件句柄
         /// <summary>
         /// 获取子控件句柄
         /// </summary>
@@ -287,6 +273,38 @@ namespace SimulationMouseKeyboard
             }, 0);
             return wndList;
         }
+
+        /// <summary>
+        /// 获取所有子控件的句柄
+        /// </summary>
+        public static List<IntPtr> EnumChilWindowsIntptr(IntPtr intPtr)
+        {
+            var intPtrs = new List<IntPtr>();
+            EnumChildWindows(intPtr, delegate (IntPtr hWnd, int lParam)
+            {
+                intPtrs.Add(hWnd);
+                return true;
+            }, 0);
+
+            return intPtrs;
+        }
+        /// <summary>
+        /// 获取子控件回调函数
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        internal delegate bool CallBack(IntPtr hwnd, int lParam);
+        /// <summary>
+        /// 获取子控件api
+        /// </summary>
+        /// <param name="hWndParent">窗体句柄</param>
+        /// <param name="lpfn">回调函数</param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        [DllImport("USER32.DLL")]
+        internal static extern int EnumChildWindows(IntPtr hWndParent, CallBack lpfn, int lParam);
+        #endregion
         /// <summary>
         /// 鼠标左击
         /// </summary>

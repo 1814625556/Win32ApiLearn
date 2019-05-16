@@ -49,6 +49,7 @@ namespace SimulationMouseKeyboard
             this.button12 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
+            this.button15 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -199,11 +200,22 @@ namespace SimulationMouseKeyboard
             this.button14.UseVisualStyleBackColor = true;
             this.button14.Click += new System.EventHandler(this.button14_Click);
             // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(578, 111);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(189, 23);
+            this.button15.TabIndex = 18;
+            this.button15.Text = "获取窗体所有子控件句柄";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
+            // 
             // CCForm1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 537);
+            this.Controls.Add(this.button15);
             this.Controls.Add(this.button14);
             this.Controls.Add(this.button13);
             this.Controls.Add(this.button12);
@@ -243,6 +255,7 @@ namespace SimulationMouseKeyboard
         private Button button12;
         private Button button13;
         private Button button14;
+        private Button button15;
     }
 }
 
