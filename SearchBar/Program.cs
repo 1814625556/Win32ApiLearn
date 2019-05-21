@@ -17,9 +17,235 @@ namespace User32Test
         public int Age { get; set; }
     }
 
+
     class Program
     {
         static void Main(string[] args)
+        {
+            //leftClick((IntPtr)5964418);
+            ZhuanPiaoInfo();
+
+
+        }
+        /// <summary>
+        /// 专票地址信息填写
+        /// </summary>
+        static bool ZhuanPiaoInfo()
+        {
+            string pageName = "开具增值税专用发票";
+            var bar = WinApi.FindWindow(null, pageName);
+            if (bar == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            var list = WinApi.EnumChilWindowsIntptr(bar).Select(ptr=>(int)ptr).ToList();
+
+
+            //var grandparent = WinApi.GetParent((IntPtr) list[list.Count - 1]);
+            //var parent = (int)WinApi.FindWindowEx(grandparent, IntPtr.Zero, null, null);
+
+            //var parent2 = (int)WinApi.FindWindowEx((IntPtr)parent, IntPtr.Zero, null, null);
+
+            var list2 = WinApi.FindChildBar((IntPtr) list[2]);
+
+            var list3 = WinApi.FindChildBar(list2[19]);
+            var list4 = WinApi.FindChildBar(list2[21]);
+
+            for (var i = 0; i < list3.Count; i++)
+            {
+                WinApi.SendMessage(list3[i], 0x0C, IntPtr.Zero, "6217920170878354");
+
+                StringBuilder sb = new StringBuilder();
+                //获取文本
+                WinApi.GetWindowTextW(list3[i], sb, 255);
+                var str = sb.ToString();
+            }
+            for (var i = 0; i < list4.Count; i++)
+            {
+                WinApi.SendMessage(list4[i], 0x0C, IntPtr.Zero, "xinjiapo 15721527020");
+            }
+
+            var accountBar1 = WinApi.FindWindowEx((IntPtr) list2[list2.Count - 4], IntPtr.Zero, null, null);
+            var accountBar2 = WinApi.FindWindowEx((IntPtr)list2[list2.Count - 4], accountBar1, null, null);
+            //WinApi.SendMessage(accountBar, 0x0C, IntPtr.Zero, "6217720678878325");
+
+
+            if (list == null || list.Count < 37)
+            {
+                return false;
+            }
+
+            WinApi.SendMessage((IntPtr)list[list.Count-5], 0x0C, IntPtr.Zero, "shanghai...");
+            Thread.Sleep(500);
+            //WinApi.SendMessage((IntPtr)list[37], 0x0C, IntPtr.Zero, "6217720678878325");
+            WinApi.SendMessage((IntPtr)list[list.Count-9], 0x0C, IntPtr.Zero, "6217720678878325");
+            return true;
+        }
+
+        /// <summary>
+        /// 卷票折扣功能
+        /// </summary>
+        static void JuanPiaoZheKou()
+        {
+            Thread.Sleep(3000);
+
+            var bar = WinApi.FindWindow(null, "开具增值税普通发票(卷票)");
+            var child = WinApi.FindWindowEx(bar, IntPtr.Zero, null, "FPtiankai_new");
+            var child1 = WinApi.FindWindowEx(child, IntPtr.Zero, null, null);
+            var child2 = WinApi.FindWindowEx(child, child1, null, null);
+
+            RECT rect;
+            HandleRef ptrT = new HandleRef(null, child2);
+            WinApi.GetWindowRect(ptrT, out rect);
+
+            WinApi.ClickLocation(child2, rect.right - rect.left - 290, 25); //点击折扣
+
+
+            Thread.Sleep(500);
+            var bar1 = WinApi.FindWindow(null, "添加折扣行");
+            var list = WinApi.EnumChilWindowsIntptr(bar1).Select(i => (int)i).ToList();
+            if (list == null || list.Count < 7)
+            {
+                return;
+            }
+
+
+
+            WinApi.SendMessage((IntPtr)list[6], 0x0C, IntPtr.Zero, "2.5");
+
+            //Thread.Sleep(1000);
+            //WinApi.keybd_event(Keys.Tab, 0, 0, 0);
+            //Thread.Sleep(1000);
+            //WinApi.keybd_event(Keys.Tab, 0, 0, 0);
+            //Thread.Sleep(1000);
+            //WinApi.keybd_event(Keys.Tab, 0, 0, 0);
+            //Thread.Sleep(1000);
+            //WinApi.keybd_event(Keys.Enter, 0, 0, 0);
+
+            Thread.Sleep(1000);
+
+
+            WinApi.PostMessage((IntPtr)list[4], 0x00F5, 0, 0);
+
+            //WinApi.LeftClick((IntPtr)list[4]);
+            //WinApi.SendKey((IntPtr)list[4], KeySnap.VK_ENTER);
+            //WinApi.ClickLocation((IntPtr) list[4],1,1);
+
+
+
+            Console.ReadKey();
+        }
+
+        public static void leftClick(IntPtr hWnd1)
+        {
+            IntPtr hWnd = (IntPtr)hWnd1;
+            if (hWnd != IntPtr.Zero)
+            {
+                WinApi.PostMessage(hWnd, 0x0201, 0, 0);
+                WinApi.PostMessage(hWnd, 0x0202, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// 测试原生的sendKey方法
+        /// </summary>
+        static void TestYuanShengSendKey()
+        {
+            Thread.Sleep(5000);
+            SendKeys.SendWait("{TAB}"); ;
+            Thread.Sleep(100);
+
+            SendKeys.SendWait(" ");
+            SendKeys.SendWait("{BACKSPACE}");
+            SendKeys.SendWait("陈昌测试状态");
+            //JuanpiaoCeShi();
+        }
+
+        static void JuanpiaoCeShi()
+        {
+            var jBar = WinApi.FindWindow(null, "开具增值税普通发票(卷票)");
+            var list = WinApi.EnumChilWindowsIntptr(jBar);
+
+            WinApi.SendMessage(list[list.Count-2], 0x0C, IntPtr.Zero, "CHENCHANG");
+
+            WinApi.SendMessage(list[list.Count-5], 0x0C, IntPtr.Zero, "12345678901234567");
+
+            WinApi.SendMessage(list[22], 0x0C, IntPtr.Zero, "收款 柳若水");
+
+            WinApi.SendMessage(list[23], 0x0C, IntPtr.Zero, "备注：小猪");
+
+            var IntList = list.Select(i => (int)i).ToList();
+            for (var i = 0; i < IntList.Count; i++)
+            {
+                //if(IntList[i] == 1705808)
+                //    Console.WriteLine(i);
+                //if (IntList[i] == 2687710)
+                //    Console.WriteLine(i);
+                //if (IntList[i] == 4393708)
+                //    Console.WriteLine(i);
+                //if (IntList[i] == 4262056)
+                //    Console.WriteLine(i);
+            }
+            
+        }
+
+
+        public static void Retry(Func<string,string> action, int count, int sleepMilliTimeout = 0)
+        {
+            if (count <= 0)
+            {
+                throw new Exception($"Retry: 参数count({count})必须为正数");
+            }
+
+            if (sleepMilliTimeout < 0)
+            {
+                throw new Exception($"Retry: 参数sleepMilliTimeout({sleepMilliTimeout})不可以为负数");
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                try
+                {
+                    Console.Write(action.Invoke("GOOD BEY"));
+                    Thread.Sleep(sleepMilliTimeout);
+                }
+                catch (Exception e)
+                {
+                    if (sleepMilliTimeout > 0)
+                    {
+                        Thread.Sleep(sleepMilliTimeout);
+                    }
+
+                    if (i == count - 1)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            throw new Exception("Retry: 未正确执行");
+        }
+
+        /// <summary>
+        /// 红冲专票-备注
+        /// </summary>
+        static void HongChongRemark()
+        {
+            var bar = WinApi.FindWindow(null, "开具增值税专用发票");
+            var list = WinApi.EnumChilWindowsIntptr(bar);
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (list[i] == (IntPtr)525010)
+                    Console.WriteLine(i);
+            }
+            WinApi.SendMessage(list[11], 0x0C, IntPtr.Zero, "备注---chenchang---测试");
+        }
+
+        /// <summary>
+        /// 验证ref
+        /// </summary>
+        static void YnazhengRef()
         {
             var stu1 = new Student()
             {
@@ -33,11 +259,9 @@ namespace User32Test
 
             ChangeStu(stu1);
             Console.WriteLine(JsonConvert.SerializeObject(stu3));
-            
+
             ChangeStu(ref stu1);
             Console.WriteLine(JsonConvert.SerializeObject(stu3));
-
-            Console.ReadKey();
         }
 
 

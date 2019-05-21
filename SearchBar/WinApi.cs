@@ -191,9 +191,8 @@ namespace User32Test
             return btDownResult && btUpResult;
         }
 
-        public static bool LeftClick(IntPtr hWnd, int x=5, int y=5)
+        public static bool LeftClick(IntPtr hWnd)
         {
-            Point point = new Point(x, y);
             var btDownResult = WinApi.PostMessage(hWnd, 0x0201, 0, 0);
             Thread.Sleep(10);
             var btUpResult = WinApi.PostMessage(hWnd, 0x0202, 0, 0);
@@ -263,7 +262,6 @@ namespace User32Test
                 intPtrs.Add(hWnd);
                 return true;
             }, 0);
-
             return intPtrs;
         }
         /// <summary>
@@ -283,6 +281,26 @@ namespace User32Test
         [DllImport("USER32.DLL")]
         internal static extern int EnumChildWindows(IntPtr hWndParent, CallBack lpfn, int lParam);
         #endregion
+        /// <summary>
+        /// 查找子控件
+        /// </summary>
+        /// <param name="parentBar"></param>
+        /// <returns></returns>
+        public static List<IntPtr> FindChildBar(IntPtr parentBar)
+        {
+            var listChildBars = new List<IntPtr>();
+            var temp = IntPtr.Zero;
+            while (true)
+            {
+                temp = WinApi.FindWindowEx(parentBar, temp, null, null);
+                if (temp == IntPtr.Zero)
+                {
+                    break;
+                }
+                listChildBars.Add(temp);
+            }
+            return listChildBars;
+        }
 
     }
     //结构体布局 本机位置
