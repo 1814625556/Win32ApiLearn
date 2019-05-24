@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HookTest", "HookTest\HookTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileUploadDownLoad", "FileUploadDownLoad\FileUploadDownLoad.csproj", "{0B5C303F-6C6C-4829-97A5-FE4D4A0DA16F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PYTPrinter", "PYTPrinter\PYTPrinter.csproj", "{873A0DA2-EE93-428A-B8BC-7FCD66CA0DA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{0B5C303F-6C6C-4829-97A5-FE4D4A0DA16F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B5C303F-6C6C-4829-97A5-FE4D4A0DA16F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B5C303F-6C6C-4829-97A5-FE4D4A0DA16F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{873A0DA2-EE93-428A-B8BC-7FCD66CA0DA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{873A0DA2-EE93-428A-B8BC-7FCD66CA0DA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{873A0DA2-EE93-428A-B8BC-7FCD66CA0DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{873A0DA2-EE93-428A-B8BC-7FCD66CA0DA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

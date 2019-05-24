@@ -1,0 +1,65 @@
+﻿{
+  "serialNo": "Sean_149999999",
+  "invoice": {
+    "amountInfo": {
+      "amountWithTax": 80.7,
+      "amountWithoutTax": 69.57,
+      "taxAmount": 11.13
+    },
+    "checkCode": "这是checkCode部分内容",
+    "cipherText": "这是cipherText部分内容abcdefghigklmn1234567890一二三四五！@#￥%……&*（）",
+    "control": {
+      "customPrintControl": {
+        "customPrintInfo": {
+        	"head1":"订:479169-1 编码:2014 (100817003)",
+		"head2":"追踪码：03F52EAB09AE4827A804B721CE05D139"
+		},
+        "template": "1"
+      },
+      "saleListFileFlag": false
+    },
+    "details": [
+      {
+        "amount": 69.57,
+        "cargoName": "*其他化学制品*雷达电蚊片",
+        "itemSpec": "测试最新型规格型号",
+        "quantity": 3,
+        "quantityUnit": "箱",
+        "taxAmount": 11.13,
+        "taxPre": 0,
+        "taxPreCon": "",
+        "taxRate": "0.16",
+        "unitPrice": 23.19,
+        "zeroTax": ""
+      }
+    ],
+    "invoiceCode": "00000000001",
+    "invoiceDate": "20190521",
+    "invoiceNo": "00000002",
+    "invoiceType": "c",
+    "machineCode": "499924867208",
+    "makeInvoiceSource": "2",
+    "operatorInfo": {
+      "cashierName": "沃尔玛",
+      "checkerName": "沃尔玛",
+      "invoicerName": "沃尔玛"
+    },
+    "purchaser": {
+      "purchaserAddress": "这是测试购方地址abcd1234！@#￥",
+      "purchaserBankAccount": "6222023202013616588",
+      "purchaserBankName": "测试银行名称",
+      "purchaserName": "深圳四川大厦企业有限公司四川宾馆",
+      "purchaserTaxNo": "91440300892175614L",
+      "purchaserTel": "021-12345678"
+    },
+    "remark": "这是备注1234ABCD！@#￥",
+    "seller": {
+    "sellerTaxNo": "WEM403006610053WEM",
+     "sellerName": "沃尔玛的测试企业", 
+      "sellerAddress": "深圳市南山区沃尔玛的地址信息" ,
+      "sellerTel": "0755-88392100",
+      "sellerBankName": "中国工商银行深圳红围支行",
+      "sellerBankAccount": "4000021209024217701"
+    }
+  }
+}

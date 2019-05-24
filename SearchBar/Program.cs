@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using System.Windows.Automation;
 
 namespace User32Test
 {
@@ -22,11 +23,58 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
-            //leftClick((IntPtr)5964418);
-            ZhuanPiaoInfo();
 
-
+            UIZiDongHua();
+            Console.ReadKey();
         }
+
+        /// <summary>
+        /// 点击自动导入按钮--采用UI自动化方案
+        /// </summary>
+        static void UIZiDongHua()
+        {
+            Thread.Sleep(2000);
+            var bar = WinApi.FindWindow(null, "开具增值税普通发票");
+            var list = WinApi.EnumChilWindowsIntptr(bar);
+            var childBar = list[list.Count - 1];
+            var parentAutomation = AutomationElement.FromHandle(childBar);
+
+            var listAutomation = parentAutomation.
+                FindAll(TreeScope.Children, Condition.TrueCondition);
+
+            List<AutomationElement> listauto = new List<AutomationElement>(listAutomation.Count);
+            for (int i = 0; i < listAutomation.Count; i++)
+            {
+                listauto.Add(listAutomation[i]);
+                Console.WriteLine($"{i}-name:{listAutomation[i].Current.Name}," +
+                                  $"ClassName:{listAutomation[i].Current.ClassName}" +
+                                  $"ControlType:{listAutomation[i].Current.ControlType}");
+                if (listAutomation[i].Current.Name == "导入")
+                {
+                    object patternObject;
+                    var pattern = listAutomation[i].TryGetCurrentPattern
+                        (InvokePattern.Pattern, out patternObject);
+                    ((InvokePattern)patternObject).Invoke();
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// 查找自动导入按钮
+        /// </summary>
+        static void ZiDongDaoRu()
+        {
+            var bar = WinApi.FindWindow(null, "开具增值税普通发票");
+            var list = WinApi.EnumChilWindowsIntptr(bar);
+            var childBar = list[list.Count - 1];
+            RECT rect;
+            var handler = new HandleRef(null, childBar);
+            var flag = WinApi.GetWindowRect(handler, out rect);
+            WinApi.ClickLocation(childBar, rect.right - rect.left - 690,25);
+        }
+
         /// <summary>
         /// 专票地址信息填写
         /// </summary>
@@ -485,6 +533,10 @@ namespace User32Test
             int selected = WinApi.SendMessage(child1, 0x014e, (IntPtr)6, "");
 
         }
+
+        /// <summary>
+        /// 截图测试
+        /// </summary>
         static void JieTuCeShi()
         {
             var bar = WinApi.FindWindow(null, "开具增值税普通发票");
