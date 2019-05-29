@@ -24,13 +24,27 @@ namespace PYTPrinter
             doc.LoadFromFile(filePath);
 
             //选择打印机
-            doc.PrintSettings.PrinterName = printName;
+            doc.PrintSettings.PrinterName = new PrintDocument().PrinterSettings.PrinterName;
+
+            SettingPrinter(doc);
 
             //选择打印页码范围
             doc.PrintSettings.SelectPageRange(1, 10);
 
             //执行打印
             doc.Print();
+        }
+        /// <summary>
+        /// 设置打印机默认配置
+        /// </summary>
+        /// <param name="doc"></param>
+        private static void SettingPrinter(PdfDocument doc)
+        {
+            doc.PrintSettings.SelectPageRange(1, doc.Pages.Count);
+            doc.PrintSettings.Copies = 1;
+            doc.PageSettings.Orientation = PdfPageOrientation.Portrait;    //Portrait-纵向 LandScape-横向;
+            doc.PrintSettings.SelectSinglePageLayout(Spire.Pdf.Print.PdfSinglePageScalingMode.ActualSize, false);  //Pdf文件的实际尺寸                                                                                                     //静默打印PDF文档
+            doc.PrintSettings.PrintController = new StandardPrintController();
         }
 
         /// <summary>

@@ -12,44 +12,105 @@ using System.Windows.Automation;
 
 namespace User32Test
 {
-    public class Student
-    {
-        public string Name { get; set; }
-        public int Age { get; set; }
-    }
-
-
     class Program
     {
         static void Main(string[] args)
         {
 
-            UIZiDongHua();
+            //UIZiDongHua();
+            //ShowWindow();
+            Thread.Sleep(2000);
+            suilvwenti();
             Console.ReadKey();
         }
 
+        //通过名称设置下拉框选项
+        static void suilvwenti()
+        {
+            var bar = WinApi.FindWindow(null, "商品编码添加");
+            var child = WinApi.FindWindowEx(bar, IntPtr.Zero, null, "*税率");
+            var child1 = WinApi.FindWindowEx(bar, child, null, null);
+            Console.WriteLine($"bar:{bar},child:{child},child1:{child1}");
+            //通过索引设置下拉框选项
+            WinApi.SetComboxItemValue(child1, "3%");
+        }
+
         /// <summary>
-        /// 点击自动导入按钮--采用UI自动化方案
+        /// 专票红冲改动
+        /// </summary>
+        static void zhuanpiaohongchong()
+        {
+            //对专票备注进行赋值--貌似不能修改--需要确认
+            var pageName = "开具增值税专用发票";
+            var bar = WinApi.FindWindow(null, pageName);
+            
+            var list = WinApi.EnumChilWindowsIntptr(bar);
+
+            List<IntPtr> list2 = new List<IntPtr>();
+            for (var i = 2; i < list.Count; i++)
+            {
+                list2 = WinApi.FindChildBar((IntPtr)list[i]);
+                if (list2?.Count >= 22)
+                {
+                    break;
+                }
+            }
+
+            var temp = list2.Select(i => (int) i).ToList();
+
+            WinApi.SendMessage(list2[6], 0x0C, IntPtr.Zero, "备注信息");
+
+            var list3 = WinApi.FindChildBar(list2[19]);
+            var list4 = WinApi.FindChildBar(list2[21]);
+
+            foreach (IntPtr t in list3)
+            {
+                //银行名称账号
+                WinApi.SendMessage(t, 12, IntPtr.Zero, $"银行账号9898989");
+            }
+            foreach (IntPtr t in list4)
+            {
+                //购方地址，电话
+                var addressTel = $"购方地    址电话";
+                WinApi.SendMessage(t, 12, IntPtr.Zero, addressTel);
+            }
+        }
+
+        /// <summary>
+        /// 最大最小化
+        /// </summary>
+
+        static void ShowWindow()
+        {
+            var winBar = WinApi.FindWindow(null, "Form1Text");
+            var childs = WinApi.FindChildBar(winBar);
+            WinApi.SendMessage(childs[childs.Count - 1], 0x0C, IntPtr.Zero, "chenchang");
+            for (var i = 0; i < 1; i++)
+            {
+                WinApi.ShowWindow(winBar, 2); //最小
+                Thread.Sleep(1000);
+                WinApi.ShowWindow(winBar, 3); //最大
+                Thread.Sleep(1000);
+            }
+        }
+
+        /// <summary>
+        /// 点击自动导入按钮--采用UI自动化方案--使用UI方案查找句柄--精确方法可以使用
         /// </summary>
         static void UIZiDongHua()
         {
             Thread.Sleep(2000);
-            var bar = WinApi.FindWindow(null, "开具增值税普通发票");
+            var bar = WinApi.FindWindow(null, "开具增值税专用发票");
             var list = WinApi.EnumChilWindowsIntptr(bar);
+
             var childBar = list[list.Count - 1];
             var parentAutomation = AutomationElement.FromHandle(childBar);
-
             var listAutomation = parentAutomation.
                 FindAll(TreeScope.Children, Condition.TrueCondition);
 
-            List<AutomationElement> listauto = new List<AutomationElement>(listAutomation.Count);
             for (int i = 0; i < listAutomation.Count; i++)
             {
-                listauto.Add(listAutomation[i]);
-                Console.WriteLine($"{i}-name:{listAutomation[i].Current.Name}," +
-                                  $"ClassName:{listAutomation[i].Current.ClassName}" +
-                                  $"ControlType:{listAutomation[i].Current.ControlType}");
-                if (listAutomation[i].Current.Name == "导入")
+                if (listAutomation[i].Current.Name == "打印")
                 {
                     object patternObject;
                     var pattern = listAutomation[i].TryGetCurrentPattern
@@ -57,6 +118,7 @@ namespace User32Test
                     ((InvokePattern)patternObject).Invoke();
                 }
             }
+            Thread.Sleep(10000);
         }
 
 
@@ -288,39 +350,6 @@ namespace User32Test
                     Console.WriteLine(i);
             }
             WinApi.SendMessage(list[11], 0x0C, IntPtr.Zero, "备注---chenchang---测试");
-        }
-
-        /// <summary>
-        /// 验证ref
-        /// </summary>
-        static void YnazhengRef()
-        {
-            var stu1 = new Student()
-            {
-                Name = "cc",
-                Age = 26
-            };
-
-            var stu3 = stu1;
-            stu1.Age = 35;
-            Console.WriteLine(JsonConvert.SerializeObject(stu3));
-
-            ChangeStu(stu1);
-            Console.WriteLine(JsonConvert.SerializeObject(stu3));
-
-            ChangeStu(ref stu1);
-            Console.WriteLine(JsonConvert.SerializeObject(stu3));
-        }
-
-
-        static void ChangeStu(Student stu)
-        {
-            stu.Age = 48;
-        }
-
-        static void ChangeStu(ref Student stu)
-        {
-            stu.Age = 48;
         }
 
         static void Change1(ref int age)

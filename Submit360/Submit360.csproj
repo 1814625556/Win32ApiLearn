@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{873A0DA2-EE93-428A-B8BC-7FCD66CA0DA6}</ProjectGuid>
+    <ProjectGuid>{09909548-97B6-46F1-AB57-B1B5B066C25B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>PYTPrinter</RootNamespace>
-    <AssemblyName>PYTPrinter</AssemblyName>
+    <RootNamespace>Submit360</RootNamespace>
+    <AssemblyName>Submit360</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -32,18 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Spire.License, Version=1.3.7.40, Culture=neutral, PublicKeyToken=b1144360237c8b3f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Project\rk223am\lib\Spire.License.dll</HintPath>
-    </Reference>
-    <Reference Include="Spire.Pdf, Version=5.4.20.2040, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Project\rk223am\lib\Spire.Pdf.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,23 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helper\GraphicHelper.cs" />
-    <Compile Include="Helper\SheetPrintManager.cs" />
-    <Compile Include="PdfHelper.cs" />
-    <Compile Include="PrintEntitys\BasePrinterEntity.cs" />
-    <Compile Include="PrintEntitys\MarginModel.cs" />
-    <Compile Include="PrintEntitys\PrintBaseEntity.cs" />
-    <Compile Include="PrintEntitys\PrinterBusiness\PaymentBusiness.cs" />
-    <Compile Include="PrintEntitys\PrinterBusiness\PrintTest.cs" />
-    <Compile Include="Printer.cs" />
-    <Compile Include="PDFPrinter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="636946591049348339.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

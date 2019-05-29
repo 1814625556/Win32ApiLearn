@@ -11,7 +11,9 @@ namespace PYTPrinter
         static void Main(string[] args)
         {
             //var list = new Printer().GetPrinterList();
-            PDFPrinter.pdfPrint(@"C:\Users\Admin\Desktop\cc.pdf");
+            var pdf = args[0];
+            Console.WriteLine(pdf);
+            PDFPrinter.pdfPrint(pdf, "");
         }
     }
 }

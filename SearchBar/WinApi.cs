@@ -74,6 +74,11 @@ namespace User32Test
         [DllImport("USER32.DLL", EntryPoint = "SendMessage")]
         internal static extern int SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, string lParam);
 
+
+
+        [DllImport("USER32.DLL", CharSet = CharSet.Auto, SetLastError = true)]
+        internal static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
+
         /// <summary>
         /// 获取文本文件操作
         /// </summary>
@@ -300,6 +305,34 @@ namespace User32Test
                 listChildBars.Add(temp);
             }
             return listChildBars;
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SendMessage", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendRefMessage(IntPtr hWnd, uint Msg, int wParam, StringBuilder lParam);
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, string lParam);
+
+        /// <summary>
+        /// 通过句柄和值设置下拉框
+        /// </summary>
+        /// <param name="intPtr"></param>
+        /// <param name="itemValue"></param>
+        /// <returns></returns>
+        public static bool SetComboxItemValue(IntPtr intPtr, string itemValue)
+        {
+            int num1 = SendMessage(intPtr, 326, 0, 0);
+            for (int wParam = 0; wParam < num1; ++wParam)
+            {
+                StringBuilder lParam = new StringBuilder(100);
+                SendRefMessage(intPtr, 328U, wParam, lParam);
+                if (lParam.ToString().Contains(itemValue))
+                {
+                    int num2 = SendMessage(intPtr, 334, wParam, "");
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

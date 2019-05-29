@@ -26,7 +26,8 @@ namespace FileUploadDownLoad
 
             //RequestDaYin();
 
-            JieMa();
+            //JieMa();
+            SubmitSoftwareTest();
             Console.ReadKey();
         }
 
