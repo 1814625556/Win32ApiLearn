@@ -12,6 +12,16 @@ namespace User32Test
     public static class WinApi
     {
         /// <summary>
+        /// 窗体前置
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        [DllImport("User32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        //获取焦点
+        [DllImport("User32.dll")]
+        public static extern int SetFocus(IntPtr hwnd);
+        /// <summary>
         /// 获取窗体的句柄
         /// </summary>
         /// <param name="strClass">窗口类名--这个需要查找（精易编程助手）</param>
@@ -118,6 +128,36 @@ namespace User32Test
         /// <param name="dwExtraInfo"></param>
         [DllImport("user32.dll")]
         public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
+        /// <summary>
+        /// radio按钮操作
+        /// </summary>
+        /// <param name="hDlg"></param>
+        /// <param name="nIDFirstButton"></param>
+        /// <param name="nIDLastButton"></param>
+        /// <param name="nIDCheckButton"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        public static extern bool CheckRadioButton(
+            IntPtr hDlg,
+            int nIDFirstButton,
+            int nIDLastButton,
+            int nIDCheckButton
+        );
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hDlg"></param>
+        /// <param name="nIDButton"></param>
+        /// <param name="uCheck"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        public static extern bool CheckDlgButton(
+                IntPtr hDlg,      // handle to dialog box
+                int nIDButton,  // button-control identifier
+                int uCheck     // check state
+            );
 
 
         #region 截图 winapi
@@ -287,10 +327,35 @@ namespace User32Test
         internal static extern int EnumChildWindows(IntPtr hWndParent, CallBack lpfn, int lParam);
         #endregion
         /// <summary>
-        /// 查找子控件
+        /// 查找直接子控件信息
         /// </summary>
         /// <param name="parentBar"></param>
         /// <returns></returns>
+        public static List<WindowInfo> FindChildInfo(IntPtr parentBar)
+        {
+            var wndList = new List<WindowInfo>();
+            var temp = IntPtr.Zero;
+            while (true)
+            {
+                temp = WinApi.FindWindowEx(parentBar, temp, null, null);
+                if (temp == IntPtr.Zero)
+                {
+                    break;
+                }
+                WindowInfo wnd = new WindowInfo();
+                StringBuilder sb = new StringBuilder(256);
+                wnd.hWnd = temp;
+                GetWindowTextW(temp, sb, sb.Capacity);
+                wnd.szWindowName = sb.ToString();
+                GetClassName(temp, sb, sb.Capacity);
+                wnd.szClassName = sb.ToString();
+                wnd.parentHWnd = GetParent(temp);
+                wnd.id = (int)temp;
+                wndList.Add(wnd);
+            }
+            return wndList;
+        }
+
         public static List<IntPtr> FindChildBar(IntPtr parentBar)
         {
             var listChildBars = new List<IntPtr>();
@@ -333,6 +398,16 @@ namespace User32Test
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// 左键点击-2
+        /// </summary>
+        /// <param name="intPtr"></param>
+        public static void LeftClickMsg(IntPtr intPtr)
+        {
+            WinApi.PostMessage(intPtr, 245, 0, 0);
+            Thread.Sleep(10);
         }
 
     }

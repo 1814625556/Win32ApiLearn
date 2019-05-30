@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Windows.Automation;
+using SearchBar;
 
 namespace User32Test
 {
@@ -19,9 +20,31 @@ namespace User32Test
 
             //UIZiDongHua();
             //ShowWindow();
-            Thread.Sleep(2000);
-            suilvwenti();
+
+            
+
+            //HxShengQing.Step1();
+            //GetAllDeskForm();
+            //HxShengQing.Step2();
+            //HxShengQing.step3();
+            HxShengQing.GetInfoLoading();
             Console.ReadKey();
+        }
+
+        
+
+        static void GetAllDeskForm()
+        {
+            //var bar = WinApi.FindWindowEx(IntPtr.Zero,IntPtr.Zero, null,null);
+            var list = WinApi.FindChildInfo((IntPtr)1442640);
+
+            list.ForEach(i =>
+            {
+                if (i.szWindowName!=null)
+                {
+                    Console.WriteLine($"{i}:{i.szWindowName}");
+                }
+            });
         }
 
         //通过名称设置下拉框选项
