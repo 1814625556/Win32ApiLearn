@@ -102,7 +102,7 @@ namespace SearchBar
             var infoBar = WinApi.FindWindowEx(infoParentBar, IntPtr.Zero, null, null);
             WinApi.LeftClick(infoBar);//点击信息表成功
 
-            //打开红字增值税专用发票信息表信息选择--没有放遮挡
+            //打开红字增值税专用发票信息表信息选择--没有防遮挡
             WinApi.keybd_event(VBKEY.vbKeyDown, 0, 0, 0);
             Thread.Sleep(100);
             WinApi.keybd_event(VBKEY.vbKeyReturn, 0, 0, 0);
@@ -367,5 +367,111 @@ namespace SearchBar
         }
 
 
+        //===============================================================================================
+        /// <summary>
+        /// 红字信息表专票查询导出--第二个接口了
+        /// </summary>
+        public static void ChaXunIsLoadingSuccess()
+        {
+            //获取所有桌面窗体句柄
+            var alldeskBar = WinApi.FindChildInfo(IntPtr.Zero);
+
+            //获取开票软件句柄
+            var kprjBar = alldeskBar.Find(bar => bar.szWindowName != null && bar.szWindowName.Contains("开票软件"));
+
+            ShowForm(kprjBar.hWnd);
+
+            ClickBtnByName(kprjBar.hWnd, "发票管理");//点击发票管理
+
+            //找信息表管理父句柄
+            var barInfoList = WinApi.EnumChildWindowsCallback(kprjBar.hWnd);
+            var infoParentBar = IntPtr.Zero;
+            barInfoList.ForEach(i => {
+                if (i.szWindowName == "发票管理")
+                {
+                    infoParentBar = i.hWnd;
+                }
+            });
+            infoParentBar = WinApi.FindWindowEx(infoParentBar, IntPtr.Zero, null, null);
+            var infoBar = WinApi.FindWindowEx(infoParentBar, IntPtr.Zero, null, null);
+            WinApi.LeftClick(infoBar);//点击信息表成功
+
+            //打开红字增值税专用发票信息表信息选择--没有防遮挡
+            WinApi.keybd_event(Keys.Down, 0, 0, 0);
+            //SendKeys.SendWait("{down}");
+            Thread.Sleep(100);
+            WinApi.keybd_event(Keys.Down, 0, 0, 0);
+            //SendKeys.SendWait("{down}");
+            Thread.Sleep(100);
+            WinApi.keybd_event(Keys.Enter, 0, 0, 0);
+            //SendKeys.SendWait("{enter}");
+
+            Thread.Sleep(2000);
+            //获取开票软件下面的所有子句柄
+            var kprjList = WinApi.EnumChildWindowsCallback(kprjBar.hWnd);
+
+            //获取toolStrip1句柄
+            var toolStripBar = kprjList.Find(bar =>
+                bar.szWindowName != null && bar.szWindowName == "toolStrip1");
+
+            //点击下载按钮
+            ClickBtnByName(toolStripBar.hWnd, "下载");
+
+
+            Thread.Sleep(1000);
+            var hxshjgBar = WinApi.FindWindow(null, "红字发票信息表审核结果下载条件设置");//需要retry
+            var hxshjgList = WinApi.EnumChildWindowsCallback(hxshjgBar);
+            var tkrqBar = hxshjgList.Find(bar => bar.szWindowName == "填开日期");
+            var confirmBtn = hxshjgList.Find(bar => bar.szWindowName == "确定");
+            var xinxibiaoxinxiBar = hxshjgList.Find(bar => bar.szWindowName == "信息表信息");//信息表信息
+
+            //日期修改
+            var riqiList = WinApi.FindChildInfo(tkrqBar.hWnd);
+            //WinApi.SendMessage(riqiList[1].hWnd, 0X0C, IntPtr.Zero, "2018-05-01");
+            //WinApi.SendMessage(riqiList[1].hWnd, 0X0C, IntPtr.Zero, "2019-05-31");
+            WinApi.LeftClick(riqiList[1].hWnd);
+            SendKeys.SendWait("2018");
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.Right, 0,0,0);
+            Thread.Sleep(500);
+            SendKeys.SendWait("05");
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.Right, 0, 0, 0);
+            Thread.Sleep(500);
+            SendKeys.SendWait("01");
+            Thread.Sleep(500);
+
+            WinApi.LeftClick(riqiList[0].hWnd);
+            SendKeys.SendWait("2019");
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.Right, 0, 0, 0);
+            Thread.Sleep(500);
+            SendKeys.SendWait("05");
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.Right, 0, 0, 0);
+            Thread.Sleep(500);
+            SendKeys.SendWait("31");
+            Thread.Sleep(500);
+
+            //信息表信息修改
+            var xixinInfoList = WinApi.FindChildInfo(xinxibiaoxinxiBar.hWnd);
+            //信息表编号
+            WinApi.SendMessage(xixinInfoList[1].hWnd, 0X0C, IntPtr.Zero, "661735289405190530193705");
+            //购方税号
+            WinApi.SendMessage(xixinInfoList[xixinInfoList.Count-1].hWnd, 0X0C, IntPtr.Zero, "6217920170548015");
+            //销方税号
+            WinApi.SendMessage(xixinInfoList[xixinInfoList.Count-2].hWnd, 0X0C, IntPtr.Zero, "7217920170548015");
+
+            //点击确定按钮
+            WinApi.LeftClickMsg(confirmBtn.hWnd);
+        }
+
+        static void ShowForm(IntPtr bar)
+        {
+            WinApi.ShowWindow(bar, 2);
+            Thread.Sleep(100);
+            WinApi.ShowWindow(bar, 3);
+            Thread.Sleep(100);
+        }
     }
 }

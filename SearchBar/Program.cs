@@ -22,12 +22,13 @@ namespace User32Test
             //ShowWindow();
 
             
-
+            Thread.Sleep(2000);
             //HxShengQing.Step1();
             //GetAllDeskForm();
             //HxShengQing.Step2();
             //HxShengQing.step3();
-            HxShengQing.GetInfoLoading();
+            
+            HxShengQing.ChaXunIsLoadingSuccess();
             Console.ReadKey();
         }
 
