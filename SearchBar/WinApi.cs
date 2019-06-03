@@ -115,7 +115,7 @@ namespace User32Test
             //WinApi.PostMessage(intPtr, KeySnap.WM_SYSKEYUP, key, 0);
         }
 
-        //模拟键盘按键
+        //模拟键盘按键--没有防止遮挡
         [DllImport("user32.dll", EntryPoint = "keybd_event", SetLastError = true)]
         public static extern void keybd_event(Keys bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
 

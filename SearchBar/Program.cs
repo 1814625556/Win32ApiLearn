@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -27,12 +28,31 @@ namespace User32Test
             //GetAllDeskForm();
             //HxShengQing.Step2();
             //HxShengQing.step3();
-            
-            HxShengQing.ChaXunIsLoadingSuccess();
+
+            //HxShengQing.ChaXunIsLoadingSuccess();
+
+            GetAllProcess();
             Console.ReadKey();
         }
 
-        
+        static void GetAllProcess()
+        {
+            //Get Processes
+            Process[] processes = Process.GetProcesses();
+
+            
+        }
+
+        /// <summary>
+        /// 点击登录按钮--没有实现遮挡问题
+        /// </summary>
+        static void ClickLogin()
+        {
+            var loginWin = WinApi.FindWindow(null, "LoginForm");
+            var list = WinApi.EnumChildWindowsCallback(loginWin);
+            var loginBtn = list.Find(bar => bar.szWindowName == "登录");
+            WinApi.LeftClick(loginBtn.hWnd);
+        }
 
         static void GetAllDeskForm()
         {
