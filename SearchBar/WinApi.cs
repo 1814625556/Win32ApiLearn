@@ -40,7 +40,14 @@ namespace User32Test
             string strClass, string strWindow);
 
 
-        //发送消息
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="wMsg">等于16的时候就是点击关闭窗体</param>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
         [DllImport("USER32.DLL", EntryPoint = "PostMessage", SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern bool PostMessage(IntPtr hwnd, UInt32 wMsg, int wParam, int lParam);
 

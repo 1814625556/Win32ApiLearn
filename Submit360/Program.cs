@@ -23,7 +23,7 @@ namespace Submit360
             var downLoadLink = args[0];
             Regex reg = new Regex("setup_.*exe");
             var version = reg.Match(downLoadLink);
-            if (!downLoadLink.StartsWith("https") || string.IsNullOrEmpty(version.ToString()))
+            if (!downLoadLink.StartsWith("http") || string.IsNullOrEmpty(version.ToString()))
             {
                 Console.WriteLine("····下载链接不合法 (download illegal)····");
                 return;

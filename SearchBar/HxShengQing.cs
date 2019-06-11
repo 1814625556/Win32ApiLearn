@@ -6,6 +6,7 @@ using System.Windows.Automation;
 using System.Windows.Forms;
 using User32Test;
 using System.Threading;
+using SearchBar.RequestRed;
 
 namespace SearchBar
 {
@@ -18,7 +19,7 @@ namespace SearchBar
         //WinApi.ClickLocation((IntPtr) 7145062, 10, 37);//可以点中第一行第一块
         #endregion
         /// <summary>
-        /// 点击toolBar句柄下某个按钮
+        /// 点击toolBar句柄下某个按钮--这个有可能点不中--需要优化
         /// </summary>
         /// <param name="toolBar"></param>
         /// <param name="name"></param>
@@ -27,7 +28,7 @@ namespace SearchBar
             var parentAutomation = AutomationElement.FromHandle(toolBar);
             var listAutomation = parentAutomation.
                 FindAll(TreeScope.Children, Condition.TrueCondition);
-            for (int i = 0; i < listAutomation.Count; i++)
+            for (var i = 0; i < listAutomation.Count; i++)
             {
                 if (listAutomation[i]?.Current.ControlType != ControlType.Button)
                 {
@@ -37,14 +38,11 @@ namespace SearchBar
                 {
                     continue;
                 }
-                if (listAutomation[i].Current.Name == name)
-                {
-                    object patternObject;
-                    var pattern = listAutomation[i].TryGetCurrentPattern
-                        (InvokePattern.Pattern, out patternObject);
-                    ((InvokePattern)patternObject).Invoke();
-                    break;
-                }
+                if (listAutomation[i].Current.Name != name) continue;
+                listAutomation[i].TryGetCurrentPattern
+                    (InvokePattern.Pattern, out var patternObject);
+                ((InvokePattern)patternObject).Invoke();
+                break;
             }
         }
 
@@ -115,26 +113,54 @@ namespace SearchBar
         /// </summary>
         public static void Step2()
         {
-            var zhuanRedBar = WinApi.FindWindow(null, "红字增值税专用发票信息表信息选择");
-            var allBars = WinApi.EnumChildWindowsCallback(zhuanRedBar);
-            if (allBars == null)
+            var zhuanRedBar = IntPtr.Zero;
+
+            zhuanRedBar = TryRetry<string, IntPtr>(
+                str => WinApi.FindWindow(null, str), "红字增值税专用发票信息表信息选择", 
+                20, 500);
+            if (zhuanRedBar == IntPtr.Zero)
             {
+                //日志--红字增值税专用发票信息表信息选择查找失败
                 return;
             }
 
-            var checkBar = IntPtr.Zero;
-            allBars.ForEach(bar =>
+            Thread.Sleep(500);
+
+            TryRetry<IntPtr, bool>(bar =>
             {
-                if (bar.szWindowName.Contains("开具红字增值税专用发票信息表信息选择"))
+                var list = WinApi.EnumChildWindowsCallback(bar);
+                var PurchaserApplicationBar = list.Find(b => b.szWindowName == "一、购买方申请");
+                var SalesAllicationBar = list.Find(b => b.szWindowName == "二、销售方申请");
+                var DeductedBar = list.Find(b => b.szWindowName == "1、已抵扣");
+                var UnDeductedBar = list.Find(b => b.szWindowName == "2、未抵扣");
+                var FpInputBar = list.Find(b => b.szWindowName == "对应蓝字增值税专用发票信息");
+                if (PurchaserApplicationBar.hWnd == IntPtr.Zero || SalesAllicationBar.hWnd == IntPtr.Zero ||
+                    DeductedBar.hWnd == IntPtr.Zero || UnDeductedBar.hWnd == IntPtr.Zero || FpInputBar.hWnd==IntPtr.Zero)
                 {
-                    checkBar = bar.hWnd;
+                    return false;
                 }
-            });
+
+                //这里是判断条件--真实业务的时候添加
+                Thread.Sleep(1000);
+                WinApi.LeftClick(SalesAllicationBar.hWnd);//点击rediobutton
+                Thread.Sleep(1000);
+
+                var FpInputList = WinApi.FindChildBar(FpInputBar.hWnd);
+                WinApi.SendMessage(FpInputList[0], 0X0C, IntPtr.Zero, "123456");//发票号码
+                WinApi.SendMessage(FpInputList[1], 0X0C, IntPtr.Zero, "654321");//发票代码
 
 
-            checkBar = WinApi.FindWindowEx(checkBar, IntPtr.Zero, null, null);
-            var radioList = WinApi.FindChildBar(checkBar);
-            WinApi.LeftClick(radioList[0]);//可以点中 rediobutton
+                //Thread.Sleep(1000);
+                //WinApi.LeftClick(PurchaserApplicationBar.hWnd);
+                //Thread.Sleep(1000);
+                //WinApi.LeftClick(DeductedBar.hWnd);
+                //Thread.Sleep(1000);
+                //WinApi.LeftClick(UnDeductedBar.hWnd);
+
+                return true;
+            },zhuanRedBar, 20, 500);
+
+
         }
 
         /// <summary>
@@ -367,7 +393,40 @@ namespace SearchBar
         }
 
 
-        //===============================================================================================
+        //========================================第一个接口=======================================================
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void DiYigeJieKou()
+        {
+            //获取开票软件主窗体
+            var kprjBar = GetKprjMainPageBar();
+            if (kprjBar == IntPtr.Zero)
+            {
+                return;
+            }
+            //前置主窗体
+            ShowForm(kprjBar);
+
+            var kprjToolBar = WinApi.FindChildInfo(kprjBar)[0].hWnd;
+            //点击发票管理
+            ClickBtnByName(kprjToolBar, "发票管理");
+
+            //进入-增值税专用发票信息表填开
+            if (!EnterRedInfoTianKai(kprjBar))
+            {
+                //日志--进入增值税专用发票信息表填开页面失败
+            }
+
+            //操作-增值税专用发票信息表填开
+            if (!RedInfoTianKai(new RednotificationInfo()))
+            {
+                //日志--操作增值税专用发票信息表填开页面失败
+            }
+
+        }
+
+        //========================================第二个接口=======================================================
         /// <summary>
         /// 红字信息表专票查询导出--第二个接口了
         /// </summary>
@@ -382,6 +441,7 @@ namespace SearchBar
             ShowForm(kprjBar.hWnd);
 
             ClickBtnByName(kprjBar.hWnd, "发票管理");//点击发票管理
+
 
             //找信息表管理父句柄
             var barInfoList = WinApi.EnumChildWindowsCallback(kprjBar.hWnd);
@@ -466,12 +526,249 @@ namespace SearchBar
             WinApi.LeftClickMsg(confirmBtn.hWnd);
         }
 
+        //========================================帮助方法=======================================================
+
+        /// <summary>
+        /// 获取开票软件句柄
+        /// </summary>
+        /// <returns></returns>
+        public static IntPtr GetKprjMainPageBar()
+        {
+            try
+            {
+                //获取所有桌面窗体句柄
+                var alldeskBar = WinApi.FindChildInfo(IntPtr.Zero);
+                //获取开票软件句柄
+                var kprjBar = alldeskBar.Find(bar => bar.szWindowName != null && bar.szWindowName.Contains("开票软件"));
+                if (kprjBar.hWnd == IntPtr.Zero)
+                {
+                    Console.WriteLine("开票软件未运行");
+                    return IntPtr.Zero;
+                }
+                return kprjBar.hWnd;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return IntPtr.Zero;
+            }
+            return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// 进入增值税专用发票信息表填开
+        /// </summary>
+        /// <param name="mainBar"></param>
+        public static bool EnterRedInfoTianKai(IntPtr mainBar)
+        {
+            if (mainBar == IntPtr.Zero)
+            {
+                //日志 -- 
+                return false;
+            }
+            //找信息表管理父句柄
+            var barInfoList = WinApi.EnumChildWindowsCallback(mainBar);
+            var infoParentBar = IntPtr.Zero;
+            barInfoList.ForEach(i => {
+                if (i.szWindowName == "发票管理")
+                {
+                    infoParentBar = i.hWnd;
+                }
+            });
+            
+            infoParentBar = WinApi.FindWindowEx(infoParentBar, IntPtr.Zero, null, null);
+            var infoBar = WinApi.FindWindowEx(infoParentBar, IntPtr.Zero, null, null);
+            if (infoBar == IntPtr.Zero)
+            {
+                //日志--未找到发票管理句柄，打开增值税专用发票信息表填开页面失败
+                return false;
+            }
+            //点击信息表成功
+            WinApi.LeftClick(infoBar);
+
+            //打开红字增值税专用发票信息表信息选择--没有防遮挡
+            WinApi.keybd_event(VBKEY.vbKeyDown, 0, 0, 0);
+            Thread.Sleep(100);
+            WinApi.keybd_event(VBKEY.vbKeyReturn, 0, 0, 0);
+            return true;
+        }
+        /// <summary>
+        /// 操作操作增值税专用发票信息表填开页面
+        /// </summary>
+        /// <param name="redInfoEntity"></param>
+        /// <returns></returns>
+        public static bool RedInfoTianKai(RednotificationInfo redInfoEntity)
+        {
+            var zhuanRedBar = TryRetry<string, IntPtr>(
+                str => WinApi.FindWindow(null, str), "红字增值税专用发票信息表信息选择",
+                20, 500);
+            if (zhuanRedBar == IntPtr.Zero)
+            {
+                //日志--红字增值税专用发票信息表信息选择查找失败
+                return false;
+            }
+            //等待组件加载
+            Thread.Sleep(500);
+
+            var purchaserApplicationBar = new WindowInfo();
+            var salesAllicationBar = new WindowInfo();
+            var deductedBar = new WindowInfo();
+            var unDeductedBar = new WindowInfo();
+            var fpInputBar = new WindowInfo();
+            var confirmBtnBar = new WindowInfo();
+            var nextStepBar = new WindowInfo();
+
+            var flag = TryRetry<IntPtr, bool>(bar =>
+            {
+                var list = WinApi.EnumChildWindowsCallback(bar);
+                purchaserApplicationBar = list.Find(b => b.szWindowName == "一、购买方申请");
+                salesAllicationBar = list.Find(b => b.szWindowName == "二、销售方申请");
+                deductedBar = list.Find(b => b.szWindowName == "1、已抵扣");
+                unDeductedBar = list.Find(b => b.szWindowName == "2、未抵扣");
+                fpInputBar = list.Find(b => b.szWindowName == "对应蓝字增值税专用发票信息");
+                confirmBtnBar = list.Find(b => b.szWindowName == "确认");
+                nextStepBar = list.Find(b => b.szWindowName == "下一步"); 
+                if (purchaserApplicationBar.hWnd == IntPtr.Zero || salesAllicationBar.hWnd == IntPtr.Zero ||
+                    confirmBtnBar.hWnd==IntPtr.Zero || nextStepBar.hWnd == IntPtr.Zero ||
+                    deductedBar.hWnd == IntPtr.Zero || unDeductedBar.hWnd == IntPtr.Zero || fpInputBar.hWnd == IntPtr.Zero)
+                {
+                    return false;
+                }
+                return true;
+            }, zhuanRedBar, 20, 500);
+
+            if (!flag)
+            {
+                //日志--句柄获取失败，打印上述句柄
+                return false;
+            }
+
+            //这里是判断条件
+            if (redInfoEntity.notificationHead.RequestMemo.Contains("2"))//销方发起
+            {
+                WinApi.LeftClick(salesAllicationBar.hWnd);
+
+                //等待加载
+                Thread.Sleep(1000);
+
+                var FpInputList = WinApi.FindChildBar(fpInputBar.hWnd);
+                WinApi.SendMessage(FpInputList[0], 0X0C, IntPtr.Zero, "02038375");//发票号码
+                Thread.Sleep(100);
+                WinApi.SendMessage(FpInputList[1], 0X0C, IntPtr.Zero, "4400081140");//发票代码
+                Thread.Sleep(500);
+                WinApi.LeftClick(nextStepBar.hWnd);
+                if (!RedInfoConfirm(zhuanRedBar))
+                {
+                    //日志--不能开具红字专票
+                    return false;
+                }
+                return true;
+            }
+
+            //点击购方申请
+            WinApi.LeftClick(purchaserApplicationBar.hWnd);
+            //等待加载
+            Thread.Sleep(500);
+
+            if (redInfoEntity.notificationHead.RequestMemo.Trim() == ("0"))
+            {
+                WinApi.LeftClick(deductedBar.hWnd);//未抵扣
+                Thread.Sleep(500); 
+            }
+            if (redInfoEntity.notificationHead.RequestMemo.Trim() == ("1"))
+            {
+                WinApi.LeftClick(unDeductedBar.hWnd);//已抵扣
+                Thread.Sleep(500);
+
+                var FpInputList = WinApi.FindChildBar(fpInputBar.hWnd);
+                WinApi.SendMessage(FpInputList[0], 0X0C, IntPtr.Zero, "02038375");//发票号码
+                Thread.Sleep(100);
+                WinApi.SendMessage(FpInputList[1], 0X0C, IntPtr.Zero, "4400081140");//发票代码
+                Thread.Sleep(500);
+            }
+            //点击确定按钮
+            WinApi.LeftClick(confirmBtnBar.hWnd);
+
+            return true;
+        }
+
+        /// <summary>
+        /// 销方申请-增值税专用发票信息表填开页面-确定
+        /// </summary>
+        /// <returns></returns>
+        public static bool RedInfoConfirm(IntPtr zhuanRedBar)
+        {
+            var cancelBtn = IntPtr.Zero;
+            WindowInfo redBar = new WindowInfo();
+            var flag = TryRetry<IntPtr, bool>(bar =>
+            {
+                var list = WinApi.EnumChildWindowsCallback(bar);
+                redBar = list.Find(b => b.szWindowName.Contains("本张发票可以开红字发票！"));
+                var confirmBtnBar = list.Find(b => b.szWindowName == "确定");
+                var cancelBtnBar = list.Find(b => b.szWindowName == "取消"); 
+                if (redBar.hWnd == IntPtr.Zero || cancelBtnBar.hWnd==IntPtr.Zero || confirmBtnBar.hWnd==IntPtr.Zero)
+                {
+                    cancelBtn = cancelBtnBar.hWnd;
+                    return false;
+                }
+
+                WinApi.LeftClick(confirmBtnBar.hWnd);
+                return true;
+            }, zhuanRedBar, 20, 500);
+
+            if (!flag)
+            {
+                //日志--本张发票无法开红字发票:redBar.szWindowName
+                WinApi.LeftClick(cancelBtn);
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 窗体前置
+        /// </summary>
+        /// <param name="bar"></param>
         static void ShowForm(IntPtr bar)
         {
             WinApi.ShowWindow(bar, 2);
             Thread.Sleep(100);
             WinApi.ShowWindow(bar, 3);
             Thread.Sleep(100);
+        }
+
+        /// <summary>
+        /// 窗体获取重试大法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TR"></typeparam>
+        /// <param name="func"></param>
+        /// <param name="arg"></param>
+        /// <param name="count"></param>
+        /// <param name="sleepMilliTimeout"></param>
+        /// <returns></returns>
+        public static TR TryRetry<T, TR>(Func<T, TR> func, T arg, int count, int sleepMilliTimeout)
+        {
+            if (count <= 0)
+                return default(TR);
+            if (sleepMilliTimeout < 0)
+                return default(TR);
+
+            for (int i = 0; i < count; ++i)
+            {
+                try
+                {
+                    //Console.WriteLine(i);
+                    TR r = func(arg);
+                    if (!r.Equals((object)default(TR)))
+                        return r;
+                    Thread.Sleep(sleepMilliTimeout);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            return default(TR);
         }
     }
 }

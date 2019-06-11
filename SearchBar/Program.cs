@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Windows.Automation;
 using SearchBar;
+using SearchBar.RequestRed;
 
 namespace User32Test
 {
@@ -19,28 +20,31 @@ namespace User32Test
         static void Main(string[] args)
         {
 
-            //UIZiDongHua();
-            //ShowWindow();
+            //var cc = default(RednotificationHead);//null
+            //var cc = default(bool);//false
+            //var cc = default(RECT);//结构体的话里面的 字段属性都是0
 
-            
             Thread.Sleep(2000);
-            //HxShengQing.Step1();
-            //GetAllDeskForm();
-            //HxShengQing.Step2();
-            //HxShengQing.step3();
 
-            //HxShengQing.ChaXunIsLoadingSuccess();
+            //Bug.InfomationChoose();
+            //Bug.ClickRedChar();
 
-            GetAllProcess();
+            //关闭客户选择窗体
+            //Bug.GuanBiKeHuXuanZe();
+            HxShengQing.DiYigeJieKou();
             Console.ReadKey();
         }
-
+        /// <summary>
+        /// 获取所有进程信息
+        /// </summary>
         static void GetAllProcess()
         {
             //Get Processes
             Process[] processes = Process.GetProcesses();
-
-            
+            foreach (var pro in processes)
+            {
+                Console.WriteLine($"ProcessName:{pro.ProcessName}");
+            }
         }
 
         /// <summary>
