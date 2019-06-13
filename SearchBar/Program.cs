@@ -28,10 +28,21 @@ namespace User32Test
 
             //Bug.InfomationChoose();
             //Bug.ClickRedChar();
+            //Bug.XuanZe();
 
             //关闭客户选择窗体
             //Bug.GuanBiKeHuXuanZe();
-            HxShengQing.DiYigeJieKou();
+
+            //HxShengQing.WriteGoodsTaxNoSetting(null);
+            //HxShengQing.DaYin();
+
+            HxShengQing.TestBar();
+
+            var str = File.ReadAllText("RequestRed/redInfo2.txt");
+            var redInfo = JsonConvert.DeserializeObject<RednotificationInfo>(str);
+            HxShengQing.DiYigeJieKou(redInfo);
+            Console.ReadKey();
+            Console.ReadKey();
             Console.ReadKey();
         }
         /// <summary>

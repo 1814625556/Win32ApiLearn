@@ -13,30 +13,46 @@ namespace SearchBar
 {
     public class Bug
     {
-        public static void ClickBtnByName(IntPtr toolBar, string name)
+        public static bool ClickBtnByName(IntPtr toolBar, string name)
         {
-            var parentAutomation = AutomationElement.FromHandle(toolBar);
-            var listAutomation = parentAutomation.
-                FindAll(TreeScope.Children, Condition.TrueCondition);
-            for (int i = 0; i < listAutomation.Count; i++)
+            try
             {
-                if (listAutomation[i]?.Current.ControlType != ControlType.Button)
+                var parentAutomation = AutomationElement.FromHandle(toolBar);
+                var listAutomation = parentAutomation.
+                    FindAll(TreeScope.Children, Condition.TrueCondition);
+                for (var i = 0; i < listAutomation.Count; i++)
                 {
-                    continue;
-                }
-                if (string.IsNullOrEmpty(listAutomation[i]?.Current.Name))
-                {
-                    continue;
-                }
-                if (listAutomation[i].Current.Name == name)
-                {
-                    object patternObject;
-                    var pattern = listAutomation[i].TryGetCurrentPattern
-                        (InvokePattern.Pattern, out patternObject);
+                    if (listAutomation[i]?.Current.ControlType != ControlType.Button)
+                    {
+                        continue;
+                    }
+                    if (string.IsNullOrEmpty(listAutomation[i]?.Current.Name))
+                    {
+                        continue;
+                    }
+
+                    if (listAutomation[i].Current.Name != name) continue;
+
+                    listAutomation[i].TryGetCurrentPattern
+                        (InvokePattern.Pattern, out var patternObject);
                     ((InvokePattern)patternObject).Invoke();
-                    break;
+                    return true;
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+            return false;
+        }
+
+        public static void ShowForm(IntPtr bar)
+        {
+            WinApi.ShowWindow(bar, 2);
+            Thread.Sleep(100);
+            WinApi.ShowWindow(bar, 3);
+            Thread.Sleep(100);
         }
         /// <summary>
         /// 红字信息表选择
@@ -140,7 +156,7 @@ namespace SearchBar
             var fpkj = WinApi.FindWindow(null, "开具增值税专用发票");
             var list = WinApi.EnumChildWindowsCallback(fpkj);
             var redBar = list[list.Count - 1].hWnd;
-            var rect = new RECT();
+            RECT rect;
             WinApi.GetClientRect(redBar, out rect);
             WinApi.ClickLocation(redBar, rect.right - rect.left - 500, 25);
         }
@@ -153,6 +169,22 @@ namespace SearchBar
             var khxz = WinApi.FindWindow(null, "客户选择");
             //点掉窗体
             WinApi.PostMessage(khxz, 16, 0, 0);
+        }
+
+        /// <summary>
+        /// 查找按钮点击
+        /// </summary>
+        public static void XuanZe()
+        {
+            var bar = WinApi.FindWindow(null, "信息表选择");
+            ShowForm(bar);
+            var list = WinApi.EnumChildWindowsCallback(bar);
+            var tooltrip = list.Find(b => b.szWindowName == "toolStrip1");
+            var flag = ClickBtnByName(tooltrip.hWnd, "查找");
+            if (flag) return;
+            RECT rect;
+            WinApi.GetClientRect(tooltrip.hWnd, out rect);
+            WinApi.ClickLocation(tooltrip.hWnd, rect.right - rect.left - 175, 25);//查找
         }
 
     }

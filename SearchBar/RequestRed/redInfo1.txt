@@ -1,0 +1,82 @@
+﻿{
+    "notificationHead":
+	{
+	"amountWithTax": "-110",
+    "amountWithoutTax": "-100",
+    "companyTaxNo": "91310113342290888U",
+    "date": "20180910",
+    "goodsNoVer": "30.0",
+    "isMutiRate": "1",
+    "orignInvoiceCode": "1234567890",
+    "orignInvoiceNo": "12345678",
+    "purchaseTaxNo": "上海测试公司",
+    "purchaserName": "440002999999493",
+	"redNotificationType": "0",
+    "requestMemo": "0",
+    "sellerName": "上海云砺信息科技有限公司",
+    "sellerTaxNo": "91310113342290888U",
+    "taxAmount": "-10",
+    "taxKind": "0",
+    "taxRate": "0.10"
+	},
+    "notificationDetails": [
+        {
+            "amountWithTax": "-110",
+            "amountWithoutTax": "-100",
+            "corpGoodsNo": "",
+            "goodsTaxNo": "1010101020000000000",
+            "itemName": "A",
+            "itemSpec": "",
+            "priceMethod": "0",
+            "quantity": "-1",
+            "taxAmount": "-10",
+            "taxDedunction": "",
+            "taxPer": "0",
+            "taxPerCon": "",
+            "taxRate": "0.10",
+            "unit": "个",
+            "unitPrice": "100",
+            "zeroTax": "",
+			"itemSpec": "大"
+        },
+		{
+            "amountWithTax": "-110",
+            "amountWithoutTax": "-100",
+            "corpGoodsNo": "",
+            "goodsTaxNo": "1010101030000000000",
+            "itemName": "B",
+            "itemSpec": "",
+            "priceMethod": "0",
+            "quantity": "-1",
+            "taxAmount": "-10",
+            "taxDedunction": "",
+            "taxPer": "0",
+            "taxPerCon": "",
+            "taxRate": "0.11",
+            "unit": "个",
+            "unitPrice": "100",
+            "zeroTax": "",
+			"itemSpec": "大"
+        },
+		{
+            "amountWithTax": "-110",
+            "amountWithoutTax": "-100",
+            "corpGoodsNo": "",
+            "goodsTaxNo": "1010101040000000000",
+            "itemName": "C",
+            "itemSpec": "",
+            "priceMethod": "0",
+            "quantity": "-1",
+            "taxAmount": "-10",
+            "taxDedunction": "",
+            "taxPer": "0",
+            "taxPerCon": "",
+            "taxRate": "0.13",
+            "unit": "个",
+            "unitPrice": "100",
+            "zeroTax": "",
+			"itemSpec": "大"
+        }
+    ]
+   
+}

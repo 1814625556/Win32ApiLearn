@@ -11,6 +11,42 @@ namespace User32Test
 {
     public static class WinApi
     {
+        internal const int WmGettext = 13;
+        internal const int WmSettext = 12;
+        internal const int BM_CLICK = 245;
+        internal const int BM_TEXT = 12;
+        internal const int WM_CLOSE = 16;
+        internal const uint BmGetcheck = 240;
+        internal const uint BstChecked = 241;
+        internal const uint CbShowdropdown = 335;
+        internal const uint CbSettopindex = 348;
+        internal const uint WmLbuttondown = 513;
+        internal const uint WmLbuttonup = 514;
+        internal const int MouseeventfLeftdown = 2;
+        internal const int MouseeventfMove = 1;
+        internal const int MouseeventfLeftup = 4;
+        internal const int EM_GETTEXTEX = 1118;
+        public const int CB_GETLBTEXT = 328;
+        public const int CB_SETCURSEL = 334;
+        public const int CB_GETCOUNT = 326;
+        public const int CB_GETLBTEXTLEN = 329;
+        public const int VK_LEFT = 37;
+        public const int VK_UP = 38;
+        public const int VK_RIGHT = 39;
+        public const int VK_DOWN = 40;
+        public const int VK_TAB = 9;
+        public const int VK_RETURN = 13;
+        public const int VK_ESCAPE = 27;
+        public const int VK_BACK = 8;
+        public const int VK_NEXT = 34;
+        public const int VK_END = 35;
+        public const int WM_KEYDOWN = 256;
+        public const int WM_KEYUP = 257;
+        public const int WM_SYSKEYDOWN = 260;
+        public const int WM_SYSKEYUP = 261;
+        public const int VK_DELETE = 46;
+        internal const uint VbKeyZ = 90;
+
         /// <summary>
         /// 窗体前置
         /// </summary>
