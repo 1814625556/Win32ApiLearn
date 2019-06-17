@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -185,6 +186,191 @@ namespace SearchBar
             RECT rect;
             WinApi.GetClientRect(tooltrip.hWnd, out rect);
             WinApi.ClickLocation(tooltrip.hWnd, rect.right - rect.left - 175, 25);//查找
+        }
+
+        /// <summary>
+        /// 红冲信息表下载demo，缺少成功验证逻辑
+        /// </summary>
+        public static void downLoadInfo()
+        {
+            var infoBar = WinApi.FindWindow(null, "信息表选择");
+            var list = WinApi.EnumChildWindowsCallback(infoBar);
+            var toolStrip = list.Find(bar => bar.szWindowName == "toolStrip1");
+            if (toolStrip.hWnd == IntPtr.Zero)
+            {
+                return;
+            }
+
+            ClickBtnByName(toolStrip.hWnd, "下载");
+            Thread.Sleep(500);
+
+            var beginDateBar = IntPtr.Zero;
+            var endDateBar = IntPtr.Zero;
+
+            var purTaxNoBar = IntPtr.Zero;
+            var saleTaxNoBar = IntPtr.Zero;
+            var infoBhBar = IntPtr.Zero;
+
+            var confirmBar = IntPtr.Zero;
+
+            HxShengQing.TryRetry(str =>
+            {
+                var downinfoBar = WinApi.FindWindow(null, str);
+                var infoChilds = WinApi.FindChildInfo(downinfoBar);
+                confirmBar = infoChilds.Find(b => b.szWindowName == "确定").hWnd;
+
+                var infoTableInfoBar = infoChilds.Find(b => b.szWindowName == "信息表信息");
+                var infoTableChilds = WinApi.FindChildBar(infoTableInfoBar.hWnd);
+                purTaxNoBar = infoTableChilds[5];
+                saleTaxNoBar = infoTableChilds[4];
+                infoBhBar = infoTableChilds[1];
+
+                var dateBar = infoChilds.Find(b => b.szWindowName == "填开日期");
+                var dateChilds = WinApi.FindChildBar(dateBar.hWnd);
+                beginDateBar = dateChilds[1];
+                endDateBar = dateChilds[0];
+
+                if (beginDateBar == IntPtr.Zero || endDateBar == IntPtr.Zero 
+                    || purTaxNoBar == IntPtr.Zero || saleTaxNoBar == IntPtr.Zero
+                    || infoBhBar == IntPtr.Zero || confirmBar == IntPtr.Zero)
+                {
+                    return false;
+                }
+                return true;
+            }, "红字发票信息表审核结果下载条件设置");
+
+            WinApi.LeftClick(beginDateBar);
+            Thread.Sleep(500);
+            //修改填开日期起为2018-1-1
+            Thread.Sleep(100);
+            SendKeys.SendWait("2018");
+            Thread.Sleep(100);
+            SendKeys.SendWait("{right}");
+            Thread.Sleep(100);
+            SendKeys.SendWait("01");
+            Thread.Sleep(100);
+            SendKeys.SendWait("{right}");
+            Thread.Sleep(100);
+            SendKeys.SendWait("01");
+
+            Thread.Sleep(100);
+            WinApi.SendMessage(purTaxNoBar, 0X0C, IntPtr.Zero, "1234567890");
+            Thread.Sleep(100);
+            WinApi.SendMessage(saleTaxNoBar, 0X0C, IntPtr.Zero, "0987654321");
+            Thread.Sleep(100);
+            WinApi.SendMessage(infoBhBar, 0X0C, IntPtr.Zero, "12345678901234567");
+            Thread.Sleep(500);
+
+            WinApi.LeftClick(confirmBar);
+
+            var infoDownLoadBar = HxShengQing.TryRetry(str => WinApi.FindWindow(null, str), "信息表下载中");
+            if (infoDownLoadBar != IntPtr.Zero)
+            {
+                for (var i = 0; i < 100; i++)
+                {
+                    infoDownLoadBar = WinApi.FindWindow(null, "信息表下载中");
+                    var SysMessageBox = WinApi.FindWindow(null, "SysMessageBox");
+                    if (SysMessageBox != IntPtr.Zero)
+                    {
+                        HxShengQing.SystemOpera("确认");
+                        break;
+                    }
+                    if (infoDownLoadBar == IntPtr.Zero)
+                        break;
+                    Thread.Sleep(1000);
+                }
+            }
+
+        }
+
+
+        /// <summary>
+        /// 蓝字发票校验页面过度
+        /// </summary>
+        public static void lanzifapiaoguodu()
+        {
+            var blueInvoiceInputtHw = HxShengQing.TryRetry(str => WinApi.FindWindow(null, str), "销项正数发票代码号码填写、确认");
+
+            var fapiaodaimaBar1 = IntPtr.Zero;
+            var fapiaodaimaBar2 = IntPtr.Zero;
+            var fapiaohaomaBar1 = IntPtr.Zero;
+            var fapiaohaomaBar2 = IntPtr.Zero;
+            var nextStepBar = IntPtr.Zero;
+
+
+            var flag = HxShengQing.TryRetry(bar =>
+            {
+                var list = WinApi.EnumChildWindowsCallback(bar);
+                nextStepBar = list.Find(b => b.szWindowName == "下一步").hWnd;
+
+                var tabPage2 = list.Find(b => b.szWindowName == "tabPage2").hWnd;
+                var childs = WinApi.FindChildBar(tabPage2);
+
+                fapiaodaimaBar1 = childs[6];
+                fapiaodaimaBar2 = childs[0];
+                fapiaohaomaBar1 = childs[3];
+                fapiaohaomaBar2 = childs[1];
+
+                if (fapiaodaimaBar1 == IntPtr.Zero || fapiaodaimaBar2 == IntPtr.Zero ||
+                    fapiaohaomaBar1 == IntPtr.Zero ||
+                    fapiaohaomaBar2 == IntPtr.Zero || nextStepBar == IntPtr.Zero)
+                {
+                    return false;
+                }
+                return true;
+            }, blueInvoiceInputtHw);
+
+            if (!flag)
+            {
+                throw new Exception("xxxx:蓝字发票校验页面句柄查找错误");
+            }
+
+            WinApi.SendMessage(fapiaodaimaBar1, 0X0C, IntPtr.Zero, "4400154620");
+            Thread.Sleep(100);
+            WinApi.SendMessage(fapiaodaimaBar2, 0X0C, IntPtr.Zero, "4400154620");
+            Thread.Sleep(100);
+            WinApi.SendMessage(fapiaohaomaBar1, 0X0C, IntPtr.Zero, "51365035");
+            Thread.Sleep(100);
+            WinApi.SendMessage(fapiaohaomaBar2, 0X0C, IntPtr.Zero, "51365035");
+            WinApi.SendKey(fapiaohaomaBar2,WinApi.VK_RETURN);
+            Thread.Sleep(100);
+
+            //点击下一步按钮
+            WinApi.LeftClick(nextStepBar);
+
+
+            var confirmBtn = IntPtr.Zero;
+            var cancelBtn = IntPtr.Zero;
+            var isClickConfirm = IntPtr.Zero;
+
+            var nextFlag = HxShengQing.TryRetry(bar =>
+            {
+                var list = WinApi.EnumChildWindowsCallback(bar);
+                confirmBtn = list.Find(b => b.szWindowName == "确  定").hWnd;
+                cancelBtn = list.Find(b => b.szWindowName == "取 消").hWnd;
+                isClickConfirm = list.Find(b => b.szWindowName == "本张发票可以开红字发票！").hWnd;
+                if (confirmBtn == IntPtr.Zero || cancelBtn == IntPtr.Zero)
+                {
+                    return false;
+                }
+                return true;
+            }, blueInvoiceInputtHw);
+
+            if (!nextFlag)
+            {
+                throw new Exception("xxxx:蓝字发票校验页面下一步之后，句柄查找错误");
+            }
+
+            //点击确定按钮
+            if (isClickConfirm != IntPtr.Zero)
+            {
+                WinApi.LeftClick(confirmBtn);
+            }
+            else
+            {
+                throw new Exception("xxxx:本张发票不可以开红字发票！");
+            }
+
         }
 
     }

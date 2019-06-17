@@ -18,7 +18,73 @@ namespace SearchBar
     {
         #region 测试语句
         //WinApi.ClickLocation((IntPtr) 7145062, 10, 37);//可以点中第一行第一块
+
+        //赋值成功
+        //cc.TryGetCurrentPattern
+        //    (ValuePattern.Pattern, out var patternObject);
+        //((ValuePattern)patternObject).SetValue("mingchenghaha~");
+
         #endregion
+
+
+        //Ui自动化操作单选按钮
+        public static void RadioButtonTest()
+        {
+            var zsBar = WinApi.FindWindow(null, "红字增值税专用发票信息表信息选择");
+            var automationElement = AutomationElement.FromHandle(zsBar);
+
+            var childs1 = automationElement.FindAll(TreeScope.Descendants, Condition.TrueCondition);
+
+            for (var i = 0; i < childs1.Count; i++)
+            {
+                if (childs1[i].Current.ControlType != ControlType.RadioButton)
+                {
+                    continue;
+                }
+                Console.WriteLine($"Name:{childs1[i].Current.Name}");
+                if (childs1[i].Current.Name.Contains("未抵扣"))
+                {
+                    var autoMation = childs1[i];
+
+                    autoMation.TryGetCurrentPattern(SelectionItemPattern.Pattern, out var obj);
+                    if (obj != null)
+                    {
+                        ((SelectionItemPattern)obj).Select();
+                    }
+                }
+            }
+            //var childs2 = automationElement.FindAll(TreeScope.Descendants, Condition.TrueCondition);
+
+        }
+        /// <summary>
+        /// 复选框操作
+        /// </summary>
+        public static void CheckBoxTest()
+        {
+            var zsBar = WinApi.FindWindow(null, "红字增值税专用发票信息表信息选择");
+            var automationElement = AutomationElement.FromHandle(zsBar);
+
+            var childs1 = automationElement.FindAll(TreeScope.Descendants, Condition.TrueCondition);
+
+            for (var i = 0; i < childs1.Count; i++)
+            {
+                if (childs1[i].Current.ControlType != ControlType.CheckBox)
+                {
+                    continue;
+                }
+                Console.WriteLine($"Name:{childs1[i].Current.Name}");
+                if (childs1[i].Current.Name.Contains("成品油"))
+                {
+                    var autoMation = childs1[i];
+
+                    autoMation.TryGetCurrentPattern(TogglePattern.Pattern, out var obj);
+                    if (obj != null)
+                    {
+                        ((TogglePattern)obj).Toggle();
+                    }
+                }
+            }
+        }
 
         public static void TestBar()
         {
@@ -33,9 +99,9 @@ namespace SearchBar
 
             var kprjToolBar = WinApi.FindChildInfo(kprjBar)[1].hWnd;
 
-            //ClickBtnByName(kprjToolBar, "红字增值税专用发票信息表填开");
-
             InvokeMenuItem(kprjToolBar, "红字增值税专用发票信息表填开");
+
+            InvokeMenuItem(kprjToolBar, "红字增值税专用发票信息表查询导出");
 
         }
 
@@ -79,37 +145,69 @@ namespace SearchBar
             return false;
         }
 
-       
+       /// <summary>
+       /// 使用UI自动化的方式操作 菜单栏
+       /// </summary>
+       /// <param name="hWnd"></param>
+       /// <param name="name"></param>
         public static void InvokeMenuItem(IntPtr hWnd, string name)
         {
             if (hWnd == IntPtr.Zero)
                 throw new Exception("句柄不能为空Zero");
-            AutomationElement automationElement = AutomationElement.FromHandle(hWnd);
-            PropertyCondition propertyCondition1 = new PropertyCondition(AutomationElement.NameProperty, (object)name);
-            int num = 4;
-            PropertyCondition propertyCondition2 = propertyCondition1;
-
-            var list = automationElement.FindAll(TreeScope.Descendants, Condition.TrueCondition);
-
-            AutomationElement first = automationElement.FindFirst((TreeScope)num, (Condition)propertyCondition2);
-            // ISSUE: variable of the null type
-            //__Null local = null;
-            //if (first == (AutomationElement) local)
-            //{
-
-            //}
-            //throw new MenuItemNotFoundException();
-            AutomationPattern pattern = InvokePattern.Pattern;
-            object patternObject;
-            first.TryGetCurrentPattern(pattern, out patternObject);
+            var automationElement = AutomationElement.FromHandle(hWnd);
+            var propertyCondition1 = new PropertyCondition(AutomationElement.NameProperty, (object)name);
+            var first = automationElement.FindFirst(TreeScope.Descendants, (Condition)propertyCondition1);
+            var pattern = InvokePattern.Pattern;
+            first.TryGetCurrentPattern(pattern, out var patternObject);
             if (!(patternObject is InvokePattern))
             {
-
+                throw new Exception("xx");
             }
-            //throw new MenuItemInvokeException();
             ((InvokePattern)patternObject).Invoke();
         }
-        
+
+        public static void InvokeEditItem(IntPtr Hwnd, string name)
+        {
+            var bar = WinApi.FindWindow(null, "开具增值税普通发票");
+            var list = WinApi.EnumChildWindowsCallback(bar);
+
+            var listChild = WinApi.FindChildInfo(list[2].hWnd);
+            var tableBar = listChild[14];
+
+            AutomationElement automationElement = AutomationElement.FromHandle(tableBar.hWnd);
+            var tableList = automationElement.FindAll(TreeScope.Children, Condition.TrueCondition);
+
+            var zuhekuan = tableList[0];//组合框
+            UIHelper.SetSelectedComboBoxItem(zuhekuan,"17%");
+
+            var zhhekuangList = zuhekuan.FindAll(TreeScope.Children, Condition.TrueCondition);
+
+
+            var cczhuhe = zhhekuangList[0].FindAll(TreeScope.Children, Condition.TrueCondition);
+
+            //PropertyCondition propertyCondition1 = new PropertyCondition(AutomationElement.NameProperty, (object)"文本");
+            //AutomationElement first = zhhekuangList[0].FindFirst(TreeScope.Children, (Condition)propertyCondition1);
+
+            //automationElement.TryGetCurrentPattern(TablePattern.Pattern, out var pb);
+            //AutomationElement audemo = ((TablePattern) pb).GetItem(2, 7);
+
+            //var hangling = tableList[0].FindAll(TreeScope.Children, Condition.TrueCondition);
+            //var hangyi = tableList[1].FindAll(TreeScope.Children, Condition.TrueCondition);
+            var hanger = tableList[2].FindAll(TreeScope.Children, Condition.TrueCondition);
+            //var hangsan = tableList[3].FindAll(TreeScope.Children, Condition.TrueCondition);
+
+            //UIHelper.InsertTextUsingUIAutomation(hanger[2], "大份");
+
+            var shuilvlist = hanger[7].FindAll(TreeScope.Children, Condition.TrueCondition);
+            
+
+            //hanger[7].TryGetCurrentPattern
+            //    (InvokePattern.Pattern, out var patternObject);
+            //((InvokePattern)patternObject).Invoke();
+
+            //UIHelper.InsertTextUsingUIAutomation(hangling[2], "大份");
+        }
+
 
 
         public static string TaxSub(string taxStr)
@@ -572,11 +670,17 @@ namespace SearchBar
             //1：点击发票管理
             ClickBtnByName(kprjToolBar, "发票管理");
 
+            Thread.Sleep(1000);
+
             //2：主界面进入-增值税专用发票信息表填开
-            if (!EnterRedInfoTianKai(kprjBar))
-            {
-                //日志--进入增值税专用发票信息表填开页面失败
-            }
+            //if (!EnterRedInfoTianKai(kprjBar))
+            //{
+            //    //日志--进入增值税专用发票信息表填开页面失败
+            //}
+
+            //2：主界面进入 - 增值税专用发票信息表填开
+            var kprjToolBar2 = WinApi.FindChildInfo(kprjBar)[1].hWnd;
+            InvokeMenuItem(kprjToolBar2, "红字增值税专用发票信息表填开");
 
             //3：操作-增值税专用发票信息表填开
             if (!RedInfoTianKai(redInfo))
@@ -584,9 +688,7 @@ namespace SearchBar
                 //日志--操作增值税专用发票信息表填开页面失败
             }
 
-            //4：操作红字发票信息表填开--点击打印
-            //Thread.Sleep(5000);
-
+            //4：操作红字发票信息表填开
             if (!RedInfoFpTianKai(kprjBar, redInfo))
             {
                 //日志--红字信息填开失败
@@ -595,6 +697,11 @@ namespace SearchBar
             DaYin();
             //6：点击取消
             SystemOpera("取消");
+
+            Thread.Sleep(1000);
+
+            //7：进入查询导出页面
+            InvokeMenuItem(kprjToolBar2, "红字增值税专用发票信息表查询导出");
         }
 
         //========================================第二个接口=======================================================
@@ -874,8 +981,9 @@ namespace SearchBar
                 //日志---开票软件句柄获取失败
                 return false;
             }
-
             var hzxxtklist = new List<WindowInfo>();
+            //红字信息编码
+            var hzbm = "";
             TryRetry<IntPtr, bool>(b =>
             {
                 //获取开票软件下面的所有子句柄
@@ -949,7 +1057,9 @@ namespace SearchBar
                 //--日志数据填写异常
                 return false;
             }
-
+            //获取税号
+            var hzshList = WinApi.FindChildInfo(hzxxtklist[3].hWnd);
+            hzbm = hzshList[1].szWindowName;
             //点击打印
             ClickBtnByName(toolBar,"打印");
             return true;

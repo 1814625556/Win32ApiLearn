@@ -32,15 +32,23 @@ namespace User32Test
 
             //关闭客户选择窗体
             //Bug.GuanBiKeHuXuanZe();
-
+            //信息表下载
+            //var infoDownLoadBar = WinApi.FindWindow(null, "信息表下载中");//这个是一直存在的不能这样搞
+            //Bug.downLoadInfo();
             //HxShengQing.WriteGoodsTaxNoSetting(null);
             //HxShengQing.DaYin();
 
-            HxShengQing.TestBar();
 
-            var str = File.ReadAllText("RequestRed/redInfo2.txt");
-            var redInfo = JsonConvert.DeserializeObject<RednotificationInfo>(str);
-            HxShengQing.DiYigeJieKou(redInfo);
+            //HxShengQing.InvokeEditItem(IntPtr.Zero, "");
+
+            //Bug.lanzifapiaoguodu();
+
+            //HxShengQing.RadioButtonTest();
+            HxShengQing.CheckBoxTest();
+
+            //var str = File.ReadAllText("RequestRed/redInfo2.txt");
+            //var redInfo = JsonConvert.DeserializeObject<RednotificationInfo>(str);
+            //HxShengQing.DiYigeJieKou(redInfo);
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();
