@@ -24,6 +24,9 @@ namespace User32Test
             //var cc = default(bool);//false
             //var cc = default(RECT);//结构体的话里面的 字段属性都是0
 
+            //Bug.CloseWindow();
+            Bug.TreeIntpre();
+
             Thread.Sleep(2000);
 
             //Bug.InfomationChoose();

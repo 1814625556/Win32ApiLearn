@@ -58,5 +58,13 @@ namespace SimulationMouseKeyboardForm
             form2.ShowDialog();//这种方式必须关闭form2,才能返回form1
             //form2.Show();
         }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (treeView1.SelectedNode != null)
+            {
+                MessageBox.Show(treeView1.SelectedNode.Text);
+            }
+        }
     }
 }

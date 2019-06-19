@@ -14,6 +14,57 @@ namespace SearchBar
 {
     public class Bug
     {
+        //这种方式获取不到treeview的句柄信息
+        public static void TreeIntpre()
+        {
+            var treeBar = (IntPtr)328902;
+            var list = WinApi.EnumChildWindowsCallback(treeBar);
+            list.ForEach(l=>Console.WriteLine(l.szWindowName));
+        }
+
+        /// <summary>
+        /// 树类型的UI自动化
+        /// </summary>
+        public static void TreePattern()
+        {
+            var treeBar = (IntPtr) 328902;
+            var treeMation = AutomationElement.FromHandle(treeBar);
+
+            var propertyCondition = new PropertyCondition(AutomationElement.NameProperty, "节点0");
+
+            var node0 = treeMation.FindFirst(TreeScope.Children, propertyCondition);
+
+            node0.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out var obj);
+            ((ExpandCollapsePattern)obj).Expand();
+            var node2 = node0.FindFirst(TreeScope.Children,
+                new PropertyCondition(AutomationElement.NameProperty, "节点2"));
+
+            Thread.Sleep(2000);
+            node2.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out var node2Pattern);
+            ((ExpandCollapsePattern)node2Pattern).Expand();
+        }
+
+        //关闭window窗体
+        public static void CloseWindow()
+        {
+            //获取开票软件主窗体
+            var kprjBar = HxShengQing.GetKprjMainPageBar();
+            if (kprjBar == IntPtr.Zero)
+            {
+                return;
+            }
+            //前置主窗体
+            ShowForm(kprjBar);
+
+
+            var list = WinApi.EnumChildWindowsCallback(kprjBar);
+            var bar = list.Find(b => b.szWindowName == "红字发票信息表查询导出").hWnd;
+
+            var barMation = AutomationElement.FromHandle(bar);
+            barMation.TryGetCurrentPattern(WindowPattern.Pattern, out var obj);
+            ((WindowPattern) obj).Close();
+        }
+
         /// <summary>
         /// 加载框判断
         /// </summary>
