@@ -14,6 +14,18 @@ namespace SearchBar
 {
     public class Bug
     {
+        /// <summary>
+        /// 加载框判断
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsInfoLoading()
+        {
+            var infoBar = WinApi.FindWindow(null, "信息表下载中");
+            var automation = AutomationElement.FromHandle(infoBar);
+            var str = JsonConvert.SerializeObject(automation.Current.IsOffscreen);//区别在IsOffscreen
+            return true;
+        }
+
         public static bool ClickBtnByName(IntPtr toolBar, string name)
         {
             try

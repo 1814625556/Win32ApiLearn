@@ -87,9 +87,18 @@ namespace User32Test
         [DllImport("USER32.DLL", EntryPoint = "PostMessage", SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern bool PostMessage(IntPtr hwnd, UInt32 wMsg, int wParam, int lParam);
 
+        /// <summary>
+        /// 关闭windown窗体
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <returns></returns>
+        public static bool CloseWinForm(IntPtr hwnd)
+        {
+            return PostMessage(hwnd, 0X10, 0,0);
+        }
 
         /// <summary>
-        /// 窗体最大最小化
+        /// 窗体最大最小化2：最小，3：最大
         /// </summary>
         /// <param name="hwnd"></param>
         /// <param name="nCmdShow"></param>

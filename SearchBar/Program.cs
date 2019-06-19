@@ -35,6 +35,7 @@ namespace User32Test
             //信息表下载
             //var infoDownLoadBar = WinApi.FindWindow(null, "信息表下载中");//这个是一直存在的不能这样搞
             //Bug.downLoadInfo();
+            //Bug.IsInfoLoading();
             //HxShengQing.WriteGoodsTaxNoSetting(null);
             //HxShengQing.DaYin();
 
@@ -43,12 +44,26 @@ namespace User32Test
 
             //Bug.lanzifapiaoguodu();
 
+            //radiobutton,checkbox,combox加载功能
             //HxShengQing.RadioButtonTest();
-            HxShengQing.CheckBoxTest();
+            //HxShengQing.CheckBoxTest();
+            //HxShengQing.ComboxSelected();
 
-            //var str = File.ReadAllText("RequestRed/redInfo2.txt");
-            //var redInfo = JsonConvert.DeserializeObject<RednotificationInfo>(str);
-            //HxShengQing.DiYigeJieKou(redInfo);
+            //var entity = DateBaseHelper.GetHzscResult();
+
+
+            //HxShengQing.UploadHzInfo(IntPtr.Zero, "661543812468190619150832");
+
+            var str = File.ReadAllText("RequestRed/redInfo3.txt");
+            var redInfo = JsonConvert.DeserializeObject<RednotificationInfo>(str);
+            HxShengQing.DiYigeJieKou(redInfo);
+
+            //HxShengQing.UploadHzInfo((IntPtr)15207074, "661543812468190618162340");
+
+            //HxShengQing.SystemOpera("确认", out var message);
+            //Console.WriteLine(message);
+
+            //HxShengQing.ChaXunIsLoadingSuccess();
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();

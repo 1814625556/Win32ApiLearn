@@ -78,13 +78,53 @@ namespace SearchBar
                     var autoMation = childs1[i];
 
                     autoMation.TryGetCurrentPattern(TogglePattern.Pattern, out var obj);
+                    //autoMation.TryGetCurrentPattern(DockPattern.Pattern, out var obj2);
                     if (obj != null)
                     {
                         ((TogglePattern)obj).Toggle();
+                        //((DockPattern)obj).;
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// 下拉框选项
+        /// </summary>
+        public static void ComboxSelected()
+        {
+            var zsBar = WinApi.FindWindow(null, "商品编码添加");
+            var automationElement = AutomationElement.FromHandle(zsBar);
+
+            var childs1 = automationElement.FindAll(TreeScope.Descendants, Condition.TrueCondition);
+
+            for (var i = 0; i < childs1.Count; i++)
+            {
+                if (childs1[i].Current.ControlType != ControlType.ComboBox)
+                {
+                    continue;
+                }
+                Console.WriteLine($"Name:{childs1[i].Current.Name}");
+                if (childs1[i].Current.Name.Contains("商品名称"))
+                {
+                    var autoMation = childs1[i];
+
+                    UIHelper.SetSelectedComboBoxItem(autoMation, "17%");
+
+                    //autoMation.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out var obj);
+                    ////autoMation.TryGetCurrentPattern(DockPattern.Pattern, out var obj2);
+                    //if (obj != null)
+                    //{
+                    //    ((ExpandCollapsePattern)obj).Expand();
+                    //    ((ExpandCollapsePattern)obj).Collapse();
+                    //    //((DockPattern)obj).;
+                    //}
+                }
+            }
+        }
+
+
+
 
         public static void TestBar()
         {
@@ -133,6 +173,10 @@ namespace SearchBar
 
                     listAutomation[i].TryGetCurrentPattern
                         (InvokePattern.Pattern, out var patternObject);
+                    if (patternObject == null)
+                    {
+                        throw new Exception($"{name},按钮转换失败");
+                    }
                     ((InvokePattern)patternObject).Invoke();
                     return true;
                 }
@@ -563,7 +607,7 @@ namespace SearchBar
         }
 
         /// <summary>
-        /// 获取信息表流水账号
+        /// 获取信息表流水账号--已经使用UI自动化方式替代
         /// </summary>
         public static void Getsuihao()
         {
@@ -649,6 +693,27 @@ namespace SearchBar
             WinApi.LeftClickMsg(btn.hWnd);
             return true;
         }
+        public static bool SystemOpera(string btnName,out string message)
+        {
+            message = "";
+            var messageCopy = "";
+            //多次重复获取按钮
+            var btn = TryRetry(str =>
+            {
+                var sysBar = WinApi.FindWindow(null, str);
+                var sysListBars = WinApi.EnumChildWindowsCallback(sysBar);
+                messageCopy = sysListBars[4].szWindowName;
+                return sysListBars.Find(b => b.szWindowName == btnName);
+            }, "SysMessageBox");
+
+            if (btn.hWnd == IntPtr.Zero)
+            {
+                return false;
+            }
+            message = messageCopy;
+            WinApi.LeftClickMsg(btn.hWnd);
+            return true;
+        }
 
 
         //========================================第一个接口=======================================================
@@ -656,6 +721,67 @@ namespace SearchBar
         /// 
         /// </summary>
         public static void DiYigeJieKou(RednotificationInfo redInfo)
+        {
+            //获取开票软件主窗体
+            var kprjBar = GetKprjMainPageBar();
+            if (kprjBar == IntPtr.Zero)
+            {
+                return;
+            }
+            //前置主窗体
+            ShowForm(kprjBar);
+
+            var kprjToolBar = WinApi.FindChildInfo(kprjBar)[0].hWnd;
+            //1：点击发票管理
+            ClickBtnByName(kprjToolBar, "发票管理");
+
+            Thread.Sleep(1000);
+
+            //2：主界面进入 - 增值税专用发票信息表填开
+            var kprjToolBar2 = WinApi.FindChildInfo(kprjBar)[1].hWnd;
+            InvokeMenuItem(kprjToolBar2, "红字增值税专用发票信息表填开");
+
+            //3：操作-增值税专用发票信息表填开
+            if (!RedInfoTianKai(redInfo))
+            {
+                //日志--操作增值税专用发票信息表填开页面失败
+            }
+
+            //4：操作红字发票信息表填开--里面有明细
+            if (!RedInfoFpTianKai(kprjBar, redInfo,out var hzbm))
+            {
+                //日志--红字信息填开失败
+            }
+            //5：点击打印--选择不打印
+            DaYin();
+            //6：点击取消
+            SystemOpera("取消");
+
+            Thread.Sleep(1000);
+
+            //7：进入查询导出页面
+            InvokeMenuItem(kprjToolBar2, "红字增值税专用发票信息表查询导出");
+
+            //8：上传红字信息表
+            UploadHzInfo(kprjBar, hzbm);
+
+            //9：等待信息表上传
+            if (!WaitLoadingForm("信息表上传中"))
+            {
+                //throw new Exception("信息表上传失败");
+                Console.WriteLine("信息表上传错误");
+            }
+
+            //10：获取对应的红字信息
+            var entity = DateBaseHelper.GetHzscResult(hzbm);
+            Console.WriteLine("success...");
+        }
+
+        //========================================第二个接口=======================================================
+        /// <summary>
+        /// 红字信息表专票查询导出--第二个接口了
+        /// </summary>
+        public static void ChaXunIsLoadingSuccess()
         {
             //获取开票软件主窗体
             var kprjBar = GetKprjMainPageBar();
@@ -680,73 +806,12 @@ namespace SearchBar
 
             //2：主界面进入 - 增值税专用发票信息表填开
             var kprjToolBar2 = WinApi.FindChildInfo(kprjBar)[1].hWnd;
-            InvokeMenuItem(kprjToolBar2, "红字增值税专用发票信息表填开");
-
-            //3：操作-增值税专用发票信息表填开
-            if (!RedInfoTianKai(redInfo))
-            {
-                //日志--操作增值税专用发票信息表填开页面失败
-            }
-
-            //4：操作红字发票信息表填开
-            if (!RedInfoFpTianKai(kprjBar, redInfo))
-            {
-                //日志--红字信息填开失败
-            }
-            //5：点击打印--选择不打印
-            DaYin();
-            //6：点击取消
-            SystemOpera("取消");
-
-            Thread.Sleep(1000);
-
-            //7：进入查询导出页面
             InvokeMenuItem(kprjToolBar2, "红字增值税专用发票信息表查询导出");
-        }
 
-        //========================================第二个接口=======================================================
-        /// <summary>
-        /// 红字信息表专票查询导出--第二个接口了
-        /// </summary>
-        public static void ChaXunIsLoadingSuccess()
-        {
-            //获取所有桌面窗体句柄
-            var alldeskBar = WinApi.FindChildInfo(IntPtr.Zero);
-
-            //获取开票软件句柄
-            var kprjBar = alldeskBar.Find(bar => bar.szWindowName != null && bar.szWindowName.Contains("开票软件"));
-
-            ShowForm(kprjBar.hWnd);
-
-            ClickBtnByName(kprjBar.hWnd, "发票管理");//点击发票管理
-
-
-            //找信息表管理父句柄
-            var barInfoList = WinApi.EnumChildWindowsCallback(kprjBar.hWnd);
-            var infoParentBar = IntPtr.Zero;
-            barInfoList.ForEach(i => {
-                if (i.szWindowName == "发票管理")
-                {
-                    infoParentBar = i.hWnd;
-                }
-            });
-            infoParentBar = WinApi.FindWindowEx(infoParentBar, IntPtr.Zero, null, null);
-            var infoBar = WinApi.FindWindowEx(infoParentBar, IntPtr.Zero, null, null);
-            WinApi.LeftClick(infoBar);//点击信息表成功
-
-            //打开红字增值税专用发票信息表信息选择--没有防遮挡
-            WinApi.keybd_event(Keys.Down, 0, 0, 0);
-            //SendKeys.SendWait("{down}");
-            Thread.Sleep(100);
-            WinApi.keybd_event(Keys.Down, 0, 0, 0);
-            //SendKeys.SendWait("{down}");
-            Thread.Sleep(100);
-            WinApi.keybd_event(Keys.Enter, 0, 0, 0);
-            //SendKeys.SendWait("{enter}");
 
             Thread.Sleep(2000);
             //获取开票软件下面的所有子句柄
-            var kprjList = WinApi.EnumChildWindowsCallback(kprjBar.hWnd);
+            var kprjList = WinApi.EnumChildWindowsCallback(kprjBar);
 
             //获取toolStrip1句柄
             var toolStripBar = kprjList.Find(bar =>
@@ -765,8 +830,6 @@ namespace SearchBar
 
             //日期修改
             var riqiList = WinApi.FindChildInfo(tkrqBar.hWnd);
-            //WinApi.SendMessage(riqiList[1].hWnd, 0X0C, IntPtr.Zero, "2018-05-01");
-            //WinApi.SendMessage(riqiList[1].hWnd, 0X0C, IntPtr.Zero, "2019-05-31");
             WinApi.LeftClick(riqiList[1].hWnd);
             SendKeys.SendWait("2018");
             Thread.Sleep(500);
@@ -802,6 +865,25 @@ namespace SearchBar
 
             //点击确定按钮
             WinApi.LeftClickMsg(confirmBtn.hWnd);
+
+            //等待信息表下载
+            TryRetry(str =>
+            {
+                var infoDownLoadBar = WinApi.FindWindow(null, "信息表下载中");
+                var automation = AutomationElement.FromHandle(infoDownLoadBar);
+
+                var sysAlertBar = WinApi.FindWindow(null, "SysMessageBox");
+                if (sysAlertBar != IntPtr.Zero)
+                {
+                    SystemOpera("确认");
+                }
+
+                return automation.Current.IsOffscreen;
+                //SystemOpera("")
+            }, "信息表下载中",60,1000);
+
+            
+            Console.WriteLine("success...");
         }
 
         //========================================帮助方法=======================================================
@@ -974,8 +1056,9 @@ namespace SearchBar
         /// 红字发票信息表填开--填写红字信息表
         /// </summary>
         /// <returns></returns>
-        public static bool RedInfoFpTianKai(IntPtr kprjBar,RednotificationInfo redInfoEntity)
+        public static bool RedInfoFpTianKai(IntPtr kprjBar,RednotificationInfo redInfoEntity, out string hzbm)
         {
+            hzbm = "";
             if (kprjBar == IntPtr.Zero)
             {
                 //日志---开票软件句柄获取失败
@@ -983,7 +1066,6 @@ namespace SearchBar
             }
             var hzxxtklist = new List<WindowInfo>();
             //红字信息编码
-            var hzbm = "";
             TryRetry<IntPtr, bool>(b =>
             {
                 //获取开票软件下面的所有子句柄
@@ -1226,6 +1308,127 @@ namespace SearchBar
                 WinApi.LeftClick(cancelBtnBar.hWnd);
             }
             return flag;
+        }
+
+        /// <summary>
+        /// 第一个接口最后一步，红字信息表上传
+        /// </summary>
+        /// <param name="hzbm"></param>
+        /// <returns></returns>
+        public static bool UploadHzInfoBak(IntPtr hwnd, string hzbm)
+        {
+            AutomationElement toolStripMation = null;
+            AutomationElement tableGridMation = null;
+
+            TryRetry(bar =>
+            {
+                var winMations = AutomationElement.FromHandle(bar);
+                toolStripMation = winMations.FindFirst(TreeScope.Descendants,
+                    new PropertyCondition(AutomationElement.NameProperty, "toolStrip1"));//toolStrip1
+
+                tableGridMation = winMations.FindFirst(TreeScope.Descendants,
+                    new PropertyCondition(AutomationElement.NameProperty, "DataGridView"));//DataGridView
+
+                return toolStripMation.Current.NativeWindowHandle != 0 && tableGridMation.Current.NativeWindowHandle != 0;
+            },hwnd,20,500);
+
+            //输入数据
+            var inputMation = toolStripMation.FindFirst(TreeScope.Children,
+                new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit));
+            inputMation.TryGetCurrentPattern
+                (ValuePattern.Pattern, out var patternObject);
+            if (patternObject == null)
+            {
+                throw new Exception("编辑按钮出错");
+            }
+            ((ValuePattern)patternObject).SetValue(hzbm);
+
+            //var rowMations = tableGridMation.FindAll(TreeScope.Children, Condition.TrueCondition);
+            Thread.Sleep(500);
+
+            //点击选中
+            WinApi.ClickLocation((IntPtr) tableGridMation.Current.NativeWindowHandle, 10, 50);
+
+            //点击上传
+            ClickBtnByName((IntPtr)toolStripMation.Current.NativeWindowHandle, "上传");
+
+            SystemOpera("确认");
+            return true;
+        }
+
+
+        public static bool UploadHzInfo(IntPtr hwnd, string hzbm,bool isDebug=true)
+        {
+            if (isDebug)
+            {
+                hwnd = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427 - [红字发票信息表查询导出]");
+            }
+            var toolStripBar = IntPtr.Zero;
+            var tableGridBar = IntPtr.Zero;
+
+            TryRetry(bar =>
+            {
+                var ChildList = WinApi.EnumChildWindowsCallback(hwnd);
+
+                toolStripBar = ChildList.Find(b=>b.szWindowName== "toolStrip1").hWnd;//toolStrip1
+
+                var dataGridBar = ChildList.Find(b => b.szWindowName == "红字发票信息表查询导出").hWnd;
+                dataGridBar = WinApi.FindWindowEx(dataGridBar, IntPtr.Zero, null, null);
+                tableGridBar = WinApi.FindWindowEx(dataGridBar, IntPtr.Zero, null, null);
+                //tableGridMation = winMations.FindFirst(TreeScope.Descendants,
+                //    new PropertyCondition(AutomationElement.NameProperty, "DataGridView"));//DataGridView
+
+                return toolStripBar != IntPtr.Zero;
+            }, hwnd, 20, 500);
+
+            //输入数据
+            var inputMation = AutomationElement.FromHandle(toolStripBar).FindFirst(TreeScope.Children,
+                new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit));
+            inputMation.TryGetCurrentPattern
+                (ValuePattern.Pattern, out var patternObject);
+            if (patternObject == null)
+            {
+                throw new Exception("编辑按钮出错");
+            }
+            ((ValuePattern)patternObject).SetValue(hzbm);
+
+            //var rowMations = tableGridMation.FindAll(TreeScope.Children, Condition.TrueCondition);
+            Thread.Sleep(500);
+
+            //点击选中
+            WinApi.ClickLocation(tableGridBar, 10, 50);
+
+            //点击上传
+            ClickBtnByName(toolStripBar, "上传");
+            //点击确认
+            SystemOpera("确认");
+            return true;
+        }
+
+        /// <summary>
+        /// 信息表上传，下载等待框
+        /// </summary>
+        /// <param name="waitFormName"></param>
+        /// <param name="clickBtnName"></param>
+        /// <returns></returns>
+        public static bool WaitLoadingForm(string waitFormName,string clickBtnName= "确认")//信息表上传中
+        {
+            var result = true;
+            Thread.Sleep(2000);
+            TryRetry(str =>
+            {
+                var infoDownLoadBar = WinApi.FindWindow(null, str);
+                var automation = AutomationElement.FromHandle(infoDownLoadBar);
+
+                var sysAlertBar = WinApi.FindWindow(null, "SysMessageBox");
+                if (sysAlertBar != IntPtr.Zero)
+                {
+                    SystemOpera(clickBtnName);
+                    result = false;
+                }
+                return automation.Current.IsOffscreen;
+            }, waitFormName, 60, 1000);
+            return result;
         }
 
         /// <summary>

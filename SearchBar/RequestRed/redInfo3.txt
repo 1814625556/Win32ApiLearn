@@ -38,44 +38,6 @@
             "unitPrice": "100",
             "zeroTax": "",
 			"itemSpec": "大"
-        },
-		{
-            "amountWithTax": "-110",
-            "amountWithoutTax": "-100",
-            "corpGoodsNo": "",
-            "goodsTaxNo": "1010101030000000000",
-            "itemName": "土豆",
-            "itemSpec": "",
-            "priceMethod": "0",
-            "quantity": "-2",
-            "taxAmount": "-10",
-            "taxDedunction": "",
-            "taxPer": "0",
-            "taxPerCon": "",
-            "taxRate": "0.11",
-            "unit": "个",
-            "unitPrice": "100",
-            "zeroTax": "",
-			"itemSpec": "大"
-        },
-		{
-            "amountWithTax": "-110",
-            "amountWithoutTax": "-100",
-            "corpGoodsNo": "",
-            "goodsTaxNo": "1010101040000000000",
-            "itemName": "香菇",
-            "itemSpec": "",
-            "priceMethod": "0",
-            "quantity": "-2",
-            "taxAmount": "-10",
-            "taxDedunction": "",
-            "taxPer": "0",
-            "taxPerCon": "",
-            "taxRate": "0.13",
-            "unit": "个",
-            "unitPrice": "100",
-            "zeroTax": "",
-			"itemSpec": "大"
         }
     ]
    
