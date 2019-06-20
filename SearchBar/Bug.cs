@@ -14,6 +14,16 @@ namespace SearchBar
 {
     public class Bug
     {
+
+        public static void WindownType()
+        {
+            var bar = WinApi.FindWindow(null, "红字增值税专用发票信息表信息选择");
+            var winMation = AutomationElement.FromHandle(bar);
+            winMation.TryGetCurrentPattern(WindowPattern.Pattern, out var wobj);
+            ((WindowPattern)wobj).SetWindowVisualState(WindowVisualState.Normal);
+        }
+
+
         //这种方式获取不到treeview的句柄信息
         public static void TreeIntpre()
         {

@@ -1266,5 +1266,20 @@ namespace SearchBar
             return default(TR);
         }
 
+        /// <summary>
+        /// UI窗体前置
+        /// </summary>
+        /// <param name="winBar"></param>
+        public static void SetForGround(IntPtr winBar)
+        {
+            var winMation = AutomationElement.FromHandle(winBar);
+            winMation.TryGetCurrentPattern(WindowPattern.Pattern, out var wobj);
+            if (wobj == null)
+            {
+                throw new Exception("不支持windownPattern模式");
+            }
+            ((WindowPattern) wobj).SetWindowVisualState(WindowVisualState.Normal);
+        }
+
     }
 }

@@ -46,6 +46,7 @@ namespace User32Test
             //HxShengQing.InvokeEditItem(IntPtr.Zero, "");
 
             //Bug.lanzifapiaoguodu();
+            Bug.WindownType();
 
             //radiobutton,checkbox,combox加载功能
             //HxShengQing.RadioButtonTest();
