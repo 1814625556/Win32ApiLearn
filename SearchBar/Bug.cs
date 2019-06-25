@@ -8,19 +8,50 @@ using System.Threading;
 using System.Windows.Automation;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using SearchBar.RequestRed;
 using User32Test;
 
 namespace SearchBar
 {
     public class Bug
     {
-
+        /// <summary>
+        /// 窗体的最大最小化，正常大小
+        /// </summary>
         public static void WindownType()
         {
-            var bar = WinApi.FindWindow(null, "红字增值税专用发票信息表信息选择");
-            var winMation = AutomationElement.FromHandle(bar);
-            winMation.TryGetCurrentPattern(WindowPattern.Pattern, out var wobj);
-            ((WindowPattern)wobj).SetWindowVisualState(WindowVisualState.Normal);
+            var bar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427 - [红字发票信息表填开]");
+            if (bar == IntPtr.Zero)
+                bar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427");
+
+            var list = WinApi.EnumChildWindowsCallback(bar);
+            var fpoInfoBar = list.Find(b => b.szWindowName == "红字发票信息表填开").hWnd;
+
+            //WinApi.ShowWindow(fpoInfoBar,1);
+
+            //ShowForm(bar);
+            if (fpoInfoBar != IntPtr.Zero)
+            {
+                var winMation = AutomationElement.FromHandle(fpoInfoBar);
+                winMation.TryGetCurrentPattern(WindowPattern.Pattern, out var wobj);
+
+                var property1 = ((WindowPattern)wobj).Current.IsModal;
+                //((WindowPattern)wobj).SetWindowVisualState(WindowVisualState.Minimized);
+                ((WindowPattern)wobj).SetWindowVisualState(WindowVisualState.Maximized);
+                ((WindowPattern)wobj).SetWindowVisualState(WindowVisualState.Normal);
+            }
+
+            
+            var infoBar = WinApi.FindWindow(null, "红字增值税专用发票信息表信息选择");
+            if (infoBar != IntPtr.Zero)
+            {
+                var infoBarMation = AutomationElement.FromHandle(infoBar);
+                infoBarMation.TryGetCurrentPattern(WindowPattern.Pattern, out var infoPattern);
+            }
+
+
+
+            
         }
 
 
@@ -445,6 +476,327 @@ namespace SearchBar
             }
 
         }
+
+
+        public static void WriteGoodsSetting(IntPtr goodNoSettingHw, RednotificationDetail detail)
+        {
+            if (goodNoSettingHw == IntPtr.Zero)
+            {
+                return;
+            }
+
+            if (detail == null)
+            {
+                detail = new RednotificationDetail()
+                {
+                    GoodsTaxNo = "101010102",
+                    //TaxPer = "1",
+                    TaxPerCon = "不征税",
+                    TaxRate = "0.17"
+                };
+            }
+
+            var suilvBar = IntPtr.Zero;
+            var yhBar = IntPtr.Zero;
+            var yhlBar = IntPtr.Zero;
+            var toolStrip = IntPtr.Zero;
+
+            HxShengQing.TryRetry(str =>
+            {
+                var childInfos = WinApi.FindChildInfo(goodNoSettingHw);
+                if (childInfos == null || childInfos.Count < 11)
+                {
+                    return false;
+                }
+
+                //获取toolStrip
+                toolStrip = childInfos.Find(b => b.szWindowName == "toolStrip1").hWnd;
+
+                //税率句柄
+                suilvBar = childInfos[10].hWnd;
+
+                //享受优惠政策
+                yhBar = childInfos[8].hWnd;
+
+                //优惠政策类型
+                yhlBar = childInfos[5].hWnd;
+
+                return toolStrip != IntPtr.Zero && suilvBar != IntPtr.Zero 
+                && yhBar != IntPtr.Zero && yhlBar != IntPtr.Zero;
+            }, "", 20, 500);
+
+            if ("1".Equals(detail.TaxPer) && !string.IsNullOrEmpty(detail.TaxPerCon))
+            {
+                UIHelper.SetCombox(yhBar, "是");
+
+                //等待优惠政策enable
+                Thread.Sleep(1000);
+                UIHelper.SetCombox(yhlBar, detail.TaxPerCon.Trim());
+            }
+            else
+            {
+                UIHelper.SetCombox(suilvBar, GetByTaxRate(detail.TaxRate));
+            }
+
+            ClickBtnByName(toolStrip, "保存");
+            Thread.Sleep(1000);
+
+            HxShengQing.SystemOpera("确认",out var message);
+            if (message != "修改成功！")
+            {
+                throw new Exception(message);
+            }
+        }
+
+
+        public static void WriteGoodsTaxNoAdd(IntPtr goodNoAddHw, RednotificationDetail detail)
+        {
+            if (detail == null)
+            {
+                detail = new RednotificationDetail()
+                {
+                    GoodsTaxNo = "101010102",
+                    TaxPer = "1",
+                    TaxPerCon = "不征税",
+                    TaxRate = "0.17"
+                };
+            }
+            if (goodNoAddHw == IntPtr.Zero)
+            {
+                return;
+            }
+
+            //税收分类编码
+            var ssflbmBar = IntPtr.Zero;
+            var toolStrip = IntPtr.Zero;
+            var suilvBar = IntPtr.Zero;
+            var yhBar = IntPtr.Zero;
+            var yhlBar = IntPtr.Zero;
+
+            HxShengQing.TryRetry(str =>
+            {
+                var childInfos = WinApi.FindChildInfo(goodNoAddHw);
+                if (childInfos==null || childInfos.Count < 30)
+                {
+                    return false;
+                }
+
+                //获取分类名称
+                var flmnBar = childInfos.Find(b => b.szWindowName == "税收分类名称").hWnd;
+                var temp1 = WinApi.FindWindowEx(goodNoAddHw, flmnBar, null, null);
+                var temp2 = WinApi.FindWindowEx(temp1, IntPtr.Zero, null, null);
+                ssflbmBar = WinApi.FindWindowEx(temp1, temp2, null, null);
+
+                //获取toolStrip
+                toolStrip = childInfos.Find(b => b.szWindowName == "toolStrip1").hWnd;
+
+                //获取税率句柄
+                var suilv = childInfos.Find(b => b.szWindowName == "*税率").hWnd;
+                suilvBar = WinApi.FindWindowEx(goodNoAddHw, suilv, null, null);
+
+                //获取享受优惠政策
+                var yh = childInfos.Find(b => b.szWindowName == "规格型号").hWnd;
+                yhBar = WinApi.FindWindowEx(goodNoAddHw, yh, null, null);
+
+                //优惠政策类型
+                yhlBar = childInfos[8].hWnd;
+
+                return ssflbmBar != IntPtr.Zero && toolStrip != IntPtr.Zero && 
+                suilvBar != IntPtr.Zero && yhBar != IntPtr.Zero && yhlBar != IntPtr.Zero;
+            },"",20,500);
+
+            if (ssflbmBar == IntPtr.Zero || toolStrip == IntPtr.Zero ||
+                suilvBar == IntPtr.Zero || yhBar == IntPtr.Zero || yhlBar == IntPtr.Zero)
+            {
+                throw new Exception("商品编码窗体，句柄获取失败");
+            }
+
+            WinApi.SendMessage(ssflbmBar, WinApi.BM_TEXT, IntPtr.Zero, TaxSub(detail.GoodsTaxNo));
+            Thread.Sleep(100);
+            WinApi.SendKey(ssflbmBar, WinApi.VK_DOWN);
+            Thread.Sleep(100);
+            WinApi.SendKey(ssflbmBar, WinApi.VK_RETURN);
+            Thread.Sleep(100);
+            WinApi.ClickLocation(goodNoAddHw, 300, 10);
+            Thread.Sleep(500);
+
+            if ("1".Equals(detail.TaxPer) && !string.IsNullOrEmpty(detail.TaxPerCon))
+            {
+                UIHelper.SetCombox(yhBar,"是");
+
+                //等待优惠政策enable
+                Thread.Sleep(1000); 
+                UIHelper.SetCombox(yhlBar, detail.TaxPerCon.Trim());
+            }
+            else
+            {
+                UIHelper.SetCombox(suilvBar, GetByTaxRate(detail.TaxRate));
+            }
+
+            ClickBtnByName(toolStrip, "保存");
+            Thread.Sleep(500);
+        }
+
+        /// <summary>
+        /// 商品编码添加
+        /// </summary>
+        public static void WriteGoodsTaxNoAddbak(IntPtr goodNoAddHw, RednotificationDetail detail)
+        {
+            try
+            {
+                if (goodNoAddHw == IntPtr.Zero)
+                {
+                    return;
+                }
+
+                //写入分类编码
+                var ssflName = WinApi.FindWindowEx((IntPtr)goodNoAddHw, IntPtr.Zero, null, "税收分类名称");
+                var temp1 = WinApi.FindWindowEx((IntPtr)goodNoAddHw, ssflName, null, null);
+                var temp2 = WinApi.FindWindowEx(temp1, IntPtr.Zero, null, null);
+                var ssflBar = WinApi.FindWindowEx(temp1, temp2, null, null); //获取税收分类编码句柄
+
+
+                WinApi.SendMessage(ssflBar, WinApi.BM_TEXT, IntPtr.Zero, TaxSub(detail.GoodsTaxNo)); //对文本框进行赋值
+                Thread.Sleep(200);
+                WinApi.SendKey(ssflBar, WinApi.VK_DOWN);
+                Thread.Sleep(30);
+                WinApi.SendKey(ssflBar, WinApi.VK_RETURN);
+                WinApi.ClickLocation((IntPtr)goodNoAddHw, 300, 10);
+                Thread.Sleep(200);
+
+                //优惠政策
+                if ("1".Equals(detail.TaxPer) && !string.IsNullOrEmpty(detail.TaxPerCon))
+                {
+                    //AmLogger.Info("WriteGoodsTaxNoAdd", "享受优惠政策");
+                    var spflbmBar = WinApi.FindWindow(null, "商品编码添加");
+                    var guiGebar = WinApi.FindWindowEx(spflbmBar, IntPtr.Zero, null, "规格型号");
+                    var guiGeSelectBar = WinApi.FindWindowEx(spflbmBar, guiGebar, null, null);
+
+                    WinApi.ClickLocation(guiGeSelectBar, 10, 10);
+                    Thread.Sleep(30);
+                    int selected = WinApi.SendMessage(guiGeSelectBar, WinApi.CB_SETCURSEL, (IntPtr)0, "");
+
+                    Thread.Sleep(1000); //等待优惠政策enable
+
+                    var jianma = WinApi.FindWindowEx(spflbmBar, IntPtr.Zero, null, "简码");
+                    var temp = WinApi.FindWindowEx(spflbmBar, jianma, null, null);
+                    temp = WinApi.FindWindowEx(spflbmBar, temp, null, null);
+                    var yhzclxBar = WinApi.FindWindowEx(spflbmBar, temp, null, null);
+                    int index = detail.TaxPerCon.Trim() == "免税" ? 1 : 2;
+                    WinApi.ClickLocation(yhzclxBar, 10, 10);
+                    for (var i = 0; i < index; i++)
+                    {
+                        WinApi.SendKey(yhzclxBar, WinApi.VK_DOWN);
+                        Thread.Sleep(30);
+                    }
+
+                    Thread.Sleep(100);
+                    WinApi.SendKey(ssflBar, WinApi.VK_RETURN);
+                    //AmLogger.Info("WriteGoodsTaxNoAdd", $"享受优惠政策:{guiGeSelectBar},yhzclxBar{yhzclxBar}");
+                }
+
+                //正常税率采用平台传过来的税率
+                else
+                {
+                    //修改实际传入的税率
+                    var child = WinApi.FindWindowEx((IntPtr)goodNoAddHw, IntPtr.Zero, null, "*税率");
+                    var suilvBar = WinApi.FindWindowEx((IntPtr)goodNoAddHw, child, null, null);
+                    //AmLogger.Info("WriteGoodsTaxNoAdd", $"suilvBar{suilvBar}");
+                    //通过索引设置下拉框选项
+                    Thread.Sleep(500);
+                    //WinApi.SendMessage(suilvBar, WinApi.CB_SETCURSEL, (IntPtr) GetIndexByTaxRate(detail.TaxRate), ""); //调整税率为传入税率
+                    WinApi.SetComboxItemValue(suilvBar, GetByTaxRate(detail.TaxRate));
+                }
+
+                var stripHw = WinApi.FindWindowEx((IntPtr)goodNoAddHw, IntPtr.Zero, null, "toolStrip1");
+                Thread.Sleep(500);
+                WinApi.ClickLocation(stripHw, 40, 13); //点击保存
+                //点击保存的时候可能弹出错误提示
+                Thread.Sleep(500);
+                //GetErrorInfo();
+                //AmLogger.Info("WriteGoodsTaxNoAdd", "商品编码添加填写成功");
+            }
+            catch (Exception e)
+            {
+                //CaptureScreen.TakeScreenShot("商品编码添加", $"{e.Message}");
+                //AmLogger.Error("WriteGoodsTaxNoAdd", e);
+            }
+        }
+
+        /// <summary>
+        ///根据税率获取相应索引
+        /// </summary>
+        /// <param name="taxRate"></param>
+        /// <returns></returns>
+        public static string GetByTaxRate(string taxRate = "")
+        {
+            taxRate = taxRate.Trim();
+            switch (taxRate)
+            {
+                case "0":
+                    return "0%";
+                case "0.0":
+                    return "0%";
+                case "0.00":
+                    return "0%";
+                case "0.03":
+                    return "3%";
+                case "0.04":
+                    return "4%";
+                case "0.05":
+                    return "5%";
+                case "0.06":
+                    return "6%";
+                case "0.09":
+                    return "9%";
+                case "0.10":
+                    return "10%";
+                case "0.11":
+                    return "11%";
+                case "0.13":
+                    return "13%";
+                case "0.16":
+                    return "16%";
+                case "0.17":
+                    return "17%";
+                case "减按1.5%计算":
+                    return "减按1.5%计算";
+                case "中外合作油气田":
+                    return "中外合作油气田";
+                default:
+                    return "";
+            }
+        }
+
+        public static string TaxSub(string taxStr)
+        {
+            string result = "";
+            for (var i = taxStr.Length - 1; i > 1; i--)
+            {
+                if (taxStr[i] == '0')
+                {
+                    result = taxStr.Substring(0, i + 1);
+                    continue;
+                }
+                else
+                {
+                    result = taxStr.Substring(0, i + 1);
+                }
+
+                break;
+            }
+
+            return result;
+        }
+
+        public static void GetTableFocus()
+        {
+            WinApi.keybd_event(Keys.Space, 0, 0, 0);
+            Thread.Sleep(100);
+            WinApi.keybd_event(Keys.Back, 0, 0, 0);
+            Thread.Sleep(100);
+        }
+
 
     }
 }

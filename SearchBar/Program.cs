@@ -19,15 +19,18 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
-
+            //UIHelper.SetCombox((IntPtr)328962, "是");
+            //DateBaseHelper.GetHzscResult2();
             //var cc = default(RednotificationHead);//null
             //var cc = default(bool);//false
             //var cc = default(RECT);//结构体的话里面的 字段属性都是0
 
+            var bar = WinApi.FindWindow(null, "税收分类编码设置");
+            Bug.WriteGoodsSetting(bar,null);
             //Bug.CloseWindow();
-            Bug.TreeIntpre();
+            //Bug.TreeIntpre();
 
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
 
             //Bug.InfomationChoose();
             //Bug.ClickRedChar();
@@ -46,7 +49,7 @@ namespace User32Test
             //HxShengQing.InvokeEditItem(IntPtr.Zero, "");
 
             //Bug.lanzifapiaoguodu();
-            Bug.WindownType();
+            //Bug.WindownType();
 
             //radiobutton,checkbox,combox加载功能
             //HxShengQing.RadioButtonTest();

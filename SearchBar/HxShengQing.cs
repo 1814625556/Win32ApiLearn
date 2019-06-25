@@ -365,6 +365,7 @@ namespace SearchBar
         {
             message = "";
             var messageCopy = "";
+
             //多次重复获取按钮
             var btn = TryRetry(str =>
             {

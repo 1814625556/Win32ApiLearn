@@ -15,12 +15,39 @@ namespace ConsoleApp1
         private static string serviceFilePath = @"C:\MyDatas\VsProjects\demo\SimulationMouseKeyboard\CCWinServiceLearn\bin\Debug\CCWinServiceLearn.exe";
         static void Main(string[] args)
         {
+            DateTime dt = DateTime.Now;
+            int day = DateTime.DaysInMonth(dt.Year, 7);
 
-            //InstallService();
-            Thread.Sleep(100);
-            SearchService();
-            Console.ReadKey();
+            //var value = RegeditUtil.GetValueByRegeditKey("machine");
+            MonthTest();
+           //DynamicTest.MainInvoke();
+           Console.ReadKey();
         }
+
+        static void MonthTest()
+        {
+            string month = DateTime.Now.Month.ToString();
+
+            
+        }
+
+        static void subStringDate()
+        {
+            string dateStr = "20190624";
+            var year = dateStr.Substring(0, 4);
+            var month = dateStr.Substring(4, 2);
+            var day = dateStr.Substring(6, 2);
+        }
+
+        /// <summary>
+        /// 日期类型转化
+        /// </summary>
+        static void DateBianDong()
+        {
+            var dtStr = DateTime.Now.ToShortDateString().ToString();
+            var dateArr = dtStr.Split(new[] { '-' }, StringSplitOptions.None);
+        }
+
         /// <summary>
         /// 获取所有服务
         /// </summary>

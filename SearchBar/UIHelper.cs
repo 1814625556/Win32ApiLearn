@@ -17,8 +17,8 @@ namespace SearchBar
 
             ExpandCollapsePattern expandCollapsePattern = comboBox.GetCurrentPattern(automationPatternFromElement) as ExpandCollapsePattern;
 
-            //expandCollapsePattern.Expand();//复选框展开
-            //expandCollapsePattern.Collapse();//复选框折叠
+            expandCollapsePattern.Expand();//复选框展开
+            expandCollapsePattern.Collapse();//复选框折叠
 
             AutomationElement listItem = comboBox.FindFirst(TreeScope.Subtree, new PropertyCondition(AutomationElement.NameProperty, item));
 
@@ -42,6 +42,35 @@ namespace SearchBar
             return null;
         }
 
-        
+
+        /// <summary>
+        /// 设置下拉框
+        /// </summary>
+        /// <param name="comboxBar"></param>
+        /// <param name="item"></param>
+        public static void SetCombox(IntPtr comboxBar, string item)
+        {
+            var comBoxMation = AutomationElement.FromHandle(comboxBar);
+
+            var selectItem = comBoxMation.FindFirst(TreeScope.Subtree,
+                new PropertyCondition(AutomationElement.NameProperty, item));
+
+            if (selectItem == null)
+                throw new Exception($"未找到子控件：{item}");
+
+            selectItem.TryGetCurrentPattern(SelectionItemPattern.Pattern, out var selectItemPattern);
+
+            ((SelectionItemPattern)selectItemPattern)?.Select();
+        }
+
+        public static void SetForeForm(IntPtr winBar)
+        {
+            var winMation = AutomationElement.FromHandle(winBar);
+            if (winMation == null) return;
+
+            winMation.TryGetCurrentPattern(WindowPattern.Pattern, out var winPattern);
+
+            ((WindowPattern) winPattern)?.SetWindowVisualState(WindowVisualState.Normal);
+        }
     }
 }

@@ -32,16 +32,31 @@ namespace SearchBar
             return new {redNotificationNo, date};
         }
 
-        public static DataTable GetHzscResult2(string sqdh = "661543812468190619150832")
+        public static DataTable GetHzscResult2()
         {
             var table =  new DataTable();
             using (var con = new SQLiteConnection(conStr))
             {
                 con.Open();
-                using (var adapt = new SQLiteDataAdapter($"select XXBBH,TKRQ from HZFP_SQD where SQDH='{sqdh}'", con))
+                using (var adapt = new SQLiteDataAdapter($"select * from HZFP_SQD", con))
                 {
                     adapt.Fill(table);
                 }
+            }
+
+            for (var j = 0; j < table.Columns.Count; j++)
+            {
+                Console.Write($"{table.Columns[j].ColumnName}   ");
+            }
+
+            for (var i = 0; i < table.Rows.Count; i++)
+            {
+                Console.WriteLine();
+                for (var j = 0; j < table.Columns.Count; j++)
+                {
+                    Console.Write($"{table.Rows[i][j]}    ");
+                }
+                
             }
             return table;
         }
