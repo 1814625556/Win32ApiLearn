@@ -65,9 +65,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bug.cs" />
+    <Compile Include="calcMoney.cs" />
+    <Compile Include="DataGridTest.cs" />
     <Compile Include="DateBaseHelper.cs" />
+    <Compile Include="Entitys\InvoiceInfo.cs" />
     <Compile Include="FeiQI.cs" />
     <Compile Include="HxShengQing.cs" />
+    <Compile Include="JuanPiaoCore.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestRed\Class1.cs" />
@@ -77,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="json\juan.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -15,11 +15,14 @@ namespace ConsoleApp1
         private static string serviceFilePath = @"C:\MyDatas\VsProjects\demo\SimulationMouseKeyboard\CCWinServiceLearn\bin\Debug\CCWinServiceLearn.exe";
         static void Main(string[] args)
         {
-            DateTime dt = DateTime.Now;
-            int day = DateTime.DaysInMonth(dt.Year, 7);
+            var dic = DicToEntity.StudentToDic(null);
 
-            //var value = RegeditUtil.GetValueByRegeditKey("machine");
-            MonthTest();
+            DicToEntity.DicToStudent(dic);
+            //DateTime dt = DateTime.Now;
+            //int day = DateTime.DaysInMonth(dt.Year, 7);
+
+            ////var value = RegeditUtil.GetValueByRegeditKey("machine");
+            //MonthTest();
            //DynamicTest.MainInvoke();
            Console.ReadKey();
         }

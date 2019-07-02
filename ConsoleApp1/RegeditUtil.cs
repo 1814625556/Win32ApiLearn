@@ -6,20 +6,20 @@ using Microsoft.Win32;
 
 namespace ConsoleApp1
 {
+    /// <summary>
+    /// 注册表枚举
+    /// </summary>
+    public enum RegeditEnums
+    {
+        CurrentUser,
+        LocalMachine,
+        ClassesRoot,
+        Users,
+        PerformanceData,
+        CurrentConfig,
+    }
     public static class RegeditUtil
     {
-        /// <summary>
-        /// 注册表枚举
-        /// </summary>
-        public enum Enums
-        {
-            CurrentUser,
-            LocalMachine,
-            ClassesRoot,
-            Users,
-            PerformanceData,
-            CurrentConfig,
-        };
         /// <summary>
         /// 从注册表获取相关值
         /// </summary>
@@ -29,7 +29,7 @@ namespace ConsoleApp1
         /// <returns></returns>
         public static string GetValueByRegeditKey(string key,
             string path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\fwkp.exe",
-            Enums regeditEnum = Enums.LocalMachine)
+            RegeditEnums regeditEnum = RegeditEnums.LocalMachine)
         {
 
             if (string.IsNullOrEmpty(key))
@@ -41,27 +41,27 @@ namespace ConsoleApp1
 
             switch (regeditEnum)
             {
-                case Enums.CurrentUser:
+                case RegeditEnums.CurrentUser:
                     keyExpr = Registry.CurrentUser.OpenSubKey(path,
                         false);
                     break;
-                case Enums.LocalMachine:
+                case RegeditEnums.LocalMachine:
                     keyExpr = Registry.LocalMachine.OpenSubKey(path,
                         false);
                     break;
-                case Enums.ClassesRoot:
+                case RegeditEnums.ClassesRoot:
                     keyExpr = Registry.ClassesRoot.OpenSubKey(path,
                         false);
                     break;
-                case Enums.Users:
+                case RegeditEnums.Users:
                     keyExpr = Registry.Users.OpenSubKey(path,
                         false);
                     break;
-                case Enums.PerformanceData:
+                case RegeditEnums.PerformanceData:
                     keyExpr = Registry.PerformanceData.OpenSubKey(path,
                         false);
                     break;
-                case Enums.CurrentConfig:
+                case RegeditEnums.CurrentConfig:
                     keyExpr = Registry.CurrentConfig.OpenSubKey(path,
                         false);
                     break;

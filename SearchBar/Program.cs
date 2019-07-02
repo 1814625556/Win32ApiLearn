@@ -19,14 +19,19 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
+            var winbar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427 - [红字发票信息表查询导出]");
+            var list = WinApi.EnumChildWindowsCallback(winbar);
+            var bar = list.Find(b => b.szWindowName == "红字发票信息表查询导出").hWnd;
+            HxShengQing.SetForGround(bar);
+
+
+
             //UIHelper.SetCombox((IntPtr)328962, "是");
             //DateBaseHelper.GetHzscResult2();
             //var cc = default(RednotificationHead);//null
             //var cc = default(bool);//false
             //var cc = default(RECT);//结构体的话里面的 字段属性都是0
 
-            var bar = WinApi.FindWindow(null, "税收分类编码设置");
-            Bug.WriteGoodsSetting(bar,null);
             //Bug.CloseWindow();
             //Bug.TreeIntpre();
 
@@ -60,10 +65,6 @@ namespace User32Test
 
 
             //HxShengQing.UploadHzInfo(IntPtr.Zero, "661543812468190619150832");
-
-            var str = File.ReadAllText("RequestRed/redInfo3.txt");
-            var redInfo = JsonConvert.DeserializeObject<RednotificationInfo>(str);
-            HxShengQing.DiYigeJieKou(redInfo);
 
             //HxShengQing.UploadHzInfo((IntPtr)15207074, "661543812468190618162340");
 
