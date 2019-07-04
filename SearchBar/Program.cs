@@ -19,10 +19,14 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
-            var winbar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427 - [红字发票信息表查询导出]");
-            var list = WinApi.EnumChildWindowsCallback(winbar);
-            var bar = list.Find(b => b.szWindowName == "红字发票信息表查询导出").hWnd;
-            HxShengQing.SetForGround(bar);
+
+            UiaAutoMationTest.Method1();
+
+
+            //var winbar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427 - [红字发票信息表查询导出]");
+            //var list = WinApi.EnumChildWindowsCallback(winbar);
+            //var bar = list.Find(b => b.szWindowName == "红字发票信息表查询导出").hWnd;
+            //HxShengQing.SetForGround(bar);
 
 
 

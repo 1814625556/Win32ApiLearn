@@ -54,10 +54,13 @@
   <ItemGroup>
     <Compile Include="DicToEntity.cs" />
     <Compile Include="DynamicTest.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegeditUtil.cs" />
     <Compile Include="SerializeHelper.cs" />
+    <Compile Include="Student.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

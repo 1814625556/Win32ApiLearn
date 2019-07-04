@@ -9,6 +9,11 @@ namespace ConsoleApp2
     {
         static void Main(string[] args)
         {
+
+            var stu = new Student();
+            Console.WriteLine(stu.book?.Name);
+
+
             List<bool> list = new List<bool>();
             for (var i = 0; i < 10; i++)
             {
@@ -21,5 +26,17 @@ namespace ConsoleApp2
             var str = ClassLibrary1.Class2.GetHello();
             var message = ClassLibrary1.Class1.GetHello();
         }
+    }
+
+    class Student
+    {
+        public string Name { get; set; }
+        public Book book { get; set; }
+        public List<string> list { get; set; }
+    }
+
+    class Book
+    {
+        public string Name { get; set; }
     }
 }

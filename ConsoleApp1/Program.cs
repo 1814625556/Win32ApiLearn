@@ -7,6 +7,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Ninject;
 
 namespace ConsoleApp1
 {
@@ -15,16 +16,16 @@ namespace ConsoleApp1
         private static string serviceFilePath = @"C:\MyDatas\VsProjects\demo\SimulationMouseKeyboard\CCWinServiceLearn\bin\Debug\CCWinServiceLearn.exe";
         static void Main(string[] args)
         {
-            var dic = DicToEntity.StudentToDic(null);
-
-            DicToEntity.DicToStudent(dic);
-            //DateTime dt = DateTime.Now;
-            //int day = DateTime.DaysInMonth(dt.Year, 7);
-
-            ////var value = RegeditUtil.GetValueByRegeditKey("machine");
-            //MonthTest();
-           //DynamicTest.MainInvoke();
+           NinjectDemo1();
            Console.ReadKey();
+        }
+
+        static void NinjectDemo1()
+        {
+            IKernel kernel = new StandardKernel(new Module());
+            var per = kernel.Get<Person>();
+            var stu = kernel.Get<Student2>();
+            Console.WriteLine(SerializeHelper.SerializeObject(per));
         }
 
         static void MonthTest()
