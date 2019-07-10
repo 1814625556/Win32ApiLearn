@@ -47,6 +47,14 @@ namespace User32Test
         public const int VK_DELETE = 46;
         internal const uint VbKeyZ = 90;
 
+        internal const uint VbKey_l = 0x4C;
+        internal const uint VbKey_o = 0x4F;
+        internal const uint VbKey_v = 0x56;
+        internal const uint VbKey_e = 0x45;
+        internal const uint VbKey_9 = 0x39;
+        internal const uint VbKey_2 = 0x32;
+        internal const uint VbKey_7 = 0x37;
+
         /// <summary>
         /// 窗体前置
         /// </summary>
@@ -160,7 +168,7 @@ namespace User32Test
         {
             //这种方式发送的是双字符
             WinApi.PostMessage(intPtr, KeySnap.WM_KEYDOWN, key, 0);
-            WinApi.PostMessage(intPtr, KeySnap.WM_KEYUP, key, 0);
+            //WinApi.PostMessage(intPtr, KeySnap.WM_KEYUP, key, 0);
 
             //这种方式发送的是单字符
             //WinApi.PostMessage(intPtr, KeySnap.WM_SYSKEYDOWN, key, 0);

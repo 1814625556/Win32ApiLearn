@@ -10,21 +10,17 @@ namespace ConsoleApp2
         static void Main(string[] args)
         {
 
-            var stu = new Student();
-            Console.WriteLine(stu.book?.Name);
-
-
-            List<bool> list = new List<bool>();
-            for (var i = 0; i < 10; i++)
+            SayHello<Student>(new Student()
             {
-                list.Add(false);
-            }
-            list.Add(true);
+                Name = "zhangsan",
+                book = new Book() { Name = "haiyan"}
+            });
+        }
 
-            var flag = list.Any();
+        public static void SayHello<T>(T param)
+        {
+            var stu = param as Student;
 
-            var str = ClassLibrary1.Class2.GetHello();
-            var message = ClassLibrary1.Class1.GetHello();
         }
     }
 

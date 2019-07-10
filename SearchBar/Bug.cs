@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,12 +10,138 @@ using System.Windows.Automation;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using SearchBar.RequestRed;
+using UIAutomationClient;
 using User32Test;
+using TreeScope = System.Windows.Automation.TreeScope;
+using WindowVisualState = System.Windows.Automation.WindowVisualState;
 
 namespace SearchBar
 {
     public class Bug
     {
+
+        public static void GetTxt()
+        {
+            var winbar = WinApi.FindWindow(null, "CusMessageBox");
+            var childinfos = WinApi.EnumChildWindowsCallback(winbar);
+            for (var i = 0; i<childinfos.Count; i++)
+            {
+                if (42730990 == (int) childinfos[i].hWnd)
+                {
+                    var txtMation = AutomationElement.FromHandle(childinfos[i].hWnd);
+                    Console.WriteLine(txtMation.Current.Name);
+                    txtMation.TryGetCurrentPattern(TextPattern.Pattern, out var txtPt);
+                    Console.WriteLine(((TextPattern) txtPt).DocumentRange);
+                }
+
+                //Console.WriteLine($"No:{i},hwnd:{(int)childinfos[i].hWnd},szWindowName:{childinfos[i].szWindowName},szTextName{childinfos[i].szTextName}");
+            }
+        }
+
+        public static void test()
+        {
+
+            //WinApi.FindChildInfo()
+
+            var tiaoMation = AutomationElement.FromHandle((IntPtr)3867428);
+            var childssss = tiaoMation.FindFirst(TreeScope.Descendants, 
+                new PropertyCondition(AutomationElement.AutomationIdProperty, "lblTotal"));//lblTotal
+
+            //获取主窗体
+            var winBar = WinApi.FindWindow(null, "红字发票信息表查询条件");
+            var mation = AutomationElement.FromHandle(winBar);
+            var childs = WinApi.FindChildBar(winBar);
+            var infoMation = AutomationElement.FromHandle(childs[0]);
+            var mations = infoMation.FindAll(TreeScope.Children, Condition.TrueCondition);
+            for (var i = 0; i < mations.Count; i++)
+            {
+                Console.WriteLine(mations[i].Current.Name);//text_xxbbh
+            }
+        }
+
+        public static void CommonRedRush()
+        {
+            var pageName = "开具增值税普通发票";
+            var bar = WinApi.FindWindow(null, pageName);
+            if (bar == IntPtr.Zero)
+            {
+                return;
+            }
+
+            var list = WinApi.EnumChilWindowsIntptr(bar);
+            if (list == null || list.Count < 40)
+            {
+                //AmLogger.Info("MakeRedInvoice", $"专票填开页面查找失败：list:{JsonHelper.ObjectToJson(list)}");
+                //return false;
+            }
+
+            //对备注 购方银行账号 电话地址进行赋值
+
+            List<IntPtr> list2 = new List<IntPtr>();
+            for (var i = 2; i < list.Count; i++)
+            {
+                list2 = WinApi.FindChildBar((IntPtr)list[i]);
+                if (list2?.Count >= 22)
+                {
+                    break;
+                }
+            }
+
+            if (list2 == null || list2.Count < 22)
+            {
+                //AmLogger.Info("MakeRedInvoice", $"备注 购方银行账号 电话地址 句柄查找错误 list2:{JsonHelper.ObjectToJson(list2)}");
+                //return false;
+            }
+
+            //对备注进行赋值
+            WinApi.SendMessage(list2[6], WinApi.BM_TEXT, IntPtr.Zero, "remark");
+
+            var list3 = WinApi.FindChildBar(list2[19]);
+            var list4 = WinApi.FindChildBar(list2[21]);
+
+            
+            foreach (IntPtr t in list3)
+            {
+                var accountStr = "yinhang zhanghao 888";
+                if (UiaAutoMationHelper.IsAvailable)
+                {
+                    var uiaInstance = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(t);
+                    if (uiaInstance.CurrentControlType == UIA_ControlTypeIds.UIA_EditControlTypeId)
+                    {
+                        var pattern = (IUIAutomationValuePattern)uiaInstance.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
+                        if (string.IsNullOrEmpty(pattern.CurrentValue))
+                        {
+                            pattern.SetValue(accountStr);
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    var editMation = AutomationElement.FromHandle(t);
+                    if (editMation.Current.ControlType != ControlType.Edit) return;
+                    editMation.TryGetCurrentPattern(ValuePattern.Pattern, out var pattern);
+                    if (pattern == null) return;
+                    if (string.IsNullOrEmpty(((ValuePattern)pattern).Current.Value))
+                    {
+                        ((ValuePattern)pattern).SetValue(accountStr);
+                    }
+                }
+                //银行名称，账号
+                //var accountStr = $"{invInfo.Head.PurchaserBankName}{invInfo.Head.PurchaserBankAccount}";
+
+                //WinApi.SendMessage(t, WinApi.BM_TEXT, IntPtr.Zero, accountStr);
+            }
+
+            foreach (IntPtr t in list4)
+            {
+                //购方地址，电话
+                //var addressTel = $"{invInfo.Head.PurchaserAddress} {invInfo.Head.PurchaserTel}";
+                var addressTel = "shanghai 167";
+                WinApi.SendMessage(t, WinApi.BM_TEXT, IntPtr.Zero, addressTel);
+            }
+        }
+
         /// <summary>
         /// 窗体的最大最小化，正常大小
         /// </summary>

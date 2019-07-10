@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using System.Windows.Automation;
 using SearchBar;
 using SearchBar.RequestRed;
+using UIAutomationClient;
+using TreeScope = System.Windows.Automation.TreeScope;
 
 namespace User32Test
 {
@@ -20,62 +22,21 @@ namespace User32Test
         static void Main(string[] args)
         {
 
-            UiaAutoMationTest.Method1();
+            var winbar = WinApi.FindWindow(null, "CusMessageBox");
+            var childinfos = WinApi.EnumChildWindowsCallback(winbar);
+            for (var i = 0; i < childinfos.Count; i++)
+            {
+                if (42730990 == (int)childinfos[i].hWnd)
+                {
+                    var txtMation = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(childinfos[i].hWnd);
 
+                    var txtPt = (IUIAutomationValuePattern)txtMation.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
+                    Console.WriteLine(txtPt.CurrentValue);
+                }
 
-            //var winbar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190427 - [红字发票信息表查询导出]");
-            //var list = WinApi.EnumChildWindowsCallback(winbar);
-            //var bar = list.Find(b => b.szWindowName == "红字发票信息表查询导出").hWnd;
-            //HxShengQing.SetForGround(bar);
+                //Console.WriteLine($"No:{i},hwnd:{(int)childinfos[i].hWnd},szWindowName:{childinfos[i].szWindowName},szTextName{childinfos[i].szTextName}");
+            }
 
-
-
-            //UIHelper.SetCombox((IntPtr)328962, "是");
-            //DateBaseHelper.GetHzscResult2();
-            //var cc = default(RednotificationHead);//null
-            //var cc = default(bool);//false
-            //var cc = default(RECT);//结构体的话里面的 字段属性都是0
-
-            //Bug.CloseWindow();
-            //Bug.TreeIntpre();
-
-            //Thread.Sleep(2000);
-
-            //Bug.InfomationChoose();
-            //Bug.ClickRedChar();
-            //Bug.XuanZe();
-
-            //关闭客户选择窗体
-            //Bug.GuanBiKeHuXuanZe();
-            //信息表下载
-            //var infoDownLoadBar = WinApi.FindWindow(null, "信息表下载中");//这个是一直存在的不能这样搞
-            //Bug.downLoadInfo();
-            //Bug.IsInfoLoading();
-            //HxShengQing.WriteGoodsTaxNoSetting(null);
-            //HxShengQing.DaYin();
-
-
-            //HxShengQing.InvokeEditItem(IntPtr.Zero, "");
-
-            //Bug.lanzifapiaoguodu();
-            //Bug.WindownType();
-
-            //radiobutton,checkbox,combox加载功能
-            //HxShengQing.RadioButtonTest();
-            //HxShengQing.CheckBoxTest();
-            //HxShengQing.ComboxSelected();
-
-            //var entity = DateBaseHelper.GetHzscResult();
-
-
-            //HxShengQing.UploadHzInfo(IntPtr.Zero, "661543812468190619150832");
-
-            //HxShengQing.UploadHzInfo((IntPtr)15207074, "661543812468190618162340");
-
-            //HxShengQing.SystemOpera("确认", out var message);
-            //Console.WriteLine(message);
-
-            //HxShengQing.ChaXunIsLoadingSuccess();
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();
