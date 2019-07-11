@@ -19,6 +19,53 @@ namespace SearchBar
 {
     public class Bug
     {
+        //税收分类编码添加
+        public void WriteGoodsTaxNoAdd(IntPtr goodNoAddHw, string goodsTaxNo = "",
+            string taxRate = "")
+        {
+            //税收分类编码
+            var ssflbmBar = IntPtr.Zero;
+            var toolStrip = IntPtr.Zero;
+            var suilvBar = IntPtr.Zero;
+            var yhBar = IntPtr.Zero;
+            var yhlBar = IntPtr.Zero;
+
+            var flag = HxShengQing.TryRetry(str =>
+            {
+                var childInfos = WinApi.FindChildInfo(goodNoAddHw);
+                if (childInfos == null || childInfos.Count < 30)
+                {
+                    return false;
+                }
+
+                //获取分类名称
+                var flmnBar = childInfos.Find(b => b.szWindowName == "税收分类名称").hWnd;
+                var temp1 = WinApi.FindWindowEx(goodNoAddHw, flmnBar, null, null);
+                var temp2 = WinApi.FindWindowEx(temp1, IntPtr.Zero, null, null);
+                ssflbmBar = WinApi.FindWindowEx(temp1, temp2, null, null);
+
+                //获取toolStrip
+                toolStrip = childInfos.Find(b => b.szWindowName == "toolStrip1").hWnd;
+
+                //获取税率句柄
+                var suilv = childInfos.Find(b => b.szWindowName == "*税率").hWnd;
+                suilvBar = WinApi.FindWindowEx(goodNoAddHw, suilv, null, null);
+
+                //获取享受优惠政策
+                var yh = childInfos.Find(b => b.szWindowName == "规格型号").hWnd;
+                yhBar = WinApi.FindWindowEx(goodNoAddHw, yh, null, null);
+
+                //优惠政策类型
+                yhlBar = childInfos[8].hWnd;
+                return ssflbmBar != IntPtr.Zero && toolStrip != IntPtr.Zero &&
+                       suilvBar != IntPtr.Zero && yhBar != IntPtr.Zero && yhlBar != IntPtr.Zero;
+            }, "", 40, 500);
+
+            WinApi.SendMessage(ssflbmBar, WinApi.BM_TEXT, IntPtr.Zero, TaxSub(goodsTaxNo));
+            
+            HxShengQing.ClickBtnByName(toolStrip, "保存");
+
+        }
 
         public static void GetTxt()
         {

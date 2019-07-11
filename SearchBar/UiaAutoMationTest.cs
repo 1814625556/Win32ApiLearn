@@ -10,7 +10,101 @@ namespace SearchBar
 {
     public class UiaAutoMationTest
     {
-        //获取异常报错
+        //var handle = subChilds.GetElement(1).CurrentNativeWindowHandle;
+        //var thirdChilds = subChilds.GetElement(1).FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+        /// <summary>
+        /// 获取输入焦点
+        /// </summary>
+        public static void Method6()
+        {
+            var tableBar = (IntPtr)4852320;
+
+            var bar = (IntPtr)4852320;
+            var childinfos = WinApi.EnumChildWindowsCallback(bar);
+            WinApi.SendMessage(childinfos[childinfos.Count-1].hWnd, 12, IntPtr.Zero, "wwwgoogle");
+
+            var childs = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(tableBar).
+                FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+            var subChilds = childs.GetElement(4).FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+            //弹出 税收分类编码添加
+            try
+            {
+                for (var i = 2; i < 7; i++)
+                {
+                    var ptd = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(i)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                    ptd.SetValue("77");
+                }
+                var pt = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(1)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                pt.DoDefaultAction();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                //处理税收分类编码添加
+            }
+
+            //出发税率事件
+            var pt1 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(7)
+                .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+            pt1.DoDefaultAction();
+
+            //设置税率
+            childinfos = WinApi.FindChildInfo(bar);
+            UIHelper.SetCombox(childinfos[1].hWnd,"17%");
+        }
+
+        //dataGriddeep
+        public static void Method5()
+        {
+
+            //可以采用winapi方式
+            //var bar = (IntPtr)4852320;
+            //var childs = WinApi.EnumChildWindowsCallback(bar);
+            //WinApi.SendMessage(childs[4].hWnd, 12, IntPtr.Zero, "cc");
+
+
+            var tableBar = (IntPtr)4852320;
+
+            var childs = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(tableBar).
+                FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+            var subChilds = childs.GetElement(3).FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+           
+            
+            var pt = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(6)
+                .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+            pt.SetValue("100.99");
+            
+
+            
+
+            //WinApi.SendMessage((IntPtr)subChilds.GetElement(3).CurrentNativeWindowHandle, 12, IntPtr.Zero, "88");
+        }
+        //操作表格控件
+        public static void Method4()
+        {
+            var tableBar = (IntPtr)4852320;
+
+            var childs = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(tableBar).
+                FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+            var subChilds = childs.GetElement(3).FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+
+            var pt = (IUIAutomationLegacyIAccessiblePattern) subChilds.GetElement(1)
+                .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+            pt.SetValue("100.99");
+
+            //WinApi.SendMessage((IntPtr)subChilds.GetElement(3).CurrentNativeWindowHandle, 12, IntPtr.Zero, "88");
+        }
+
+        //获取异常报错--成功
         public static void Method3()
         {
             var winbar = WinApi.FindWindow(null, "CusMessageBox");

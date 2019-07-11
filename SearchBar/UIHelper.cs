@@ -10,6 +10,23 @@ namespace SearchBar
 {
     public class UIHelper
     {
+        //设置税率
+        public static void SetCombox(IntPtr comboxBar, string item)
+        {
+            if (comboxBar == IntPtr.Zero) return;
+
+            var comBoxMation = AutomationElement.FromHandle(comboxBar);
+            if (comBoxMation.Current.IsEnabled == false) return;
+
+            var selectItem = comBoxMation.FindFirst(TreeScope.Subtree,
+                new PropertyCondition(AutomationElement.NameProperty, item));
+
+            if (selectItem == null) return;
+
+            selectItem.TryGetCurrentPattern(SelectionItemPattern.Pattern, out var selectItemPattern);
+            ((SelectionItemPattern)selectItemPattern)?.Select();
+        }
+
         //UI
         public static void SetSelectedComboBoxItem(AutomationElement comboBox, string item)
         {
@@ -40,27 +57,6 @@ namespace SearchBar
             }
 
             return null;
-        }
-
-
-        /// <summary>
-        /// 设置下拉框
-        /// </summary>
-        /// <param name="comboxBar"></param>
-        /// <param name="item"></param>
-        public static void SetCombox(IntPtr comboxBar, string item)
-        {
-            var comBoxMation = AutomationElement.FromHandle(comboxBar);
-
-            var selectItem = comBoxMation.FindFirst(TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.NameProperty, item));
-
-            if (selectItem == null)
-                throw new Exception($"未找到子控件：{item}");
-
-            selectItem.TryGetCurrentPattern(SelectionItemPattern.Pattern, out var selectItemPattern);
-
-            ((SelectionItemPattern)selectItemPattern)?.Select();
         }
 
         public static void SetForeForm(IntPtr winBar)

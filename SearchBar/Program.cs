@@ -22,20 +22,13 @@ namespace User32Test
         static void Main(string[] args)
         {
 
-            var winbar = WinApi.FindWindow(null, "CusMessageBox");
-            var childinfos = WinApi.EnumChildWindowsCallback(winbar);
-            for (var i = 0; i < childinfos.Count; i++)
-            {
-                if (42730990 == (int)childinfos[i].hWnd)
-                {
-                    var txtMation = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(childinfos[i].hWnd);
+            //WinApi.SendMessage((IntPtr) 0x00600168, 12, IntPtr.Zero, "cc");
 
-                    var txtPt = (IUIAutomationValuePattern)txtMation.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
-                    Console.WriteLine(txtPt.CurrentValue);
-                }
+            //var bar = (IntPtr)4852320;
+            //var childs = WinApi.EnumChildWindowsCallback(bar);
+            //WinApi.SendMessage(childs[4].hWnd, 12, IntPtr.Zero, "cc");
 
-                //Console.WriteLine($"No:{i},hwnd:{(int)childinfos[i].hWnd},szWindowName:{childinfos[i].szWindowName},szTextName{childinfos[i].szTextName}");
-            }
+            UiaAutoMationTest.Method6();
 
             Console.ReadKey();
             Console.ReadKey();
