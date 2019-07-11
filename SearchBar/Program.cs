@@ -23,12 +23,9 @@ namespace User32Test
         {
 
             //WinApi.SendMessage((IntPtr) 0x00600168, 12, IntPtr.Zero, "cc");
+            Bug.CommonTianKai();
 
-            //var bar = (IntPtr)4852320;
-            //var childs = WinApi.EnumChildWindowsCallback(bar);
-            //WinApi.SendMessage(childs[4].hWnd, 12, IntPtr.Zero, "cc");
-
-            UiaAutoMationTest.Method6();
+            Console.WriteLine("success...");
 
             Console.ReadKey();
             Console.ReadKey();

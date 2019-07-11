@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using UIAutomationClient;
 using User32Test;
@@ -10,8 +12,217 @@ namespace SearchBar
 {
     public class UiaAutoMationTest
     {
-        //var handle = subChilds.GetElement(1).CurrentNativeWindowHandle;
-        //var thirdChilds = subChilds.GetElement(1).FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+        //测试普票填开
+        public static void Method8()
+        {
+            var tableBar = (IntPtr)21169748;
+
+            var childs = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(tableBar)
+                .FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+            for (var i = 2; i < childs.Length; i++)
+            {
+
+                var subChilds = childs.GetElement(i).FindAll(TreeScope.TreeScope_Children,
+                    UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+                //对名称进行赋值
+                var pt3 = (IUIAutomationLegacyIAccessiblePattern) subChilds.GetElement(1)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
+                pt3.DoDefaultAction();
+                Thread.Sleep(500);
+                var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"AAA");
+
+                try
+                {
+                    pt3.DoDefaultAction();
+                }
+                catch (Exception e)
+                {
+                    var noaddBar = WinApi.FindWindow(null, "商品编码添加");
+                    Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
+                    Console.WriteLine(e);
+                }
+
+                //改变税率
+                var pt2 = (IUIAutomationLegacyIAccessiblePattern) subChilds.GetElement(7)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                pt2.DoDefaultAction();
+
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                UIHelper.SetCombox(childinfos1[1].hWnd,"17%");
+                //WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "17%");
+
+                Thread.Sleep(500);
+
+                for (var j = 2; j < 6; j++)
+                {
+                    var pt1 = (IUIAutomationLegacyIAccessiblePattern) subChilds.GetElement(j)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
+                   if (j == 2)
+                    {
+                        pt1.DoDefaultAction();
+                        //pt1.SetValue("小");
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "小");
+                        Thread.Sleep(100);
+                    }
+                    else if (j == 3)
+                    {
+                        pt1.DoDefaultAction();
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "kg");
+                        Thread.Sleep(100);
+                    }
+                    else if (j == 4)
+                    {
+                        pt1.DoDefaultAction();
+                        //pt1.SetValue("小");
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "3");
+                        Thread.Sleep(100);
+                    }
+                    else if (j == 5)
+                    {
+                        pt1.DoDefaultAction();
+                        //pt1.SetValue("小");
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "100");
+                        Thread.Sleep(100);
+                        pt1.DoDefaultAction();
+                        Thread.Sleep(1000);
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 成功操作红字申请--税率问题解决了
+        /// </summary>
+        public static void Method7()
+        {
+            var tableBar = (IntPtr)6227812;
+
+            var childs = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(tableBar).
+                FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+            for (var i = 1; i < childs.Length; i++)
+            {
+
+                var subChilds = childs.GetElement(i).FindAll(TreeScope.TreeScope_Children,
+                    UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+                //对名称进行赋值
+                var pt3 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(0)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
+                pt3.DoDefaultAction();
+                Thread.Sleep(500);
+                var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"AAA");
+
+                try
+                {
+                    pt3.DoDefaultAction();
+                }
+                catch (Exception e)
+                {
+                    var noaddBar = WinApi.FindWindow(null, "商品编码添加");
+                    Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
+                    Console.WriteLine(e);
+                }
+
+                //改变税率
+                var pt2 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(6)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                pt2.DoDefaultAction();
+
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "17%");
+
+                Thread.Sleep(500);
+
+                for (var j = 1; j < 8; j++)
+                {
+                    var pt1 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(j)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
+                    pt1.Select(j);
+
+                    if (j == 0)
+                    {
+                        pt1.DoDefaultAction();
+                        Thread.Sleep(500);
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, $"{i}-{j}AAA");
+
+                        try
+                        {
+                            pt1.DoDefaultAction();
+                        }
+                        catch (Exception e)
+                        {
+                            var noaddBar = WinApi.FindWindow(null, "商品编码添加");
+                            Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
+                            Console.WriteLine(e);
+                        }
+                    }
+                  
+                    else if (j == 1)
+                    {
+                        pt1.DoDefaultAction();
+                        //pt1.SetValue("小");
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "小");
+                        Thread.Sleep(100);
+                    }
+                    else if (j == 2)
+                    {
+                        pt1.DoDefaultAction();
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "kg");
+                        Thread.Sleep(100);
+                    }
+                    else if (j == 3)
+                    {
+                        pt1.DoDefaultAction();
+                        //pt1.SetValue("小");
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "-1");
+                        Thread.Sleep(100);
+                    }
+                    else if (j == 4)
+                    {
+                        pt1.DoDefaultAction();
+                        //pt1.SetValue("小");
+                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "100");
+                        Thread.Sleep(100);
+                        pt1.DoDefaultAction();
+                        Thread.Sleep(1000);
+                    }
+                    //else if (j == 5)
+                    //{
+                    //    pt1.SetValue("-100.00");
+                    //    Thread.Sleep(100);
+                    //    //pt1.DoDefaultAction();
+                    //}
+                    //else if (j == 7)
+                    //{
+                    //    pt1.SetValue("-9");
+                    //    Thread.Sleep(100);
+                    //    //pt1.DoDefaultAction();
+                    }
+
+                }
+            }
+
+            
+
+        
 
         /// <summary>
         /// 获取输入焦点

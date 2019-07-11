@@ -19,17 +19,52 @@ namespace SearchBar
 {
     public class Bug
     {
+        //UI普票填开
+        public static void CommonTianKai()
+        {
+            var tableBar = (IntPtr)4195498;
+            //var toolBar = (IntPtr) 6948734;
+
+            //for (var i = 0; i < 5; i++)
+            //{
+            //    HxShengQing.ClickBtnByName(toolBar, "增行");
+            //    Thread.Sleep(100);
+            //}
+            
+            var tableMation = AutomationElement.FromHandle(tableBar);
+
+            var firstChilds = tableMation.FindAll(TreeScope.Children, Condition.TrueCondition);
+
+            var childs = firstChilds[1].FindAll(TreeScope.Children, Condition.TrueCondition);
+
+            childs[1].TryGetCurrentPattern(GridItemPattern.Pattern, out var invokePt);
+
+            //((GridItemPattern)invokePt).Current.Column;
+
+            var infos = WinApi.EnumChildWindowsCallback(tableBar);
+            WinApi.SendMessage(infos[infos.Count - 1].hWnd, 12, IntPtr.Zero, "aaa");
+
+            for (var i = 0; i < firstChilds.Count; i++)
+            {
+                
+            }
+        }
+
+
+
+
+
+
+
+
+
         //税收分类编码添加
-        public void WriteGoodsTaxNoAdd(IntPtr goodNoAddHw, string goodsTaxNo = "",
-            string taxRate = "")
+        public static void WriteGoodsTaxNoAdd(IntPtr goodNoAddHw, string goodsTaxNo = "")
         {
             //税收分类编码
             var ssflbmBar = IntPtr.Zero;
             var toolStrip = IntPtr.Zero;
-            var suilvBar = IntPtr.Zero;
-            var yhBar = IntPtr.Zero;
-            var yhlBar = IntPtr.Zero;
-
+          
             var flag = HxShengQing.TryRetry(str =>
             {
                 var childInfos = WinApi.FindChildInfo(goodNoAddHw);
@@ -47,22 +82,14 @@ namespace SearchBar
                 //获取toolStrip
                 toolStrip = childInfos.Find(b => b.szWindowName == "toolStrip1").hWnd;
 
-                //获取税率句柄
-                var suilv = childInfos.Find(b => b.szWindowName == "*税率").hWnd;
-                suilvBar = WinApi.FindWindowEx(goodNoAddHw, suilv, null, null);
 
-                //获取享受优惠政策
-                var yh = childInfos.Find(b => b.szWindowName == "规格型号").hWnd;
-                yhBar = WinApi.FindWindowEx(goodNoAddHw, yh, null, null);
+                return ssflbmBar != IntPtr.Zero && toolStrip != IntPtr.Zero;
 
-                //优惠政策类型
-                yhlBar = childInfos[8].hWnd;
-                return ssflbmBar != IntPtr.Zero && toolStrip != IntPtr.Zero &&
-                       suilvBar != IntPtr.Zero && yhBar != IntPtr.Zero && yhlBar != IntPtr.Zero;
             }, "", 40, 500);
 
             WinApi.SendMessage(ssflbmBar, WinApi.BM_TEXT, IntPtr.Zero, TaxSub(goodsTaxNo));
-            
+            Thread.Sleep(500);
+
             HxShengQing.ClickBtnByName(toolStrip, "保存");
 
         }
