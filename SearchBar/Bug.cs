@@ -19,7 +19,20 @@ namespace SearchBar
 {
     public class Bug
     {
+
+
+        public static void tishi()
+        {
+            var winBar = WinApi.FindWindow(null, "提示");
+            var childs = WinApi.EnumChildWindowsCallback(winBar);
+            var confirmBtn = childs.Find(b => b.szWindowName == "确认");
+            WinApi.LeftClick(confirmBtn.hWnd);
+            WinApi.LeftClickMsg(confirmBtn.hWnd);
+        }
+
+
         //UI普票填开
+        //https://docs.microsoft.com/en-us/dotnet/api/system.windows.automation.controltype.custom?view=netframework-4.8 Control.Custom类型是无法转化的
         public static void CommonTianKai()
         {
             var tableBar = (IntPtr)4195498;

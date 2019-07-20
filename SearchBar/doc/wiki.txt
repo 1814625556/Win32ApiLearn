@@ -1,0 +1,22 @@
+﻿
+点击相对位置：
+WinApi.GetWindowRect(new HandleRef(null, toolBar), out var rect);
+WinApi.ClickLocation(toolBar, rect.Right - rect.Left - 500, 25);
+
+ //var dataBar = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(subChilds[0].hWnd);
+            ////var pt = (IUIAutomationLegacyIAccessiblePattern)dataBar
+            ////    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+            //var pt = (IUIAutomationValuePattern)dataBar
+            //    .GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
+            ////pt.SetValue("2018-01-08");
+
+//uia 按条件查找控件
+var winBar = WinApi.FindWindow("", "开具增值税普通发票(卷票)");
+            var winBarUia = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(winBar);
+            var DataGrid1 = winBarUia.FindFirst(TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "DataGrid1"));
+
+//ui 按条件查询控件
+ var winMation = AutomationElement.FromHandle(winBar);
+            var dataGridMation = winMation.FindFirst(System.Windows.Automation.TreeScope.Descendants,
+                new PropertyCondition(AutomationElement.AutomationIdProperty, "DataGrid1"));

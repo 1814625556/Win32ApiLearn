@@ -21,15 +21,20 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
+            //UiaAutoMationTest.Method10();
 
-            //WinApi.SendMessage((IntPtr) 0x00600168, 12, IntPtr.Zero, "cc");
-            Bug.CommonTianKai();
-
-            Console.WriteLine("success...");
-
+            Bug.tishi();
+            
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();
+        }
+
+        public static void SetTab()
+        {
+            Thread.Sleep(500);
+            WinApi.keybd_event(Keys.Tab, 0, 0, 0);
+            Thread.Sleep(500);
         }
         /// <summary>
         /// 获取所有进程信息
