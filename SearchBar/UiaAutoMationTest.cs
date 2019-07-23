@@ -119,7 +119,7 @@ namespace SearchBar
             }
         }
 
-        //根据条件查找控件
+        //根据条件查找控件--uia和ui的方式
         public static void Method12()
         {
             var winBar = WinApi.FindWindow(null, "开具增值税普通发票(卷票)");
@@ -366,10 +366,26 @@ namespace SearchBar
         //普票测试通过
         public static void Method8()
         {
-            var tableBar = (IntPtr)21169748;
+            var winBar = WinApi.FindWindow(null, "开具增值税普通发票");
+            var winBarUia = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(winBar);
 
-            var childs = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(tableBar)
-                .FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+            var toolBar = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "toolStrip3"));
+
+            for (var i = 0; i < 8; i++)
+            {
+                ClickBtnUia(toolBar.CurrentNativeWindowHandle, "减行");
+                Thread.Sleep(100);
+            }
+            for (var i = 0; i < 5; i++)
+            {
+                ClickBtnUia(toolBar.CurrentNativeWindowHandle, "增行");
+                Thread.Sleep(100);
+            }
+
+            var dataGridUia = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "DataGrid1"));
+            var childs = dataGridUia.FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
             for (var i = 2; i < childs.Length; i++)
             {
 
@@ -382,7 +398,7 @@ namespace SearchBar
 
                 pt3.DoDefaultAction();
                 Thread.Sleep(500);
-                var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                var childinfos1 = WinApi.EnumChildWindowsCallback(dataGridUia.CurrentNativeWindowHandle);
                 WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"AAA");
 
                 try
@@ -401,10 +417,10 @@ namespace SearchBar
                     .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
                 pt2.DoDefaultAction();
 
-                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                childinfos1 = WinApi.EnumChildWindowsCallback(dataGridUia.CurrentNativeWindowHandle);
                 UIHelper.SetCombox(childinfos1[1].hWnd,"17%");
                 //WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "17%");
-
+                 
                 Thread.Sleep(500);
 
                 for (var j = 2; j < 6; j++)
@@ -415,31 +431,28 @@ namespace SearchBar
                    if (j == 2)
                     {
                         pt1.DoDefaultAction();
-                        //pt1.SetValue("小");
-                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        var childinfos = WinApi.EnumChildWindowsCallback(dataGridUia.CurrentNativeWindowHandle);
                         WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "小");
                         Thread.Sleep(100);
                     }
                     else if (j == 3)
                     {
                         pt1.DoDefaultAction();
-                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        var childinfos = WinApi.EnumChildWindowsCallback(dataGridUia.CurrentNativeWindowHandle);
                         WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "kg");
                         Thread.Sleep(100);
                     }
                     else if (j == 4)
                     {
                         pt1.DoDefaultAction();
-                        //pt1.SetValue("小");
-                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        var childinfos = WinApi.EnumChildWindowsCallback(dataGridUia.CurrentNativeWindowHandle);
                         WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "3");
                         Thread.Sleep(100);
                     }
                     else if (j == 5)
                     {
                         pt1.DoDefaultAction();
-                        //pt1.SetValue("小");
-                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+                        var childinfos = WinApi.EnumChildWindowsCallback(dataGridUia.CurrentNativeWindowHandle);
                         WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "100");
                         Thread.Sleep(100);
                         pt1.DoDefaultAction();
@@ -447,6 +460,29 @@ namespace SearchBar
                     }
                 }
             }
+        }
+
+        //普票全部红冲-只改变金额（不含税的地方）-- 测试成功
+        public static void Method88()
+        {
+            //459660
+            var tableBar = (IntPtr)394524;
+
+            var childs = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(tableBar)
+                .FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+
+            var subChilds = childs.GetElement(1).FindAll(TreeScope.TreeScope_Children,
+                UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+            var pt1 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(6)
+                .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
+            pt1.DoDefaultAction();
+            var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+            WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "100");
+            Thread.Sleep(100);
+            pt1.DoDefaultAction();
         }
 
 
@@ -795,6 +831,16 @@ namespace SearchBar
 
             var pattern = (IUIAutomationInvokePattern)element.GetCurrentPattern(UIA_PatternIds.UIA_InvokePatternId);
             pattern?.Invoke();
+        }
+
+        public static bool ClickBtnUia(IntPtr toolBar, string name)
+        {
+            var winBarUia = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(toolBar);
+            var element = winBarUia.FindFirst(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_NamePropertyId, name));
+            var pattern = (IUIAutomationInvokePattern)element.GetCurrentPattern(UIA_PatternIds.UIA_InvokePatternId);
+            pattern?.Invoke();
+            return true;
         }
 
     }

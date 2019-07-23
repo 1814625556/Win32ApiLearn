@@ -8,6 +8,9 @@ using System.Windows.Forms;
 using User32Test;
 using System.Threading;
 using SearchBar.RequestRed;
+using UIAutomationClient;
+using TreeScope = System.Windows.Automation.TreeScope;
+using WindowVisualState = System.Windows.Automation.WindowVisualState;
 
 namespace SearchBar
 {
@@ -155,7 +158,9 @@ namespace SearchBar
             return false;
         }
 
-       /// <summary>
+        
+
+        /// <summary>
        /// 使用UI自动化的方式操作 菜单栏
        /// </summary>
        /// <param name="hWnd"></param>

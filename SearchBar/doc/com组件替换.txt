@@ -1,0 +1,154 @@
+﻿ /// <summary>
+        /// 写明细--采用com组件方式--缺少校验机制
+        /// </summary>
+        /// <param name="invoice"></param>
+        private void WriteDetails(InvoiceInfo invoice, IntPtr toolBar,IntPtr tableBar)
+        {
+            AmLogger.Info("WriteDetail", "===================普票部分红冲明细start============");
+            for (var i = 0; i < 8; i++)
+            {
+                AmCommon.ClickBtnUiaByName(toolBar, "减行");
+                Thread.Sleep(100);
+            }
+            Thread.Sleep(300);
+            for (var i = 0; i < invoice.InvoiceDetails.Count; i++)
+            {
+                AmCommon.ClickBtnUiaByName(toolBar, "增行");
+                Thread.Sleep(100);
+            }
+            //获取所有行
+            var rows = UiaHelper.GetUIAutomation().ElementFromHandle(tableBar)
+                .FindAll(UIAutomationClient.TreeScope.TreeScope_Children, UiaHelper.GetUIAutomation().CreateTrueCondition());
+
+            for (var i = 0; i < invoice.InvoiceDetails.Count; i++)
+            {
+                var detail = invoice.InvoiceDetails[i];
+                if(detail==null) continue;
+
+                //指定行的所有列
+                var cols = rows.GetElement(i+2).FindAll(UIAutomationClient.TreeScope.TreeScope_Children,
+                    UiaHelper.GetUIAutomation().CreateTrueCondition());
+
+                var pt1 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(1)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                pt1.DoDefaultAction();
+                Thread.Sleep(100);
+                var itemName = Tools.DelSimpName(detail.ItemName, detail.GoodsTaxNo);
+                var childs = WinApi.EnumChildWindowsCallback(tableBar);
+                //赋值名称
+                WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, itemName);
+                var pt2 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(2)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                pt2.DoDefaultAction();
+                var ssbmszBar = IntPtr.Zero;
+                var ssbmtjBar = IntPtr.Zero;
+                RetryUtil.TryRetry(str =>
+                {
+                    ssbmszBar = WinApi.FindWindow(null, "税收分类编码设置");
+                    ssbmtjBar = WinApi.FindWindow(null, "商品编码添加");
+                    return ssbmszBar != IntPtr.Zero || ssbmtjBar != IntPtr.Zero;
+                }, "", 20, 200);
+                if (ssbmszBar != IntPtr.Zero)
+                {
+                    IocHelper.GetInstance<WriteGoodsSettingForm>().WriteGoodsSetting(ssbmszBar,
+                        detail.TaxPer, detail.TaxperCon, detail.TaxRate);
+                    pt2.DoDefaultAction();
+                    Thread.Sleep(100);
+                }
+                if (ssbmtjBar != IntPtr.Zero)
+                {
+                    IocHelper.GetInstance<WriteGoodsTaxNoAddForm>().WriteGoodsTaxNoAdd(ssbmtjBar, detail.GoodsTaxNo,
+                        detail.TaxPer, detail.TaxperCon, detail.TaxRate);
+                    pt2.DoDefaultAction();
+                    Thread.Sleep(100);
+                }
+
+                //赋值规格
+                if (string.IsNullOrEmpty(detail.ItemSpec)==false)
+                {
+                    childs = WinApi.EnumChildWindowsCallback(tableBar);
+                    WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.ItemSpec);
+                }
+
+                //赋值单位
+                if (string.IsNullOrEmpty(detail.Unit) == false)
+                {
+                    var pt3 = (IUIAutomationLegacyIAccessiblePattern) cols.GetElement(3)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                    pt3.DoDefaultAction();
+                    Thread.Sleep(100);
+                    childs = WinApi.EnumChildWindowsCallback(tableBar);
+                    WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.Unit);
+                }
+
+                //赋值数量
+                if (string.IsNullOrEmpty(detail.Quantity) == false)
+                {
+                    var pt4 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(4)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                    pt4.DoDefaultAction();
+                    Thread.Sleep(100);
+                    childs = WinApi.EnumChildWindowsCallback(tableBar);
+                    WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.Quantity);
+                }
+
+                //赋值价格
+                if (string.IsNullOrEmpty(detail.UnitPrice)==false)
+                {
+                    var pt5 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(5)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                    pt5.DoDefaultAction();
+                    Thread.Sleep(100);
+                    childs = WinApi.EnumChildWindowsCallback(tableBar);
+                    var price = detail.UnitPrice;
+                    if (detail.PriceMethod.Trim() == "1")
+                    {
+                        price = (Convert.ToDecimal(price) / (1 + Convert.ToDecimal(detail.TaxRate))).ToString();
+                        //包含精度的情况
+                        //price = Math.Round(Convert.ToDecimal(price) / (1 + Convert.ToDecimal(detail.TaxRate)), 
+                        //    2, MidpointRounding.AwayFromZero).ToString();
+                    }
+                    WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, price);
+                    pt5.DoDefaultAction();
+                    Thread.Sleep(100);
+                }
+
+                //是否填写金额
+                if (string.IsNullOrWhiteSpace(detail.Quantity) && string.IsNullOrWhiteSpace(detail.UnitPrice))
+                {
+                    var pt6 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(6)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                    pt6.DoDefaultAction();
+                    childs = WinApi.EnumChildWindowsCallback(tableBar);
+                    WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.AmountWithoutTax);
+                }
+
+                //修改税率
+                //WinApi.ClickLocation(tableBar, 660, 34+20*i);//标头24像素点，行20像素点
+                if (ssbmszBar == IntPtr.Zero && ssbmtjBar == IntPtr.Zero && 
+                    TaxDataOpera.IsSameRate(Tools.DelSimpName(detail.ItemName, detail.GoodsTaxNo), detail.TaxRate) == false)
+                {
+                    var pt7 = (IUIAutomationLegacyIAccessiblePattern) cols.GetElement(7)
+                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                    pt7.DoDefaultAction();
+                    Thread.Sleep(500);
+                    childs = WinApi.EnumChildWindowsCallback(tableBar);
+                    AmCommon.SetCombox(childs[1].hWnd, AmCommon.GetByTaxRate(detail.TaxRate));
+                }
+            }
+            AmLogger.Info("WriteDetail", "===================普票部分红冲明细end============");
+
+        }
+
+
+		 /// <summary>
+        /// 窗体前置-最大最小
+        /// </summary>
+        /// <param name="bar"></param>
+        public static void ShowForm(IntPtr bar)
+        {
+            WinApi.ShowWindow(bar, 2);//最小
+            Thread.Sleep(100);
+            WinApi.ShowWindow(bar, 3);//最大
+            Thread.Sleep(100);
+        }

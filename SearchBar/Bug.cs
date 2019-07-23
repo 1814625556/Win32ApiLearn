@@ -20,6 +20,72 @@ namespace SearchBar
     public class Bug
     {
 
+        //发票确认重构
+        public static bool ClickVerifyInvoicePage(ref string invoiceCode, ref string invoiceNo,
+            ref string invoiceType, bool isEnter = true)
+        {
+
+            
+            var formBar = HxShengQing.TryRetry(str => WinApi.FindWindow(null, "发票号码确认"), "", 40, 500);
+            
+            var dmInfo = new WindowInfo();
+            var hmInfo = new WindowInfo();
+            var invoiceTypeInfo = new WindowInfo();
+            var confirmBar = IntPtr.Zero;
+            var cancelBar = IntPtr.Zero;
+
+            var flag = HxShengQing.TryRetry(str =>
+            {
+                var childs = WinApi.EnumChildWindowsCallback(formBar);
+                if (childs.Count < 10)
+                    return false;
+                if (childs[7].szWindowName.Length == 10 || childs[7].szWindowName.Length == 12)
+                {
+                    dmInfo = childs[7];
+                }
+                else
+                {
+                    dmInfo = childs.FirstOrDefault(info =>
+                        info.szWindowName.Length == 10 || info.szWindowName.Length == 12);
+                }
+                if (childs[5].szWindowName.Length == 8)
+                {
+                    hmInfo = childs[5];
+                }
+                else
+                {
+                    hmInfo = childs.FirstOrDefault(info => info.szWindowName.Length == 8 && int.TryParse(info.szWindowName, out var hm));
+                }
+                invoiceTypeInfo = childs[4];
+                confirmBar = childs.FirstOrDefault(b=>b.szWindowName=="确认").hWnd;
+                cancelBar = childs.FirstOrDefault(b => b.szWindowName == "取消").hWnd;
+                return confirmBar != IntPtr.Zero && cancelBar != IntPtr.Zero && !string.IsNullOrEmpty(invoiceTypeInfo.szWindowName) &&
+                       !string.IsNullOrEmpty(dmInfo.szWindowName) && !string.IsNullOrEmpty(hmInfo.szWindowName);
+            }, "", 10, 500);
+
+            //赋值
+            invoiceNo = hmInfo.szWindowName;
+            invoiceCode = dmInfo.szWindowName;
+            invoiceType = invoiceTypeInfo.szWindowName;
+            
+            
+            if (isEnter)
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    WinApi.LeftClick(confirmBar);
+                    Thread.Sleep(1000);
+                    formBar = WinApi.FindWindow(null, "发票号码确认");
+                    if (formBar == IntPtr.Zero) break;
+                }
+            }
+            else
+            {
+                WinApi.LeftClick(cancelBar);
+            }
+           
+            return true;
+        }
 
         public static void tishi()
         {

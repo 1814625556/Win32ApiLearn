@@ -93,6 +93,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="doc\com组件替换.txt" />
     <Content Include="doc\wiki.txt" />
     <Content Include="RequestRed\redInfo2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

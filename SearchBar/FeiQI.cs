@@ -10,6 +10,186 @@ namespace SearchBar
 {
     class FeiQI
     {
+        //public static void Method8(IntPtr tableBar)
+        //{
+        //    try
+        //    {
+        //        var winBar = WinApi.FindWindow(null, "开具增值税普通发票");
+        //        var winBarUia = UiaHelper.GetUIAutomation().ElementFromHandle(winBar);
+        //        var dataGridUia = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants, UiaHelper.GetUIAutomation().CreatePropertyCondition(
+        //            UIA_PropertyIds.UIA_AutomationIdPropertyId, "DataGrid1"));
+        //        var childs = dataGridUia
+        //            .FindAll(UIAutomationClient.TreeScope.TreeScope_Children, UiaHelper.GetUIAutomation().CreateTrueCondition());
+        //        for (var i = 2; i < childs.Length; i++)
+        //        {
+
+        //            var subChilds = childs.GetElement(i).FindAll(UIAutomationClient.TreeScope.TreeScope_Children,
+        //                UiaHelper.GetUIAutomation().CreateTrueCondition());
+
+        //            //对名称进行赋值
+        //            var pt3 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(2)
+        //                .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
+        //            var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+        //            WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"AAA");
+        //            try
+        //            {
+        //                pt3.DoDefaultAction();
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                Console.WriteLine(e);
+        //                throw;
+        //            }
+        //            Thread.Sleep(500);
+
+        //            //try
+        //            //{
+        //            //    pt3.DoDefaultAction();
+        //            //}
+        //            //catch (Exception e)
+        //            //{
+        //            //    var noaddBar = WinApi.FindWindow(null, "商品编码添加");
+        //            //    Console.WriteLine(e);
+        //            //}
+
+        //            //改变税率
+        //            var pt2 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(7)
+        //                .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+        //            pt2.DoDefaultAction();
+
+        //            childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+        //            //WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "17%");
+
+        //            Thread.Sleep(500);
+
+        //            for (var j = 2; j < 6; j++)
+        //            {
+        //                var pt1 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(j)
+        //                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
+        //                if (j == 2)
+        //                {
+        //                    pt1.DoDefaultAction();
+        //                    var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+        //                    WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "小");
+        //                    Thread.Sleep(100);
+        //                }
+        //                else if (j == 3)
+        //                {
+        //                    pt1.DoDefaultAction();
+        //                    var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+        //                    WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "kg");
+        //                    Thread.Sleep(100);
+        //                }
+        //                else if (j == 4)
+        //                {
+        //                    pt1.DoDefaultAction();
+        //                    var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+        //                    WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "3");
+        //                    Thread.Sleep(100);
+        //                }
+        //                else if (j == 5)
+        //                {
+        //                    pt1.DoDefaultAction();
+        //                    var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
+        //                    WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "100");
+        //                    Thread.Sleep(100);
+        //                    pt1.DoDefaultAction();
+        //                    Thread.Sleep(1000);
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+        //        throw;
+        //    }
+
+
+        //}
+
+        //         for (var i = 0; i<invoice.InvoiceDetails.Count; i++)
+        //            {
+        //                var detail = invoice.InvoiceDetails[i];
+        //        AmCommon.ClickBtnUiaByName(toolBar, "增行");
+        //                Thread.Sleep(100);
+        //                //赋值--名称
+        //                var childs = WinApi.EnumChildWindowsCallback(tableBar);
+        //        var itemName = Tools.DelSimpName(detail.ItemName, detail.GoodsTaxNo);
+        //        WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, itemName);
+
+        //                var rows = UiaHelper.GetUIAutomation().ElementFromHandle(tableBar)
+        //                    .FindAll(UIAutomationClient.TreeScope.TreeScope_Children, UiaHelper.GetUIAutomation().CreateTrueCondition());
+        //        var cols = rows.GetElement(rows.Length - 1).FindAll(UIAutomationClient.TreeScope.TreeScope_Children,
+        //            UiaHelper.GetUIAutomation().CreateTrueCondition());
+        //        var pt2 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(2)
+        //            .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+        //        pt2.DoDefaultAction();
+        //                Thread.Sleep(100);
+
+        //                var ssbmszBar = IntPtr.Zero;
+        //        var ssbmtjBar = IntPtr.Zero;
+        //        RetryUtil.TryRetry(str =>
+        //                {
+        //                    ssbmszBar = WinApi.FindWindow(null, "税收分类编码设置");
+        //                    ssbmtjBar = WinApi.FindWindow(null, "商品编码添加");
+        //                    return ssbmszBar != IntPtr.Zero || ssbmtjBar != IntPtr.Zero;
+        //                }, "", 20, 200);
+        //                if (ssbmszBar != IntPtr.Zero)
+        //                {
+        //                    IocHelper.GetInstance<WriteGoodsSettingForm>().WriteGoodsSetting(ssbmszBar,
+        //                        detail.TaxPer, detail.TaxperCon, detail.TaxRate);
+        //    pt2.DoDefaultAction();
+        //                    Thread.Sleep(100);
+        //                }
+        //                if (ssbmtjBar != IntPtr.Zero)
+        //                {
+        //                    IocHelper.GetInstance<WriteGoodsTaxNoAddForm>().WriteGoodsTaxNoAdd(ssbmtjBar, detail.GoodsTaxNo,
+        //                        detail.TaxPer, detail.TaxperCon, detail.TaxRate);
+        //pt2.DoDefaultAction();
+        //                    Thread.Sleep(100);
+        //                }
+        //                childs = WinApi.EnumChildWindowsCallback(tableBar);
+        //                //赋值规格
+        //                WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.ItemSpec);
+
+        //                var pt3 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(3)
+        //                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+        //pt3.DoDefaultAction();
+        //                Thread.Sleep(100);
+        //                childs = WinApi.EnumChildWindowsCallback(tableBar);
+        //                //赋值单位
+        //                WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.Unit);
+
+        //                var pt4 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(4)
+        //                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+        //pt4.DoDefaultAction();
+        //                Thread.Sleep(100);
+        //                childs = WinApi.EnumChildWindowsCallback(tableBar);
+        //                //赋值数量
+        //                WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.Quantity);
+
+        //                var pt5 = (IUIAutomationLegacyIAccessiblePattern)cols.GetElement(5)
+        //                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+        //pt5.DoDefaultAction();
+        //                Thread.Sleep(100);
+        //                childs = WinApi.EnumChildWindowsCallback(tableBar);
+        //                //赋值价格
+        //                WinApi.SendMessage(childs[childs.Count - 1].hWnd, 12, IntPtr.Zero, detail.UnitPrice);
+        //                pt5.DoDefaultAction();
+        //                Thread.Sleep(100);
+
+        //                //修改税率
+        //                WinApi.ClickLocation(tableBar, 660, 34+20* i);//标头24像素点，行20像素点
+        //                Thread.Sleep(500);
+        //                childs = WinApi.EnumChildWindowsCallback(tableBar);
+        //                AmCommon.SetCombox(childs[1].hWnd, "17%");
+        //            }
+
+
         #region 测试语句
         //WinApi.ClickLocation((IntPtr) 7145062, 10, 37);//可以点中第一行第一块
 
