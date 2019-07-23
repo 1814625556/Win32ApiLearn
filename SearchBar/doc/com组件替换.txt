@@ -152,3 +152,162 @@
             WinApi.ShowWindow(bar, 3);//最大
             Thread.Sleep(100);
         }
+
+
+		public static void Method10()
+        {
+            var winBar = WinApi.FindWindow(null, "开具增值税普通发票(卷票)");
+            var winBarUia = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(winBar);
+
+            var toolBarUia = winBarUia.FindFirst(TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "toolStrip3"));
+            var dataGridUia = winBarUia.FindFirst(TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "DataGrid1"));
+            var tableBar = (IntPtr)dataGridUia.CurrentNativeWindowHandle;
+
+            var childs = dataGridUia.FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+            var shouhang = dataGridUia.FindFirst(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation()
+                .CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, "首行"));
+
+            var rectshouhang = shouhang.CurrentBoundingRectangle;
+
+            var recthangling = dataGridUia.FindFirst(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation()
+                .CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, "行 0")).CurrentBoundingRectangle;
+
+            var col1rect = shouhang.FindAll(TreeScope.TreeScope_Children,
+                UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition()).GetElement(1).CurrentBoundingRectangle;
+
+            var col2rect = shouhang.FindAll(TreeScope.TreeScope_Children,
+                UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition()).GetElement(2).CurrentBoundingRectangle;
+
+
+            var locationShuilvY = rectshouhang.bottom - rectshouhang.top + (recthangling.bottom - recthangling.top) / 2;
+            var locationShuilvX = recthangling.right - recthangling.left - 20;
+            var locationYadd = (recthangling.bottom - recthangling.top);
+            var locationNameY = locationShuilvY;
+            var locationNameX = col1rect.left - rectshouhang.left + (col1rect.right - col1rect.left) / 2;
+
+
+            for (var i = 0; i < 2; i++)
+            {
+                HxShengQing.ClickBtnByName(toolBarUia.CurrentNativeWindowHandle, "减行");
+                Thread.Sleep(100);
+            }
+
+            for (var i = 0; i < 9; i++)
+            {
+                ClickBtnUia(toolBarUia.CurrentNativeWindowHandle, "增行");
+                Thread.Sleep(500);
+                //对名称进行赋值
+                var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "chenchang");
+
+                childs = dataGridUia.FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+                var element = childs.GetElement(childs.Length - 1);
+                var elementChilds = element.FindAll(TreeScope.TreeScope_Children,
+                    UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+                var rectcol2 = elementChilds.GetElement(2).CurrentBoundingRectangle;
+                WinApi.ClickLocation(tableBar, rectcol2.left - rectshouhang.left + 10,
+                    rectcol2.top - rectshouhang.top + 10);
+
+                Thread.Sleep(2000);
+                var noaddBar = WinApi.FindWindow(null, "商品编码添加");
+                if (noaddBar != IntPtr.Zero)
+                {
+                    Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
+                }
+                WinApi.ClickLocation(tableBar, rectcol2.left - rectshouhang.left + 10,
+                    rectcol2.top - rectshouhang.top + 10);
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "2.00");
+
+                var pt3 = (IUIAutomationLegacyIAccessiblePattern)elementChilds.GetElement(3)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                pt3.DoDefaultAction();
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "200.00");
+                pt3.DoDefaultAction();
+                Thread.Sleep(100);
+
+                var rect = elementChilds.GetElement(5).CurrentBoundingRectangle;
+                WinApi.ClickLocation(tableBar, rect.left - rectshouhang.left + 10, rect.top - rectshouhang.top + 10);
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                //修改税率
+                UIHelper.SetCombox(childinfos1.Find(b => b.szClassName.Contains("COMBOBOX")).hWnd, "17%");
+            }
+
+            
+            
+
+            var count = childs.Length;
+            var begin = count - 5;
+
+            for (var i = begin-1; i < count-1; i++)
+            {
+
+                var subChilds = childs.GetElement(i).FindAll(TreeScope.TreeScope_Children,
+                    UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+                WinApi.ClickLocation(tableBar, locationNameX, locationNameY + locationYadd * (i - begin+1));
+                Thread.Sleep(200);
+                //对名称进行赋值
+                var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "chenchang");
+
+                //var pt2 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(2)
+                //    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                //pt2.DoDefaultAction();
+                WinApi.ClickLocation(tableBar, col2rect.left - rectshouhang.left + (col2rect.right - col2rect.left) / 2, locationNameY + locationYadd * (i - begin + 1));
+                Thread.Sleep(100);
+                WinApi.ClickLocation(tableBar, locationNameX, locationNameY + locationYadd * (i - begin + 1));
+                Thread.Sleep(100);
+                //pt2.DoDefaultAction();
+                WinApi.ClickLocation(tableBar, col2rect.left - rectshouhang.left + (col2rect.right - col2rect.left) / 2, locationNameY + locationYadd * (i - begin + 1));
+                //Thread.Sleep(20);
+                //WinApi.ClickLocation(tableBar, col2rect.left - rectshouhang.left + (col2rect.right - col2rect.left) / 2, locationNameY + locationYadd * (i - begin + 1));
+                Thread.Sleep(2000);
+                var noaddBar =WinApi.FindWindow(null, "商品编码添加");
+                if (noaddBar != IntPtr.Zero)
+                {
+                    Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
+                    WinApi.ClickLocation(tableBar, col2rect.left - rectshouhang.left + (col2rect.right - col2rect.left) / 2, locationNameY + locationYadd * (i - begin + 1));
+                    Thread.Sleep(500);
+                }
+                WinApi.ClickLocation(tableBar, col2rect.left - rectshouhang.left + (col2rect.right - col2rect.left) / 2, locationNameY + locationYadd * (i - begin + 1));
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                //数量
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "2.00");
+
+                var pt3 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(3)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                pt3.DoDefaultAction();
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                //单价
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "100.00");
+                Thread.Sleep(100);
+                pt3.DoDefaultAction();
+
+                //var pt4 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(4)
+                //    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                //pt4.DoDefaultAction();
+                //Thread.Sleep(500);
+                //childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                ////金额
+                //WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "100.00");
+
+                WinApi.ClickLocation(tableBar, locationShuilvX, locationShuilvY + locationYadd * (i - begin+1));
+                Thread.Sleep(20);
+                WinApi.ClickLocation(tableBar, locationShuilvX, locationShuilvY + locationYadd * (i - begin+1));
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                //修改税率
+                UIHelper.SetCombox(childinfos1.Find(b => b.szClassName.Contains("COMBOBOX")).hWnd, "17%");
+            }
+        }

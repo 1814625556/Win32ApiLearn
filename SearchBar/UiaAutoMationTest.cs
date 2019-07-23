@@ -176,93 +176,81 @@ namespace SearchBar
 
 
         /// <summary>
-        /// 卷票测试--通过--有点小问题需要调整--调整完毕，大于5的话从4开始，其他从3开始
+        /// 卷票测试--通过--有点小问题需要调整--调整完毕，大于5的话从4开始，其他从3开始--默认五条数据
         /// </summary>
         public static void Method10()
         {
             var winBar = WinApi.FindWindow(null, "开具增值税普通发票(卷票)");
             var winBarUia = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(winBar);
+
+            var toolBarUia = winBarUia.FindFirst(TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "toolStrip3"));
+
             var dataGridUia = winBarUia.FindFirst(TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
                 UIA_PropertyIds.UIA_AutomationIdPropertyId, "DataGrid1"));
+            var tableBar = (IntPtr)dataGridUia.CurrentNativeWindowHandle;
 
-            var tableBar = (IntPtr) dataGridUia.CurrentNativeWindowHandle; 
-            var childs = dataGridUia.FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
-
-            var count = childs.Length;
-
-            for (var i = 4; i < count; i++)
+            var shouhangRetc = dataGridUia.FindFirst(TreeScope.TreeScope_Descendants,
+                UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                    UIA_PropertyIds.UIA_NamePropertyId, "首行")).CurrentBoundingRectangle;
+            for (var i = 0; i < 2; i++)
             {
+                HxShengQing.ClickBtnByName(toolBarUia.CurrentNativeWindowHandle, "减行");
+                Thread.Sleep(100);
+            }
+            for (var i = 0; i < 9; i++)
+            {
+                ClickBtnUia(toolBarUia.CurrentNativeWindowHandle, "增行");
+                Thread.Sleep(500);
+                //对名称进行赋值
+                var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"chenchang{i}");
 
-                var subChilds = childs.GetElement(i).FindAll(TreeScope.TreeScope_Children,
+                var element = dataGridUia.FindFirst(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation()
+                    .CreatePropertyCondition(
+                        UIA_PropertyIds.UIA_NamePropertyId, $"行 {i}"));
+
+                var elementChilds = element.FindAll(TreeScope.TreeScope_Children,
                     UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
 
-                //对名称进行赋值
-                var pt3 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(1)
-                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                //触发商品编码添加窗体
+                var rectcol2 = elementChilds.GetElement(2).CurrentBoundingRectangle;
+                WinApi.ClickLocation(tableBar, rectcol2.left - shouhangRetc.left + 10,
+                    rectcol2.top - shouhangRetc.top + 10);
 
-                Console.WriteLine($"name :{subChilds.GetElement(1).CurrentName}");
-                
+                Thread.Sleep(2000);
+                var noaddBar = WinApi.FindWindow(null, "商品编码添加");
+                if (noaddBar != IntPtr.Zero)
+                {
+                    Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
+                    Thread.Sleep(500);
+                    WinApi.ClickLocation(tableBar, rectcol2.left - shouhangRetc.left + 10,
+                        rectcol2.top - shouhangRetc.top + 10);
+                    Thread.Sleep(500);
+                }
+                WinApi.ClickLocation(tableBar, rectcol2.left - shouhangRetc.left + 10,
+                    rectcol2.top - shouhangRetc.top + 10);
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "2.00");
+
+                var pt3 = (IUIAutomationLegacyIAccessiblePattern)elementChilds.GetElement(3)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
                 pt3.DoDefaultAction();
                 Thread.Sleep(500);
-                var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
-                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "UUUU");
-
-                try
-                {
-                    pt3.DoDefaultAction();
-                }
-                catch (Exception e)
-                {
-                    var noaddBar = WinApi.FindWindow(null, "商品编码添加");
-                    Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
-                    Console.WriteLine(e);
-                }
-
-                //改变税率
-                var pt2 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(5)
-                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
-
-                Console.WriteLine($"name :{subChilds.GetElement(5).CurrentName}");
-
-                pt2.DoDefaultAction();
-                Thread.Sleep(100);
-                pt2.DoDefaultAction();
                 childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
-                UIHelper.SetCombox(childinfos1.Find(b=>b.szClassName.Contains("COMBOBOX")).hWnd, "17%");
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "200.00");
+                pt3.DoDefaultAction();
                 Thread.Sleep(500);
 
-                for (var j = 2; j < 5; j++)
-                {
-                    var pt1 = (IUIAutomationLegacyIAccessiblePattern)subChilds.GetElement(j)
-                        .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
-
-                    //数量
-                    if (j == 2)
-                    {
-                        pt1.DoDefaultAction();
-                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
-                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "2");
-                        Thread.Sleep(100);
-                    }
-                    //含税单价
-                    else if (j == 3)
-                    {
-                        pt1.DoDefaultAction();
-                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
-                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "25");
-                        Thread.Sleep(100);
-                    }
-                    //含税金额
-                    else if (j == 4)
-                    {
-                        pt1.DoDefaultAction();
-                        var childinfos = WinApi.EnumChildWindowsCallback(tableBar);
-                        WinApi.SendMessage(childinfos[childinfos.Count - 1].hWnd, 12, IntPtr.Zero, "50");
-                        Thread.Sleep(100);
-                    }
-                }
-
+                var rect = elementChilds.GetElement(5).CurrentBoundingRectangle;
+                WinApi.ClickLocation(tableBar, rect.left - shouhangRetc.left + 10, rect.top - shouhangRetc.top + 10);
+                Thread.Sleep(500);
+                childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
+                //修改税率
+                UIHelper.SetCombox(childinfos1.Find(b => b.szClassName.Contains("COMBOBOX")).hWnd, "17%");
             }
+
         }
 
 
@@ -372,12 +360,12 @@ namespace SearchBar
             var toolBar = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
                 UIA_PropertyIds.UIA_AutomationIdPropertyId, "toolStrip3"));
 
-            for (var i = 0; i < 8; i++)
+            for (var i = 0; i < 4; i++)
             {
-                ClickBtnUia(toolBar.CurrentNativeWindowHandle, "减行");
+                HxShengQing.ClickBtnByName(toolBar.CurrentNativeWindowHandle, "减行");
                 Thread.Sleep(100);
             }
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 4; i++)
             {
                 ClickBtnUia(toolBar.CurrentNativeWindowHandle, "增行");
                 Thread.Sleep(100);
@@ -385,9 +373,14 @@ namespace SearchBar
 
             var dataGridUia = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
                 UIA_PropertyIds.UIA_AutomationIdPropertyId, "DataGrid1"));
+
+            var rectdatatable = dataGridUia.CurrentBoundingRectangle;
+
             var childs = dataGridUia.FindAll(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
             for (var i = 2; i < childs.Length; i++)
             {
+                var comElement = childs.GetElement(i);
+                var rect = comElement.CurrentBoundingRectangle;
 
                 var subChilds = childs.GetElement(i).FindAll(TreeScope.TreeScope_Children,
                     UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
@@ -396,14 +389,14 @@ namespace SearchBar
                 var pt3 = (IUIAutomationLegacyIAccessiblePattern) subChilds.GetElement(1)
                     .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
 
-                pt3.DoDefaultAction();
+                //pt3.DoDefaultAction();
                 Thread.Sleep(500);
                 var childinfos1 = WinApi.EnumChildWindowsCallback(dataGridUia.CurrentNativeWindowHandle);
                 WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"AAA");
 
                 try
                 {
-                    pt3.DoDefaultAction();
+                    //pt3.DoDefaultAction();
                 }
                 catch (Exception e)
                 {
@@ -413,6 +406,9 @@ namespace SearchBar
                 }
 
                 //改变税率
+
+                var subElement = subChilds.GetElement(7);
+                var retcsub = subElement.CurrentBoundingRectangle;
                 var pt2 = (IUIAutomationLegacyIAccessiblePattern) subChilds.GetElement(7)
                     .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
                 pt2.DoDefaultAction();

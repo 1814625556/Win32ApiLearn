@@ -22,13 +22,7 @@ namespace User32Test
         static void Main(string[] args)
         {
 
-            //UiaAutoMationTest.Method8();
-
-            var hm = "";
-            var dm = "";
-            var typestr = "";
-            
-            Bug.ClickVerifyInvoicePage(ref dm,ref hm,ref typestr,true);
+            UiaAutoMationTest.Method10();
 
             Console.ReadKey();
             Console.ReadKey();
