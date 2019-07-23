@@ -198,13 +198,13 @@ namespace SearchBar
                 HxShengQing.ClickBtnByName(toolBarUia.CurrentNativeWindowHandle, "减行");
                 Thread.Sleep(100);
             }
-            for (var i = 0; i < 9; i++)
+            for (var i = 0; i < 3; i++)
             {
                 ClickBtnUia(toolBarUia.CurrentNativeWindowHandle, "增行");
                 Thread.Sleep(500);
                 //对名称进行赋值
                 var childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
-                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"chenchang{i}");
+                WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, $"uuyy{i}");
 
                 var element = dataGridUia.FindFirst(TreeScope.TreeScope_Children, UiaAutoMationHelper.GetUIAutomation()
                     .CreatePropertyCondition(
@@ -213,24 +213,24 @@ namespace SearchBar
                 var elementChilds = element.FindAll(TreeScope.TreeScope_Children,
                     UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
 
-                //触发商品编码添加窗体
-                var rectcol2 = elementChilds.GetElement(2).CurrentBoundingRectangle;
-                WinApi.ClickLocation(tableBar, rectcol2.left - shouhangRetc.left + 10,
-                    rectcol2.top - shouhangRetc.top + 10);
+                var pt2 = (IUIAutomationLegacyIAccessiblePattern)elementChilds.GetElement(2)
+                    .GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
 
+                var rectcol2 = elementChilds.GetElement(2).CurrentBoundingRectangle;
+
+                //触发商品编码添加窗体
+                pt2.DoDefaultAction();
                 Thread.Sleep(2000);
                 var noaddBar = WinApi.FindWindow(null, "商品编码添加");
                 if (noaddBar != IntPtr.Zero)
                 {
                     Bug.WriteGoodsTaxNoAdd(noaddBar, "101010104");
                     Thread.Sleep(500);
+                    
                     WinApi.ClickLocation(tableBar, rectcol2.left - shouhangRetc.left + 10,
                         rectcol2.top - shouhangRetc.top + 10);
                     Thread.Sleep(500);
                 }
-                WinApi.ClickLocation(tableBar, rectcol2.left - shouhangRetc.left + 10,
-                    rectcol2.top - shouhangRetc.top + 10);
-                Thread.Sleep(500);
                 childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
                 WinApi.SendMessage(childinfos1[childinfos1.Count - 1].hWnd, 12, IntPtr.Zero, "2.00");
 
@@ -249,7 +249,9 @@ namespace SearchBar
                 childinfos1 = WinApi.EnumChildWindowsCallback(tableBar);
                 //修改税率
                 UIHelper.SetCombox(childinfos1.Find(b => b.szClassName.Contains("COMBOBOX")).hWnd, "17%");
+                
             }
+            Console.WriteLine("success...");
 
         }
 
