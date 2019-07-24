@@ -22,7 +22,7 @@ namespace User32Test
         static void Main(string[] args)
         {
 
-            UiaAutoMationTest.Method10();
+            UiaAutoMationTest.Taxtiaozheng();
 
             Console.ReadKey();
             Console.ReadKey();

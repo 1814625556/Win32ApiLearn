@@ -16,6 +16,34 @@ namespace SearchBar
 {
     public class UiaAutoMationTest
     {
+        public static void Taxtiaozheng()
+        {
+            var winBar = WinApi.FindWindow(null, "开具增值税普通发票");
+            var winBarUia = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(winBar);
+
+            var toolBar = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "toolStrip3"));
+            var dataGridUia = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants, UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId, "DataGrid1"));
+
+            var shElement = dataGridUia.FindFirst(TreeScope.TreeScope_Descendants,
+                UiaAutoMationHelper.GetUIAutomation().CreatePropertyCondition(
+                    UIA_PropertyIds.UIA_NamePropertyId, "首行"));
+
+            var shChilds = shElement.FindAll(UIAutomationClient.TreeScope.TreeScope_Descendants,
+                UiaAutoMationHelper.GetUIAutomation().CreateTrueCondition());
+
+            var danjia = shChilds.GetElement(5);
+            if (danjia.CurrentName.Contains("不含税"))
+            {
+
+            }
+            else
+            {
+                ClickBtnUia(toolBar.CurrentNativeWindowHandle, "价格");
+            }
+        }
+
         //卷票调整
         public static void Method13()
         {
