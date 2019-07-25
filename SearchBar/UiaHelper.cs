@@ -6,14 +6,14 @@ using UIAutomationClient;
 
 namespace SearchBar
 {
-    public class UiaAutoMationHelper
+    public class UiaHelper
     {
         private static readonly CUIAutomation cUIAutomation;
         public static bool IsAvailable { get; private set; }
 
 
 
-        static UiaAutoMationHelper()
+        static UiaHelper()
         {
             try
             {

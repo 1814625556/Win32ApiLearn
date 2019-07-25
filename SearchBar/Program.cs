@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -21,8 +22,30 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
+            var winBar = WinApi.FindWindow(null, "开具增值税专用发票");
+            var childs = WinApi.EnumChildWindowsCallback(winBar);
+            var toolBar = childs[childs.Count - 1].hWnd;
 
-            UiaAutoMationTest.Taxtiaozheng();
+            HxShengQing.ClickBtnByName(toolBar, "红字");
+            Thread.Sleep(1000);
+
+            var winBarUia = UiaHelper.GetUIAutomation().ElementFromHandle(winBar);
+            var dropDown = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Children,
+                UiaHelper.GetUIAutomation().CreatePropertyCondition(
+                UIA_PropertyIds.UIA_NamePropertyId, "DropDown"));
+            
+            var dropChilds = dropDown.FindAll(UIAutomationClient.TreeScope.TreeScope_Children,
+                UiaHelper.GetUIAutomation().CreateTrueCondition());
+
+            var pt = (IUIAutomationInvokePattern)dropChilds.GetElement(2).GetCurrentPattern(UIA_PatternIds.UIA_InvokePatternId);
+            pt.Invoke();
+
+            var toolChilds = AutomationElement.FromHandle(toolBar)
+                .FindAll(TreeScope.Descendants, Condition.TrueCondition);
+            for (var i=0;i<toolChilds.Count;i++)
+            {
+                Console.WriteLine(toolChilds[i].Current.Name);
+            }
 
             Console.ReadKey();
             Console.ReadKey();
@@ -319,34 +342,6 @@ namespace User32Test
             SendKeys.SendWait("{BACKSPACE}");
             SendKeys.SendWait("陈昌测试状态");
             //JuanpiaoCeShi();
-        }
-
-        static void JuanpiaoCeShi()
-        {
-            var jBar = WinApi.FindWindow(null, "开具增值税普通发票(卷票)");
-            var list = WinApi.EnumChilWindowsIntptr(jBar);
-
-            WinApi.SendMessage(list[list.Count-2], 0x0C, IntPtr.Zero, "CHENCHANG");
-
-            WinApi.SendMessage(list[list.Count-5], 0x0C, IntPtr.Zero, "12345678901234567");
-
-            WinApi.SendMessage(list[22], 0x0C, IntPtr.Zero, "收款 柳若水");
-
-            WinApi.SendMessage(list[23], 0x0C, IntPtr.Zero, "备注：小猪");
-
-            var IntList = list.Select(i => (int)i).ToList();
-            for (var i = 0; i < IntList.Count; i++)
-            {
-                //if(IntList[i] == 1705808)
-                //    Console.WriteLine(i);
-                //if (IntList[i] == 2687710)
-                //    Console.WriteLine(i);
-                //if (IntList[i] == 4393708)
-                //    Console.WriteLine(i);
-                //if (IntList[i] == 4262056)
-                //    Console.WriteLine(i);
-            }
-            
         }
 
 

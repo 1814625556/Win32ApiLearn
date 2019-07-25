@@ -256,9 +256,9 @@ namespace SearchBar
             foreach (IntPtr t in list3)
             {
                 var accountStr = "yinhang zhanghao 888";
-                if (UiaAutoMationHelper.IsAvailable)
+                if (UiaHelper.IsAvailable)
                 {
-                    var uiaInstance = UiaAutoMationHelper.GetUIAutomation().ElementFromHandle(t);
+                    var uiaInstance = UiaHelper.GetUIAutomation().ElementFromHandle(t);
                     if (uiaInstance.CurrentControlType == UIA_ControlTypeIds.UIA_EditControlTypeId)
                     {
                         var pattern = (IUIAutomationValuePattern)uiaInstance.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);

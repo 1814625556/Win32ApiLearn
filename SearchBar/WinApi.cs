@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -282,6 +283,30 @@ namespace User32Test
             }
 
             return bmp;
+        }
+
+        /// <summary>
+        /// 图片上写文字
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static Bitmap DrawTextToBitmap(Bitmap bitmap, string text)
+        {
+            //文案后面追加分辨率
+            text = $"{text}{Environment.NewLine}{Screen.PrimaryScreen.Bounds.Width}x{Screen.PrimaryScreen.Bounds.Height}";
+
+            var textLocation = new PointF(20f, Screen.PrimaryScreen.Bounds.Height * 0.85f);
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                using (var arialFont = new Font("Arial", 15, FontStyle.Bold))
+                {
+                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    graphics.DrawString(text, arialFont, Brushes.Red, textLocation);
+                }
+            }
+
+            return new Bitmap(bitmap);
         }
 
         /// <summary>
