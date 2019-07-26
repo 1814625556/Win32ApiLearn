@@ -22,6 +22,29 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
+            //ClickRedChar();
+            var winBar = WinApi.FindWindow(null, "开具增值税专用发票");
+            var childs = WinApi.EnumChildWindowsCallback(winBar);
+            var toolBar = childs[childs.Count - 1].hWnd;
+
+            HxShengQing.ClickBtnByName(toolBar, "红字");
+            Thread.Sleep(1000);
+
+            var dropDownUi = AutomationElement.FromHandle(winBar).FindFirst(TreeScope.Children,
+                new PropertyCondition(AutomationElement.NameProperty, "DropDown"));
+
+            var dropDownChilds = dropDownUi.FindAll(TreeScope.Children, Condition.TrueCondition);
+            dropDownChilds[2].TryGetCurrentPattern(InvokePattern.Pattern, out var pt);
+            ((InvokePattern)pt).Invoke();
+            //WinApi.ClickLocation(dropDown.CurrentNativeWindowHandle, 40, 54);
+
+            Console.ReadKey();
+            Console.ReadKey();
+            Console.ReadKey();
+        }
+
+        static void ClickRedChar()
+        {
             var winBar = WinApi.FindWindow(null, "开具增值税专用发票");
             var childs = WinApi.EnumChildWindowsCallback(winBar);
             var toolBar = childs[childs.Count - 1].hWnd;
@@ -32,24 +55,24 @@ namespace User32Test
             var winBarUia = UiaHelper.GetUIAutomation().ElementFromHandle(winBar);
             var dropDown = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Children,
                 UiaHelper.GetUIAutomation().CreatePropertyCondition(
-                UIA_PropertyIds.UIA_NamePropertyId, "DropDown"));
-            
+                    UIA_PropertyIds.UIA_NamePropertyId, "DropDown"));
+
+            Console.WriteLine(JsonConvert.SerializeObject(dropDown.CurrentBoundingRectangle));
+
             var dropChilds = dropDown.FindAll(UIAutomationClient.TreeScope.TreeScope_Children,
                 UiaHelper.GetUIAutomation().CreateTrueCondition());
+
+            Console.WriteLine(JsonConvert.SerializeObject(dropChilds.GetElement(2).CurrentBoundingRectangle));
 
             var pt = (IUIAutomationInvokePattern)dropChilds.GetElement(2).GetCurrentPattern(UIA_PatternIds.UIA_InvokePatternId);
             pt.Invoke();
 
             var toolChilds = AutomationElement.FromHandle(toolBar)
                 .FindAll(TreeScope.Descendants, Condition.TrueCondition);
-            for (var i=0;i<toolChilds.Count;i++)
+            for (var i = 0; i < toolChilds.Count; i++)
             {
                 Console.WriteLine(toolChilds[i].Current.Name);
             }
-
-            Console.ReadKey();
-            Console.ReadKey();
-            Console.ReadKey();
         }
 
         public static void SetTab()

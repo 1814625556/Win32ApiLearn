@@ -1,5 +1,5 @@
 ﻿
-点击相对位置：
+1: //点击相对位置：
 WinApi.GetWindowRect(new HandleRef(null, toolBar), out var rect);
 WinApi.ClickLocation(toolBar, rect.Right - rect.Left - 500, 25);
 
@@ -20,3 +20,12 @@ var winBar = WinApi.FindWindow("", "开具增值税普通发票(卷票)");
  var winMation = AutomationElement.FromHandle(winBar);
             var dataGridMation = winMation.FindFirst(System.Windows.Automation.TreeScope.Descendants,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, "DataGrid1"));
+
+//鼠标左键点击
+WinApi.PostMessage(intPtr, 245, 0, 0);
+
+或者
+
+ WinApi.PostMessage(hwnd, 513U, 0, 0);
+ thread.sleep(1)
+ WinApi.PostMessage(hwnd, 514U, 0, 0);
