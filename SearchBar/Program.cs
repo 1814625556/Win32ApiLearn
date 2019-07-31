@@ -22,21 +22,7 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
-            //ClickRedChar();
-            var winBar = WinApi.FindWindow(null, "开具增值税专用发票");
-            var childs = WinApi.EnumChildWindowsCallback(winBar);
-            var toolBar = childs[childs.Count - 1].hWnd;
-
-            HxShengQing.ClickBtnByName(toolBar, "红字");
-            Thread.Sleep(1000);
-
-            var dropDownUi = AutomationElement.FromHandle(winBar).FindFirst(TreeScope.Children,
-                new PropertyCondition(AutomationElement.NameProperty, "DropDown"));
-
-            var dropDownChilds = dropDownUi.FindAll(TreeScope.Children, Condition.TrueCondition);
-            dropDownChilds[2].TryGetCurrentPattern(InvokePattern.Pattern, out var pt);
-            ((InvokePattern)pt).Invoke();
-            //WinApi.ClickLocation(dropDown.CurrentNativeWindowHandle, 40, 54);
+            UiaAutoMationTest.Method14();
 
             Console.ReadKey();
             Console.ReadKey();
