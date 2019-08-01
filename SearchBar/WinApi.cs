@@ -486,7 +486,7 @@ namespace User32Test
         }
 
         /// <summary>
-        /// 左键点击-2
+        /// 左键点击放遮挡
         /// </summary>
         /// <param name="intPtr"></param>
         public static void LeftClickMsg(IntPtr intPtr)
