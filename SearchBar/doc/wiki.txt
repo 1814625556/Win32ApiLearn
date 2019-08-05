@@ -32,3 +32,6 @@ WinApi.PostMessage(intPtr, 245, 0, 0);
 
  //win32Api根据句柄获取控件margin
  WinApi.GetWindowRect(new HandleRef(null, toolBar), out var rect);
+
+window消息类型：
+https://blog.csdn.net/u011471873/article/details/50822116
