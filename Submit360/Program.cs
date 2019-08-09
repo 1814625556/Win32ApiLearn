@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
@@ -15,41 +16,61 @@ namespace Submit360
         static void Main(string[] args)
         {
             //args = new string[]{"http://imsc-prod-files.oss-cn-hangzhou.aliyuncs.com/file/client/un/xforceplus/Xforceplus-client_3.3.38.0722.exe"};
-
-            if (args == null || args.Length == 0)
+            try
             {
-                Console.WriteLine("····请输入下载链接 (no download link)····");
-                return;
-            }
+                if (args == null || args.Length == 0)
+                {
+                    Console.WriteLine("····请输入下载链接 (no download link)····");
+                    Environment.Exit(1);
+                    return;
+                }
 
-            var downLoadLink = args[0];
-            var reg = new Regex("setup_.*exe");
-            var version = reg.Match(downLoadLink);
-            if (string.IsNullOrEmpty(version.ToString()))
+                //Console.WriteLine($"first:{args[0]}"+$"second:{args[1]}");
+
+                var downLoadLink = args[0];
+                var version = "";
+                if (args.Length == 2)
+                {
+                    version = args[1];
+                }
+                if (string.IsNullOrEmpty(version))
+                {
+                    var reg = new Regex("setup_.*exe");
+                    version = reg.Match(downLoadLink).ToString();
+                }
+                if (string.IsNullOrEmpty(version))
+                {
+                    var reg = new Regex("client_.*exe");
+                    version = reg.Match(downLoadLink).ToString();
+                }
+                if (!downLoadLink.StartsWith("http") || string.IsNullOrEmpty(version))
+                {
+                    Console.WriteLine("····下载链接不合法 (download illegal)····");
+                    Environment.Exit(1);
+                    return;
+                }
+
+                var collection = new NameValueCollection();
+                collection.Add("version", version);
+                collection.Add("download", downLoadLink);
+                collection.Add("name", "发票助手");
+                collection.Add("intro", $"版本: {version}");
+                collection.Add("token", "0253a3c3ae95d7b65b82050774fbe9e8");
+                collection.Add("stamp", "1558402841");
+
+                var jsonStr = HttpPostData("https://open.soft.360.cn/softpost.php?act=softadd", 3000, collection);
+
+                ResponseM RM = JsonToObject<ResponseM>(jsonStr);
+                var result = Uri.UnescapeDataString(RM.message);
+                Console.WriteLine(result);
+                Environment.Exit(0);
+            }
+            catch (Exception e)
             {
-                reg=new Regex("client_.*exe");
-                version = reg.Match(downLoadLink);
+                Console.WriteLine(e);
+                Environment.Exit(1);
             }
-
-            if (!downLoadLink.StartsWith("http") || string.IsNullOrEmpty(version.ToString()))
-            {
-                Console.WriteLine("····下载链接不合法 (download illegal)····");
-                return;
-            }
-
-            NameValueCollection collection = new NameValueCollection();
-            collection.Add("version", version.ToString());
-            collection.Add("download", downLoadLink);
-            collection.Add("name", "发票助手");
-            collection.Add("intro", $"版本: {version.ToString()}");
-            collection.Add("token", "0253a3c3ae95d7b65b82050774fbe9e8");
-            collection.Add("stamp", "1558402841");
-
-            var jsonStr = HttpPostData("https://open.soft.360.cn/softpost.php?act=softadd", 3000, collection);
-
-            ResponseM RM = JsonToObject<ResponseM>(jsonStr);
-            var result = Uri.UnescapeDataString(RM.message);
-            Console.WriteLine(result);
+           
         }
 
         static string HttpPostData(string url, int timeOut, NameValueCollection stringDict)

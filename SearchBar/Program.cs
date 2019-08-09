@@ -22,8 +22,16 @@ namespace User32Test
     {
         static void Main(string[] args)
         {
-            //UiaAutoMationTest.Method14();
-            WinApi.SendMessage((IntPtr) 1049904, 12, IntPtr.Zero, "陈昌10kg");
+            var winBar = (IntPtr)Convert.ToInt32(args[0]);
+
+            var childs = UiaHelper.GetUIAutomation().ElementFromHandle(winBar).FindAll(
+                UIAutomationClient.TreeScope.TreeScope_Descendants, UiaHelper.GetUIAutomation().CreateTrueCondition());
+
+            Console.WriteLine(childs.Length);
+            for (var i = 0; i < childs.Length; i++)
+            {
+                Console.WriteLine($"name:{childs.GetElement(i).CurrentName}");
+            }
 
             Console.ReadKey();
             Console.ReadKey();

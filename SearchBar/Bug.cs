@@ -20,6 +20,19 @@ namespace SearchBar
     public class Bug
     {
 
+        public static void GetDropDown()
+        {
+            var winBar = WinApi.FindWindow(null, "开具增值税专用发票");
+            var toolBar = WinApi.EnumChilWindowsIntptr(winBar).LastOrDefault();
+            HxShengQing.ClickBtnByName(toolBar, "红字");
+            Thread.Sleep(500);
+            var dropDown = WinApi.FindWindowEx(winBar, IntPtr.Zero, null, null);
+            WinApi.SendKey(dropDown,WinApi.VK_UP);
+            Thread.Sleep(100);
+            WinApi.SendKey(dropDown, WinApi.VK_RETURN);
+            Thread.Sleep(100);
+        }
+
         //发票确认重构
         public static bool ClickVerifyInvoicePage(ref string invoiceCode, ref string invoiceNo,
             ref string invoiceType, bool isEnter = true)
