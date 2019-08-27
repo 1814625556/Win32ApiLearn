@@ -35,3 +35,7 @@ WinApi.PostMessage(intPtr, 245, 0, 0);
 
 window消息类型：
 https://blog.csdn.net/u011471873/article/details/50822116
+
+获取富文本
+ var text = WinApi.SendMessage((IntPtr)656496, 13, 1024, sb);
+                byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());

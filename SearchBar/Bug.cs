@@ -20,6 +20,37 @@ namespace SearchBar
     public class Bug
     {
 
+        public static string GetCusInfoWindow()
+        {
+            var cwWindow = WinApi.FindWindow(null, "CusMessageBox");
+            string errorInfo = "";
+            if (cwWindow != IntPtr.Zero)
+            {
+                var list = WinApi.EnumChildWindowsCallback(cwWindow);
+
+                var cwTitle = list.LastOrDefault(b=>b.szWindowName.Contains("事件代码："));
+
+                list.ForEach(b=>Console.WriteLine(b.szTextName));
+                
+                var cwTitle1 = WinApi.GetWindow(cwTitle.hWnd, 2);
+                errorInfo = list.FirstOrDefault(b=>b.hWnd==cwTitle1).szWindowName;
+
+                var querenbtn = list.FirstOrDefault(b => b.szWindowName=="确认" || b.szTextName == "确认");
+                WinApi.LeftClickMsg(querenbtn.hWnd);
+            }
+
+            return errorInfo;
+        }
+
+        public static void SendKey()
+        {
+            WinApi.SendKey((IntPtr)68732, 54);
+            Thread.Sleep(10);
+            WinApi.SendKey((IntPtr)68732, 48);
+            Thread.Sleep(10);
+            WinApi.SendKey((IntPtr)68732, 50);
+        }
+
         public static void GetDropDown()
         {
             var winBar = WinApi.FindWindow(null, "开具增值税专用发票");

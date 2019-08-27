@@ -9,6 +9,7 @@ namespace DMTest
     {
         static void Main(string[] args)
         {
+            var error = DmApi.GetWindowTitle(66972);
         }
     }
 }

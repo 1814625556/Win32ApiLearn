@@ -57,6 +57,20 @@ namespace User32Test
         internal const uint VbKey_7 = 0x37;
 
         /// <summary>
+        /// 获取同级句柄 下一个上一个
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="wCmd">2：同级别下；3：同级别上</param>
+        /// <returns></returns>
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetWindow(IntPtr hWnd, uint wCmd);
+
+        [DllImport("user32.dll")]
+        internal static extern int GetWindowTextA(IntPtr hwnd, StringBuilder lpString, int nMaxCount);
+        [DllImport("user32.dll")]
+        internal static extern int GetDlgItemTextA(IntPtr hwnd,int identity, StringBuilder lpString, int nMaxCount);
+
+        /// <summary>
         /// 窗体前置
         /// </summary>
         /// <param name="hWnd"></param>
@@ -107,7 +121,7 @@ namespace User32Test
         }
 
         /// <summary>
-        /// 窗体最大最小化2：最小，3：最大
+        /// 1:normal,2：最小，3：最大
         /// </summary>
         /// <param name="hwnd"></param>
         /// <param name="nCmdShow"></param>
@@ -144,6 +158,18 @@ namespace User32Test
         /// <returns></returns>
         [DllImport("USER32.DLL", EntryPoint = "SendMessage")]
         internal static extern int SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, string lParam);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="Msg">13获取富文本值</param>
+        /// <param name="wParam"></param>
+        /// <param name="sb"></param>
+        /// <returns></returns>
+        [DllImport("USER32.DLL", EntryPoint = "SendMessage")]
+        internal static extern int SendMessage(IntPtr hWnd, UInt32 Msg, int wParam, StringBuilder sb);
 
 
 
@@ -188,7 +214,7 @@ namespace User32Test
         /// <param name="dwFlags"></param>
         /// <param name="dwExtraInfo"></param>
         [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+        public static extern void keybd_event(int bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
         /// <summary>
         /// radio按钮操作

@@ -20,19 +20,12 @@ namespace User32Test
 {
     class Program
     {
+
         static void Main(string[] args)
         {
-            var winBar = (IntPtr)Convert.ToInt32(args[0]);
 
-            var childs = UiaHelper.GetUIAutomation().ElementFromHandle(winBar).FindAll(
-                UIAutomationClient.TreeScope.TreeScope_Descendants, UiaHelper.GetUIAutomation().CreateTrueCondition());
-
-            Console.WriteLine(childs.Length);
-            for (var i = 0; i < childs.Length; i++)
-            {
-                Console.WriteLine($"name:{childs.GetElement(i).CurrentName}");
-            }
-
+            var list = WinApi.EnumChildWindowsCallback((IntPtr)723660);
+           
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();

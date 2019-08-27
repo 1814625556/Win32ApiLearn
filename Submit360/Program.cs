@@ -84,9 +84,13 @@ namespace Submit360
             webRequest.Referer = "https://open.soft.360.cn/softsubmit.php";
 
             //添加cookie
+            //webRequest.Headers.Add("Cookie",
+            //    "Q=u%3D360H3081853709%26n%3D%26le%3Dq2ShM3W1nKScWGDjrTMipzAypTk1pl5wo20%3D%26m%3DZGt5WGWOWGWOWGWOWGWOWGWOZmHk%26qid%3D3081853709%26im%3D1_t0105d6cf9b508f72c8%26src%3Dpcw_renzheng%26t%3D1; " +
+            //    "T=s%3D6c7235b27bc263e457362c59bec79aec%26t%3D1563851408%26lm%3D%26lf%3D1%26sk%3D00ad58aa49290f3012029d79ecaef110%26mt%3D1563851408%26rc%3D%26v%3D2.0%26a%3D1;");
+
             webRequest.Headers.Add("Cookie",
                 "Q=u%3D360H3081853709%26n%3D%26le%3Dq2ShM3W1nKScWGDjrTMipzAypTk1pl5wo20%3D%26m%3DZGt5WGWOWGWOWGWOWGWOWGWOZmHk%26qid%3D3081853709%26im%3D1_t0105d6cf9b508f72c8%26src%3Dpcw_renzheng%26t%3D1; " +
-                "T=s%3D6c7235b27bc263e457362c59bec79aec%26t%3D1563851408%26lm%3D%26lf%3D1%26sk%3D00ad58aa49290f3012029d79ecaef110%26mt%3D1563851408%26rc%3D%26v%3D2.0%26a%3D1;");
+                "T=s%3Dfdbd2d5596950061cda2e064a078405e%26t%3D1566452057%26lm%3D%26lf%3D1%26sk%3D7537a704535cf20114ffb885c43ec58c%26mt%3D1566452057%26rc%3D%26v%3D2.0%26a%3D1;");
 
             // 边界符  
             var boundary = "----" + DateTime.Now.Ticks.ToString("x");
