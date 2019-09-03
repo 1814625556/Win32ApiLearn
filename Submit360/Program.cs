@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
@@ -15,7 +15,8 @@ namespace Submit360
     {
         static void Main(string[] args)
         {
-            //args = new string[]{"http://imsc-prod-files.oss-cn-hangzhou.aliyuncs.com/file/client/un/xforceplus/Xforceplus-client_3.3.38.0722.exe"};
+            //args = new string[]{"http://imsc-prod-files.oss-cn-hangzhou.aliyuncs.com/file/client/un/xforceplus/Xforceplus-client_ac_3.4.28.0828.exe" };
+            args = new string[]{ "http://imsc-prod-files.oss-cn-hangzhou.aliyuncs.com/file/client/un/xforceplus/Xforceplus-client_ac_3.4.36.0829.exe" };
             try
             {
                 if (args == null || args.Length == 0)
@@ -55,8 +56,8 @@ namespace Submit360
                 collection.Add("download", downLoadLink);
                 collection.Add("name", "发票助手");
                 collection.Add("intro", $"版本: {version}");
-                collection.Add("token", "0253a3c3ae95d7b65b82050774fbe9e8");
-                collection.Add("stamp", "1558402841");
+                collection.Add("token", ConfigurationManager.AppSettings.Get("token"));
+                collection.Add("stamp", ConfigurationManager.AppSettings.Get("stamp"));
 
                 var jsonStr = HttpPostData("https://open.soft.360.cn/softpost.php?act=softadd", 3000, collection);
 
@@ -83,14 +84,7 @@ namespace Submit360
             webRequest.Headers.Add("Origin", "https://open.soft.360.cn");
             webRequest.Referer = "https://open.soft.360.cn/softsubmit.php";
 
-            //添加cookie
-            //webRequest.Headers.Add("Cookie",
-            //    "Q=u%3D360H3081853709%26n%3D%26le%3Dq2ShM3W1nKScWGDjrTMipzAypTk1pl5wo20%3D%26m%3DZGt5WGWOWGWOWGWOWGWOWGWOZmHk%26qid%3D3081853709%26im%3D1_t0105d6cf9b508f72c8%26src%3Dpcw_renzheng%26t%3D1; " +
-            //    "T=s%3D6c7235b27bc263e457362c59bec79aec%26t%3D1563851408%26lm%3D%26lf%3D1%26sk%3D00ad58aa49290f3012029d79ecaef110%26mt%3D1563851408%26rc%3D%26v%3D2.0%26a%3D1;");
-
-            webRequest.Headers.Add("Cookie",
-                "Q=u%3D360H3081853709%26n%3D%26le%3Dq2ShM3W1nKScWGDjrTMipzAypTk1pl5wo20%3D%26m%3DZGt5WGWOWGWOWGWOWGWOWGWOZmHk%26qid%3D3081853709%26im%3D1_t0105d6cf9b508f72c8%26src%3Dpcw_renzheng%26t%3D1; " +
-                "T=s%3Dfdbd2d5596950061cda2e064a078405e%26t%3D1566452057%26lm%3D%26lf%3D1%26sk%3D7537a704535cf20114ffb885c43ec58c%26mt%3D1566452057%26rc%3D%26v%3D2.0%26a%3D1;");
+            webRequest.Headers.Add("Cookie", ConfigurationManager.AppSettings.Get("cookie"));
 
             // 边界符  
             var boundary = "----" + DateTime.Now.Ticks.ToString("x");
@@ -168,8 +162,7 @@ namespace Submit360
 
         public static T JsonToObject<T>(string jsonText)
         {
-            JavaScriptSerializer scriptSerializer = new JavaScriptSerializer();
-            scriptSerializer.MaxJsonLength = int.MaxValue;
+            var scriptSerializer = new JavaScriptSerializer {MaxJsonLength = int.MaxValue};
             try
             {
                 return scriptSerializer.Deserialize<T>(jsonText);
@@ -178,6 +171,11 @@ namespace Submit360
             {
                 throw new Exception("JSONHelper.JSONToObject(): " + ex.Message);
             }
+        }
+
+        public static string GetAppConfig(string strKey)
+        {
+            return ConfigurationManager.AppSettings.Get("cookie");
         }
     }
 }

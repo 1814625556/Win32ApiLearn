@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{34DBD508-92F4-4489-AA14-43BF412C2101}</ProjectGuid>
+    <ProjectGuid>{72FA7CEB-B439-4D6A-BC92-CE8FD06C8FB1}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DMTest</RootNamespace>
-    <AssemblyName>DMTest</AssemblyName>
+    <RootNamespace>Session</RootNamespace>
+    <AssemblyName>Session</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -32,10 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Interop.Dm">
-      <HintPath>Lib\Interop.Dm.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,20 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DmApi.cs" />
+    <Compile Include="Interops.cs" />
+    <Compile Include="OverStackSession.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="Dm">
-      <Guid>{84288AAD-BA02-4EF2-85EC-3FAD4D11354D}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
+    <Compile Include="Session3.cs" />
+    <Compile Include="SessionHelper.cs" />
+    <Compile Include="SessionOne.cs" />
+    <Compile Include="WinApi.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

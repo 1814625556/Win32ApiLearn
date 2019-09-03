@@ -24,11 +24,28 @@ namespace User32Test
         static void Main(string[] args)
         {
 
-            var list = WinApi.EnumChildWindowsCallback((IntPtr)723660);
-           
+            var dateStr = DateTime.Now.ToString("yyyyMMddHHmmss");
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();
+        }
+
+        public static int GetHwByTitle(int loginHw, string title)
+        {
+            var listInfos = WinApi.EnumChildWindowsCallback((IntPtr)loginHw);
+            try
+            {
+                for (var i = 0; i < listInfos.Count; i++)
+                {
+
+                    if (!string.IsNullOrEmpty(listInfos[i].szWindowName) && listInfos[i].szWindowName.Contains(title))
+                        return (int)listInfos[i].hWnd;
+                }
+            }
+            catch (Exception e)
+            {
+            }
+            return 0;
         }
 
         static void ClickRedChar()
