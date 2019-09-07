@@ -4,7 +4,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 
-namespace WindowsService1
+namespace SessionService
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace WindowsService1
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new Service1(){ServiceName="chenchangService..."}
+                new Service1()
             };
             ServiceBase.Run(ServicesToRun);
         }

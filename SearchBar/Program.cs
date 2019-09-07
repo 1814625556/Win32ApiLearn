@@ -23,11 +23,79 @@ namespace User32Test
 
         static void Main(string[] args)
         {
+            //Thread.Sleep(10000);
+            Test();
+            Console.ReadKey();
+            Console.ReadKey();
+            Console.ReadKey();
+        }
 
-            var dateStr = DateTime.Now.ToString("yyyyMMddHHmmss");
-            Console.ReadKey();
-            Console.ReadKey();
-            Console.ReadKey();
+
+        static void Test()
+        {
+            var winBar = WinApi.FindWindow(null, "开具增值税普通发票");
+            var childs = WinApi.EnumChildWindowsCallback(winBar);
+            var toolStrip = childs[childs.Count - 1].hWnd;
+            ClickBtnByName(toolStrip, "红字");
+        }
+
+        /// <summary>
+        /// 点击toolBar句柄下某个按钮--这个有可能点不中--需要优化
+        /// </summary>
+        /// <param name="toolBar"></param>
+        /// <param name="name"></param>
+        public static bool ClickBtnByName(IntPtr toolBar, string name)
+        {
+            if (toolBar == IntPtr.Zero)
+                return false;
+            //AmLogger.Info("ClickBtnByName", $"toolBar:{toolBar},name:{name}");
+            try
+            {
+                var winBarUia = UiaHelper.GetUIAutomation().ElementFromHandle(toolBar);
+                var element = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Children, UiaHelper.GetUIAutomation().
+                    CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, name));
+                var pattern = (IUIAutomationInvokePattern)element?.GetCurrentPattern(UIA_PatternIds.UIA_InvokePatternId);
+                pattern?.Invoke();
+                return true;
+            }
+            catch (Exception e)
+            {
+                //AmLogger.Error("ClickBtnUiaByName", $"{name},message:{e.Message},stacktrace:{e.StackTrace}");
+            }
+            return false;
+
+        }
+
+        public static void SetCombox()
+        {
+            try
+            {
+               var comBoxMation = UiaHelper.GetUIAutomation().ElementFromHandle((IntPtr)5571680);
+
+                //WinApi.ClickLocation((IntPtr) 5571680, 50, 20);
+                //Thread.Sleep(100);
+
+                //var childs = comBoxMation.FindAll(UIAutomationClient.TreeScope.TreeScope_Descendants,
+                //    UiaHelper.GetUIAutomation().CreateTrueCondition());
+                //for (var i = 0; i < childs.Length; i++)
+                //{
+                //    Console.WriteLine(childs.GetElement(i).CurrentName);
+                //}
+
+
+                var selectItem = comBoxMation?.FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants,
+                    UiaHelper.GetUIAutomation().CreatePropertyCondition(
+                        UIA_PropertyIds.UIA_NamePropertyId, "9%"));
+
+                var pattern = (IUIAutomationSelectionItemPattern)selectItem?.GetCurrentPattern(UIA_PatternIds.UIA_SelectionItemPatternId);
+                if (pattern == null) return;
+
+                pattern.Select();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public static int GetHwByTitle(int loginHw, string title)

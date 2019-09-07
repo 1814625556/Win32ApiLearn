@@ -1,4 +1,4 @@
-﻿namespace WindowsService1
+﻿namespace SessionService
 {
     partial class Service1
     {

@@ -57,6 +57,13 @@ namespace User32Test
         internal const uint VbKey_7 = 0x37;
 
         /// <summary>
+        /// 锁屏操作
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        public static extern bool LockWorkStation();
+        
+        /// <summary>
         /// 获取同级句柄 下一个上一个
         /// </summary>
         /// <param name="hWnd"></param>

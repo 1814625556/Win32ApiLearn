@@ -13,7 +13,7 @@ namespace GetProcessDemo
         static void Main(string[] args)
         {
             var processes = Process.GetProcesses();
-            var list = processes.OrderBy(pro => pro.ProcessName);
+            var list = processes.OrderBy(pro => pro.ProcessName).ToList();
 
             var entity = list.FirstOrDefault(p => p.ProcessName == "explorer11111");
 
@@ -21,7 +21,10 @@ namespace GetProcessDemo
             foreach (var process in list)
             {
                 sb.Append($"ProcessName:{process.ProcessName}\r\n");
-                Console.WriteLine(process.ProcessName);
+                sb.Append($"MainWindowHandle:{process.MainWindowHandle}\r\n");
+                sb.Append($"SessionId:{process.SessionId}\r\n");
+                //sb.Append($"ProcessName:{process.}\r\n");
+                Console.WriteLine($"MainWindowHandle:{process.MainWindowHandle}--SessionId:{process.SessionId}");
             }
             File.WriteAllText("processName.txt",sb.ToString());
             Console.ReadKey();

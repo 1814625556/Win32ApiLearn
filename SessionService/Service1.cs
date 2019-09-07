@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 
-namespace WindowsService1
+namespace SessionService
 {
     public partial class Service1 : ServiceBase
     {
@@ -19,12 +18,11 @@ namespace WindowsService1
 
         protected override void OnStart(string[] args)
         {
-            File.AppendAllText("cc.txt","start....");
+            Win32ApiHelper.CreateProcess(@"C:\Windows\System32\calc.exe");
         }
 
         protected override void OnStop()
         {
-            File.AppendAllText("cc.txt", "end....");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CCWinServiceLearn
+﻿namespace SessionService
 {
     partial class ProjectInstaller
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.serviceProcessInstaller1 = new System.ServiceProcess.ServiceProcessInstaller();
-            this.serviceInstaller1 = new System.ServiceProcess.ServiceInstaller();
+            this.sessionService = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller1
             // 
@@ -37,23 +37,22 @@
             this.serviceProcessInstaller1.Password = null;
             this.serviceProcessInstaller1.Username = null;
             // 
-            // serviceInstaller1
+            // sessionService
             // 
-            this.serviceInstaller1.Description = "一个测试程序，用来向本地写入日志文件";
-            this.serviceInstaller1.ServiceName = "Service1";
+            this.sessionService.DisplayName = "sessionServiceDisplayName";
+            this.sessionService.ServiceName = "sessionService1";
             // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
             this.serviceProcessInstaller1,
-            this.serviceInstaller1});
+            this.sessionService});
 
         }
 
         #endregion
 
         private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller1;
-        private System.ServiceProcess.ServiceInstaller serviceInstaller1;
-        private System.ServiceProcess.ServiceInstaller serviceInstaller2;
+        private System.ServiceProcess.ServiceInstaller sessionService;
     }
 }
