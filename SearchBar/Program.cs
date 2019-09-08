@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Windows.Automation;
 using SearchBar;
-using SearchBar.RequestRed;
 using UIAutomationClient;
 using TreeScope = System.Windows.Automation.TreeScope;
 
@@ -24,6 +23,7 @@ namespace User32Test
         static void Main(string[] args)
         {
             //Thread.Sleep(10000);
+            Console.WriteLine("hello world");
             Test();
             Console.ReadKey();
             Console.ReadKey();
@@ -54,12 +54,18 @@ namespace User32Test
                 var winBarUia = UiaHelper.GetUIAutomation().ElementFromHandle(toolBar);
                 var element = winBarUia.FindFirst(UIAutomationClient.TreeScope.TreeScope_Children, UiaHelper.GetUIAutomation().
                     CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, name));
+                Console.WriteLine($"{element.CurrentNativeWindowHandle}");
                 var pattern = (IUIAutomationInvokePattern)element?.GetCurrentPattern(UIA_PatternIds.UIA_InvokePatternId);
+                //var pattern = (IUIAutomationLegacyIAccessiblePattern)element?.GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+
                 pattern?.Invoke();
+                //pattern?.DoDefaultAction();
+                Console.WriteLine("success....");
                 return true;
             }
             catch (Exception e)
             {
+                Console.WriteLine($"error {e.Message}");
                 //AmLogger.Error("ClickBtnUiaByName", $"{name},message:{e.Message},stacktrace:{e.StackTrace}");
             }
             return false;
