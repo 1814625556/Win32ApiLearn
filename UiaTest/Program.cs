@@ -13,10 +13,54 @@ namespace UiaTest
     {
         static void Main(string[] args)
         {
-            Test();
+            //WinApi.SetComboxItemValue((IntPtr)721740, "是");
+            openinfo();
             Console.ReadKey();
         }
 
+        public static void openinfo()
+        {
+            var element= UiaHelper.GetUIAutomation().ElementFromHandle((IntPtr) 722784).
+                FindFirst(TreeScope.TreeScope_Descendants,UiaHelper.GetUIAutomation().CreatePropertyCondition(
+                    UIA_PropertyIds.UIA_NamePropertyId, "红字增值税专用发票信息表查询导出"));
+            var pt = (IUIAutomationInvokePattern)element.GetCurrentPattern(UIA_PatternIds.UIA_InvokePatternId);
+            Task.Factory.StartNew(()=>pt?.Invoke());
+        }
+
+
+        public static void SetCombox(IntPtr comboxBar, string item)
+        {
+            try
+            {
+                if (comboxBar == IntPtr.Zero) return;
+                WinApi.ClickLocation(comboxBar, 10, 10);
+                Thread.Sleep(1500);
+                for (var i = 0; i < 15; i++)
+                {
+                    WinApi.SendKey(comboxBar,WinApi.VK_UP);
+                    Thread.Sleep(10);
+                }
+                var comBoxMation = UiaHelper.GetUIAutomation().ElementFromHandle(comboxBar);
+                var selectItem = comBoxMation?.FindFirst(TreeScope.TreeScope_Descendants,
+                    UiaHelper.GetUIAutomation().CreatePropertyCondition(
+                        UIA_PropertyIds.UIA_NamePropertyId, item));
+                var comboxRect = comBoxMation.CurrentBoundingRectangle;
+                var selectRect = selectItem.CurrentBoundingRectangle;
+                var index = (selectRect.top - comboxRect.top) / (selectRect.bottom - selectRect.top);
+
+                for (var i = 0; i < index - 1; i++)
+                {
+                    WinApi.SendKey(comboxBar,WinApi.VK_DOWN);
+                    Thread.Sleep(10);
+                }
+                WinApi.SendKey(comboxBar,WinApi.VK_RETURN);
+                Thread.Sleep(500);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         static void Test()
         {
