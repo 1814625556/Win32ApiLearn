@@ -22,9 +22,10 @@ namespace User32Test
 
         static void Main(string[] args)
         {
-            //Thread.Sleep(10000);
-            Console.WriteLine("hello world");
-            Test();
+            //Thread.Sleep(60000);
+            var formBar = WinApi.FindWindow(null, "票易通发票助手");
+            var map = WinApi.GetWindowCapture((IntPtr)65552);
+            map.Save($"{DateTime.Now:yyyyMMddhhmmss}.png");
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UIAutomationClient;
+using static UIAutomationClient.UIA_PatternIds;
 
 namespace UiaTest
 {
@@ -14,8 +15,115 @@ namespace UiaTest
         static void Main(string[] args)
         {
             //WinApi.SetComboxItemValue((IntPtr)721740, "是");
-            openinfo();
+            //SetEditValue((IntPtr)394026,"222");
+            //SetComboxCommon((IntPtr) 918118, "7");
+
+            var sb = new StringBuilder(255);
+           
             Console.ReadKey();
+        }
+
+
+        /// <summary>
+        /// 获取edit控件的值
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <returns></returns>
+        public static string GetEditValue(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero) return "";
+            try
+            {
+                var editControl = UiaHelper.GetUIAutomation().ElementFromHandle(hwnd);
+                var editPt = (IUIAutomationValuePattern)editControl.GetCurrentPattern(UIA_ValuePatternId);
+                return editPt.CurrentValue;
+            }
+            catch (Exception e)
+            {
+                
+            }
+            return "";
+        }
+        /// <summary>
+        /// 判断是否是指定的UI类型
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="controlType"></param>
+        /// <returns></returns>
+        public static bool IsUiType(IntPtr hwnd, int controlType)
+        {
+            try
+            {
+                var editControl = UiaHelper.GetUIAutomation().ElementFromHandle(hwnd);
+                var pattern = editControl.GetCurrentPattern(controlType);
+                return pattern != null;
+            }
+            catch (Exception e)
+            {
+                
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// UI自动化设置edit值
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="setValue"></param>
+        /// <returns></returns>
+        public static bool SetEditValue(IntPtr hwnd, string setValue)
+        {
+            if (hwnd == IntPtr.Zero) return false;
+            try
+            {
+                var editControl = UiaHelper.GetUIAutomation().ElementFromHandle(hwnd);
+                var editPt = (IUIAutomationValuePattern)editControl.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
+                editPt?.SetValue(setValue);
+                return true;
+            }
+            catch (Exception e)
+            {
+                
+            }
+            return false;
+        }
+
+        public static void SetComboxCommon(IntPtr comboxBar, string item)
+        {
+            try
+            {
+                if (comboxBar == IntPtr.Zero) return;
+
+
+                WinApi.ClickLocation(comboxBar, 10, 10);
+                Thread.Sleep(1000);
+
+                var comBoxMation = UiaHelper.GetUIAutomation().ElementFromHandle(comboxBar);
+                //var childs = comBoxMation.FindAll(TreeScope.TreeScope_Descendants,
+                //    UiaHelper.GetUIAutomation().CreateTrueCondition());
+                //for (var i = 0; i < childs.Length; i++)
+                //{
+                //    var cmpt = (IUIAutomationExpandCollapsePattern)childs.GetElement(i).GetCurrentPattern(UIA_PatternIds.UIA_ExpandCollapsePatternId);
+                //    if (cmpt == null) continue;
+                //    Thread.Sleep(500);
+                //    cmpt.Expand();
+                //}
+                //var pattern = (IUIAutomationExpandCollapsePattern)comBoxMation.GetCurrentPattern(UIA_PatternIds.UIA_ExpandCollapsePatternId);
+                //if (pattern == null) return;
+                //Thread.Sleep(500);
+                //pattern.Expand();
+                var selectItem = comBoxMation?.FindFirst(TreeScope.TreeScope_Descendants,
+                    UiaHelper.GetUIAutomation().CreatePropertyCondition(
+                        UIA_PropertyIds.UIA_NamePropertyId, item));
+                var pt = (IUIAutomationLegacyIAccessiblePattern)selectItem?.GetCurrentPattern(UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+                if (pt == null) return;
+                pt.DoDefaultAction();
+                //pattern.Collapse();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public static void openinfo()
