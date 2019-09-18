@@ -56,6 +56,9 @@ namespace User32Test
         internal const uint VbKey_2 = 0x32;
         internal const uint VbKey_7 = 0x37;
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, bool BRePaint);
+
         /// <summary>
         /// 锁屏操作
         /// </summary>

@@ -135,4 +135,40 @@ namespace Session
         
        
     }
+    public sealed class Win32Api
+    {
+        [DllImport("wtsapi32.dll")]
+        internal static extern int WTSEnumerateSessions(
+            IntPtr hServer,
+            [MarshalAs(UnmanagedType.U4)] int reserved,
+            [MarshalAs(UnmanagedType.U4)] int version,
+            ref IntPtr ppSessionInfo,
+            [MarshalAs(UnmanagedType.U4)] ref int pCount);
+
+        [DllImport("WTSAPI32.DLL", SetLastError = true, CharSet = CharSet.Auto)]
+        internal static extern bool WTSQueryUserToken(int sessionId, out IntPtr token);
+        [DllImport("ADVAPI32.DLL", SetLastError = true, CharSet = CharSet.Auto)]
+        internal static extern bool CreateProcessAsUser(IntPtr hToken, string lpApplicationName, string lpCommandLine,
+            IntPtr lpProcessAttributes, IntPtr lpThreadAttributes,
+            bool bInheritHandles, uint dwCreationFlags, string lpEnvironment, string lpCurrentDirectory,
+            ref WinApi.STARTUPINFO lpStartupInfo, out WinApi.PROCESS_INFORMATION lpProcessInformation);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        internal static extern bool CloseHandle(IntPtr handle);
+
+        [DllImport("wtsapi32.dll")]
+        internal static extern void WTSFreeMemory(IntPtr pMemory);
+
+        [DllImport("user32.dll", EntryPoint = "FindWindowEx", CharSet = CharSet.Auto)]
+        internal static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childHandle, string className,
+            string captionName);
+        [DllImport("user32.dll")]
+        internal static extern bool EnumChildWindows(IntPtr hWndParent, ChildWindowsProc lpEnumFunc, int lParam);
+        internal delegate bool ChildWindowsProc(IntPtr hwnd, int lParam);
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int SendMessage(IntPtr HWnd, uint Msg, int WParam, int LParam);
+        [DllImport("user32.dll", EntryPoint = "FindWindow", CharSet = CharSet.Auto)]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+    }
 }

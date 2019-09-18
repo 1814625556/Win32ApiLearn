@@ -69,6 +69,7 @@
     <Reference Include="UIAutomationTypes" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AmCommon.cs" />
     <Compile Include="Bug.cs" />
     <Compile Include="calcMoney.cs" />
     <Compile Include="DataGridTest.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestRed\Class1.cs" />
+    <Compile Include="ScreenCut.cs" />
     <Compile Include="UiaHelper.cs" />
     <Compile Include="UiaAutoMationTest.cs" />
     <Compile Include="UIHelper.cs" />

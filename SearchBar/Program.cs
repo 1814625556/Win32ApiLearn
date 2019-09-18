@@ -19,15 +19,153 @@ namespace User32Test
 {
     class Program
     {
-
+        /// <summary>
+        /// 请输入检索关键字...
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
+            var custoBar = WinApi.FindWindow(null, "CusMessageBox");
+            var editControl =
+                UiaHelper.GetUIAutomation().ElementFromHandle(custoBar).FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants,
+                UiaHelper.GetUIAutomation().CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "rtbDescript"));
+
+            var pt = (IUIAutomationValuePattern)editControl.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
+            Console.WriteLine(pt.CurrentValue);
+
+            Console.ReadKey();
+            Console.ReadKey();
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// 获取显示器尺寸
+        /// </summary>
+        static void GetScreenSize()
+        {
+            var height = Screen.PrimaryScreen.Bounds.Height;
+            var width = Screen.PrimaryScreen.Bounds.Width;
+        }
+
+        static void SearchInputFail()
+        {
+            WinApi.GetWindowRect(new HandleRef(null, (IntPtr)1901104), out var rectbefore);
+            WinApi.MoveWindow((IntPtr)1901104, 10, 10, 3000, 2000, true);
+            WinApi.GetWindowRect(new HandleRef(null, (IntPtr)1901104), out var rectbeafter);
+
+
+
             //Thread.Sleep(60000);
             //var formBar = WinApi.FindWindow(null, "票易通发票助手");
+            var winBar = WinApi.FindWindow(null, "增值税发票税控开票软件（金税盘版） V2.2.34.190728");
+            var child1s = WinApi.EnumChildWindowsCallback(winBar);
+            var HmSearchBar = child1s.Find(b => b.szWindowName == "选择发票号码查询" || b.szTextName == "选择发票号码查询").hWnd;
+            var childs = WinApi.FindChildInfo(HmSearchBar);
+            var bar = childs.Find(b => b.szWindowName == "报送状态" || b.szTextName == "报送状态").hWnd;
+
+            //WinApi.ClickLocation(bar, 5, 15);
+            WinApi.ClickLocation(bar, 5, 15);
+
+            Thread.Sleep(1000);
+
+            //198352,
+            var editControl = UiaHelper.GetUIAutomation().ElementFromHandle(winBar).FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants,
+                UiaHelper.GetUIAutomation().CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "198352"));
+
+
+            //var editControls = UiaHelper.GetUIAutomation().ElementFromHandle(winBar).FindAll(UIAutomationClient.TreeScope.TreeScope_Descendants,
+            //    UiaHelper.GetUIAutomation().CreatePropertyCondition(
+            //        UIA_PropertyIds.UIA_ControlTypePropertyId,UIA_ControlTypeIds.UIA_EditControlTypeId));
+
+            //for (var i = 0; i < editControls.Length; i++)
+            //{
+            //    var element = editControls.GetElement(i);
+            //    var pt = (IUIAutomationValuePattern)element.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
+            //    if (i == 0)
+            //        pt.SetValue("chenchangchenchang");
+            //    Console.WriteLine($"CurrentName:{element.CurrentName} ,currentValue:{pt.CurrentValue}");
+            //}
+
+            //var child = UiaHelper.GetUIAutomation().ElementFromHandle(winBar).FindAll(
+            //    UIAutomationClient.TreeScope.TreeScope_Children,
+            //    UiaHelper.GetUIAutomation().CreateTrueCondition());
+            //for (var i = 0; i < child.Length; i++)
+            //{
+            //    Console.WriteLine(child.GetElement(i).CurrentName);
+            //}
+
+
+            //var elements = child.GetElement(1).FindAll(UIAutomationClient.TreeScope.TreeScope_Children,
+            //    UiaHelper.GetUIAutomation().CreateTrueCondition());
+            //for (var i = 0; i < elements.Length; i++)
+            //{
+            //    Console.WriteLine(elements.GetElement(i).CurrentName);
+            //}
+
+            //var elements = UiaHelper.GetUIAutomation().ElementFromHandle(bar).FindAll(
+            //    UIAutomationClient.TreeScope.TreeScope_Descendants,
+            //    UiaHelper.GetUIAutomation().CreateTrueCondition());
+            //for (var i = 0; i < elements.Length; i++)
+            //{
+            //    var ele = elements.GetElement(i);
+            //    Console.WriteLine(ele.CurrentName);
+            //}
+
+
+            //var element = UiaHelper.GetUIAutomation().ElementFromHandle(bar).FindFirst(
+            //    UIAutomationClient.TreeScope.TreeScope_Children,
+            //    UiaHelper.GetUIAutomation().CreateTrueCondition());
+            //if (element != null)
+            //{
+            //    var pt = (IUIAutomationLegacyIAccessiblePattern) element.GetCurrentPattern(
+            //        patternId: UIA_PatternIds.UIA_LegacyIAccessiblePatternId);
+            //    pt.DoDefaultAction();
+            //}
+        }
+
+        static void OperatorSys()
+        {
+            var winBar = WinApi.FindWindow(null, "SysMessageBox");
+            var bars = WinApi.EnumChildWindowsCallback(winBar);
+            for (var i = 0; i < bars.Count; i++)
+            {
+                Console.WriteLine($"bars[{i}].szWindowName:{bars[i].szWindowName},bars[i].szTextName:{bars[i].szTextName}");
+            }
+        }
+
+        ///var img = CombinImage("20190918015322.png", "20190918020258.png");
+        /// <summary>
+        /// 调用此函数后使此两种图片合并，类似相册，有个
+        /// 背景图，中间贴自己的目标图片
+        /// </summary>
+        /// <param name="sourceImg">粘贴的源图片</param>
+        /// <param name="destImg">粘贴的目标图片</param>
+        public static Image CombinImage(string sourceImg, string destImg)
+        {
+            Image imgBack = System.Drawing.Image.FromFile(sourceImg);     //相框图片  
+            Image img = System.Drawing.Image.FromFile(destImg);        //照片图片
+
+            //从指定的System.Drawing.Image创建新的System.Drawing.Graphics        
+            Graphics g = Graphics.FromImage(imgBack);
+
+            g.DrawImage(imgBack, 0, 0, imgBack.Width, imgBack.Height);      // g.DrawImage(imgBack, 0, 0, 相框宽, 相框高); 
+            //g.FillRectangle(System.Drawing.Brushes.Black, 16, 16, (int)112 + 2, ((int)73 + 2));//相片四周刷一层黑色边框
             
-            Console.ReadKey();
-            Console.ReadKey();
-            Console.ReadKey();
+            //g.DrawImage(img, 照片与相框的左边距, 照片与相框的上边距, 照片宽, 照片高);
+            g.DrawImage(img, 10, 10, img.Width, img.Width);
+            GC.Collect();
+            return imgBack;
+        }
+        
+
+        /// <summary>
+        /// 截图
+        /// </summary>
+        /// <param name="hwnd"></param>
+        static void CapturePic(IntPtr hwnd)
+        {
+            var map = WinApi.GetWindowCapture(hwnd);
+            map.Save($"{DateTime.Now:yyyyMMddhhmmss}.png");
         }
 
         static void Test()

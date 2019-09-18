@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Microsoft.Win32;
 
 namespace Session
 {
@@ -10,12 +11,12 @@ namespace Session
     {
         static void Main(string[] args)
         {
-            //SessionHelper.CreateProcess(@"C:\Windows\System32\calc.exe");
-            //var cc = WinApi.WTSQueryUserToken(1, out var token);
-            //OverStackSession.ExecuteAppAsLoggedOnUser(@"C:\Windows\System32\calc.exe", null);
-            //SessionOne.CreateProcess(@"C:\Windows\System32\calc.exe");
-            //Interops.CreateProcess("calc.exe", @"C:\Windows\System32");
-            //Session3.CreateProcess(@"C:\Windows\System32\calc.exe",null,2);
+
+            GetUserInfo.Demo();
+
+
+            //监听鼠标键盘事件
+            //SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SessionChange.SystemEvents_SessionSwitch);
             Console.ReadKey();
         }
 
