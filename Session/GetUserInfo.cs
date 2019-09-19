@@ -68,14 +68,13 @@ namespace Session
             var ppSessionInfo = IntPtr.Zero;
             var sessionCount = 0;
             var hasSession = Win32Api.WTSEnumerateSessions(IntPtr.Zero, 0, 1, ref ppSessionInfo, ref sessionCount) != 0;//获取当前所有session
-
+            
             for (var count = 0; count < sessionCount; count++)
             {
                 var si = (WinApi.WTS_SESSION_INFO) Marshal.PtrToStructure(
                     ppSessionInfo + count * Marshal.SizeOf(typeof(WinApi.WTS_SESSION_INFO)),
                     typeof(WinApi.WTS_SESSION_INFO));
 
-                //这里只有 服务可以跑
                 if (si.State != WinApi.WTS_CONNECTSTATE_CLASS.WTSActive) Console.WriteLine();
             }
         }
