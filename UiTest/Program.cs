@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Windows.Automation;
@@ -10,7 +11,14 @@ namespace UiTest
     {
         static void Main(string[] args)
         {
-            Test();
+            var bar = Convert.ToInt32(args[0]);
+            var menuBar = AutomationElement.FromHandle((IntPtr)bar);
+            var menu = menuBar.FindFirst(
+                TreeScope.Descendants,
+                new PropertyCondition(AutomationElement.NameProperty, "已开发票查询"));
+            menu.TryGetCurrentPattern(InvokePattern.Pattern, out var pt);
+            ((InvokePattern)pt).Invoke();
+
             Console.ReadKey();
         }
 
