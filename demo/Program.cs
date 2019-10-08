@@ -11,6 +11,23 @@ namespace demo
     {
         static void Main(string[] args)
         {
+            var bar = WinApi.FindWindow(null, "开具增值税专用发票");
+            Console.WriteLine($"开具增值税专用发票,bar:{bar}");
+
+            bar = WinApi.FindWindow(null, "开具增值税普通发票");
+            Console.WriteLine($"开具增值税普通发票,bar:{bar}");
+
+            bar = WinApi.FindWindow(null, "开具机动车销售统一发票");
+            Console.WriteLine($"开具机动车销售统一发票,bar:{bar}");
+
+            bar = WinApi.FindWindow(null, "开具收购发票");
+            Console.WriteLine($"开具收购发票,bar:{bar}");
+
+            Console.ReadKey();
+        }
+
+        public static void AdobeTest()
+        {
             while (true)
             {
                 var winBar = FindWindow(null, "Adobe Reader");
@@ -18,16 +35,17 @@ namespace demo
                 if (winBar != IntPtr.Zero)
                 {
                     var childs = EnumChildWindowsCallback(winBar);
-                    WinApi.LeftClickMsg(childs.Find(b=>b.szWindowName.Contains("不在显示本消息")).hWnd);
+                    WinApi.LeftClickMsg(childs.Find(b => b.szWindowName.Contains("不在显示本消息")).hWnd);
                     Console.WriteLine("选择不在显示本消息");
                     Thread.Sleep(500);
-                    WinApi.LeftClickMsg(childs.Find(b=>b.szWindowName=="确定").hWnd);
+                    WinApi.LeftClickMsg(childs.Find(b => b.szWindowName == "确定").hWnd);
                     Console.WriteLine("点击确定");
                 }
                 Console.WriteLine("没有找到Adobe Reader窗体");
                 Thread.Sleep(10000);
             }
         }
+
         /// <summary>
         /// 获取窗体的句柄
         /// </summary>

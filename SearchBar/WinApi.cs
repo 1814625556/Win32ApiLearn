@@ -56,6 +56,15 @@ namespace User32Test
         internal const uint VbKey_2 = 0x32;
         internal const uint VbKey_7 = 0x37;
 
+        [DllImport("user32.dll", EntryPoint = "SendMessageA")]
+
+        public static extern int SendMessage_Ex(IntPtr hwnd, int wMsg, int wParam, StringBuilder lParam);
+
+        public const int EM_GETLINE = 0xc4;
+
+       
+
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, bool BRePaint);
 
@@ -155,8 +164,10 @@ namespace User32Test
         /// <param name="lpString"></param>
         /// <param name="nMaxCount"></param>
         /// <returns></returns>
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", EntryPoint = "GetWindowText")]
         internal static extern int GetWindowText(IntPtr hwnd, StringBuilder lpString, int nMaxCount);
+
+       
 
         /// <summary>
         /// 给Text发送信息0x0C，操作下拉框0x014e
@@ -175,7 +186,7 @@ namespace User32Test
         /// </summary>
         /// <param name="hWnd"></param>
         /// <param name="Msg">13获取富文本值</param>
-        /// <param name="wParam"></param>
+        /// <param name="wParam">长度</param>
         /// <param name="sb"></param>
         /// <returns></returns>
         [DllImport("USER32.DLL", EntryPoint = "SendMessage")]
@@ -195,7 +206,7 @@ namespace User32Test
         /// <param name="nMaxCount"></param>
         /// <returns></returns>
         [DllImport("user32.dll", EntryPoint = "GetDlgItemTextA")]
-        public static extern int GetDlgItemText(IntPtr hDlg, int nIDDlgItem, [Out]StringBuilder lpString, int nMaxCount);
+        public static extern int GetDlgItemText(IntPtr hDlg, int nIDDlgItem, StringBuilder lpString, int nMaxCount);
 
         /// <summary>
         /// 向直定句柄的窗体发送键盘键值

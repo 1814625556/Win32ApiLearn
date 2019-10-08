@@ -1,0 +1,65 @@
+﻿{
+  "serialNo": "4bfad64112fb469bbda91e9865e4e2ed",
+  "invoice": {
+    "seller": {
+      "sellerAddress": "山东省烟台市开发区衡山路58号",
+      "sellerBankAccount": "209113976061",
+      "sellerBankName": "中国银行股份有限公司烟台开发区支行",
+      "sellerName": "毛杨李测试公司3勿动",
+      "sellerTaxNo": "440002999999493123",
+      "sellerTel": "5356930880"
+    },
+    "purchaser": {
+      "purchaserAddress": "",
+      "purchaserBankAccount": "",
+      "purchaserBankName": "",
+      "purchaserName": "辛志雪",
+      "purchaserTaxNo": "",
+      "purchaserTel": ""
+    },
+    "operatorInfo": {
+      "cashierName": "于洋洋",
+      "checkerName": "李鑫",
+      "invoicerName": "马霞"
+    },
+    "amountInfo": {
+      "amountWithTax": "400.00",
+      "amountWithoutTax": "344.83",
+      "taxAmount": "55.17"
+    },
+    "control": {
+      "customPrintControl": {
+        "template": "1",
+        "customPrintInfo": {
+          "head1": "测试这个头部存不存在1",
+          "head2": "测试这个头部存不存在2"
+        }
+      },
+      "saleListFileFlag": false
+    },
+    "checkCode": "79809457063786317219",
+    "cipherText": "111111111111111111111111111111111111111111111111111111111111111111",
+    "invoiceCode": "230008100604",
+    "invoiceDate": "20190222",
+    "invoiceNo": "19010893",
+    "invoiceType": "c",
+    "machineCode": "661551012345",
+    "makeInvoiceSource": "2",
+    "remark": "订单号206307810452402\t支付日期2019-02-21\nSN:00282240288701@8314\n78104524\n现金400元   订单号[206307810452402]",
+    "details": [
+      {
+        "cargoName": "*家用厨房电器具*格兰仕微波炉P70F23P-G5",
+        "itemSpec": "(B0)",
+        "quantityUnit": "件",
+        "quantity": "0.11",
+        "taxRate": "0.16",
+        "amount": "344.83",
+        "taxAmount": "55.17",
+        "taxPre": "0",
+        "taxPreCon": "",
+        "zeroTax": "",
+        "unitPrice": "400.00"
+      }
+    ]
+  }
+}

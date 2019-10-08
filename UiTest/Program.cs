@@ -11,13 +11,28 @@ namespace UiTest
     {
         static void Main(string[] args)
         {
-            var bar = Convert.ToInt32(args[0]);
-            var menuBar = AutomationElement.FromHandle((IntPtr)bar);
-            var menu = menuBar.FindFirst(
-                TreeScope.Descendants,
-                new PropertyCondition(AutomationElement.NameProperty, "已开发票查询"));
-            menu.TryGetCurrentPattern(InvokePattern.Pattern, out var pt);
-            ((InvokePattern)pt).Invoke();
+            var list = new List<string>()
+            {
+                "开具增值税专用发票",
+                "开具增值税普通发票",
+                "开具机动车销售统一发票",
+                "开具收购发票"
+            };
+            for (var i = 0; i < list.Count; i++)
+            {
+                var bar = WinApi.FindWindow(null, list[i]);
+                Console.WriteLine($"{list[i]},bar:{bar}");
+                if (bar == IntPtr.Zero)
+                {
+                    Console.WriteLine("bar is zero");
+                    return;
+                }
+
+                var winBar = AutomationElement.FromHandle((IntPtr)bar);
+                Console.WriteLine($"{list[i]} IsOffscreen:{winBar.Current.IsOffscreen}");
+                Console.WriteLine($"关闭{list[i]}窗体");
+                WinApi.PostMessage(bar, 16, 0, 0);
+            }
 
             Console.ReadKey();
         }

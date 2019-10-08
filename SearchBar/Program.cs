@@ -19,23 +19,93 @@ namespace User32Test
 {
     class Program
     {
+        class person
+        {
+            public string Name { get; set; }
+        }
         /// <summary>
         /// 请输入检索关键字...
         /// </summary>
         /// <param name="args"></param>
+        [STAThread]
         static void Main(string[] args)
+        {
+
+            try
+            {
+                SpecialRedRush.Debug1();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+            Console.ReadKey();
+        }
+
+        public static void TestGetEditValue()
+        {
+            int handle = 4851624;
+            int txtLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, 0);
+            var sb = new StringBuilder(txtLength + 1);
+            SendMessage(handle, WM_GETTEXT, sb.Capacity, sb);
+            var result = sb.ToString();
+        }
+
+        // These are two Win32 constants that we'll need, they'll be explained later.
+        const int WM_GETTEXT = 0x000D;
+
+        const int WM_GETTEXTLENGTH = 0x000E;
+
+        // The SendMessage function sends a Win32 message to the specified handle, it takes three
+        // ints as parameters, the message to send, and to optional parameters (pass 0 if not required).
+        [DllImport("User32.dll")]
+        public static extern Int32 SendMessage(int hWnd, int msg, int wParam, int lParam);
+
+        // An overload of the SendMessage function, this time taking in a StringBuilder as the lParam.
+        // Through the series we'll use a lot of different SendMessage overloads as SendMessage is one
+        // of the most fundamental Win32 functions.
+        [DllImport("User32.dll")]
+        public static extern Int32 SendMessage(int hWnd, int msg, int wParam, StringBuilder lParam);
+
+        /// <summary>
+        /// 从剪切板获取截图--需要设置[STAThread]属性
+        /// </summary>
+        static void GetImagFromClipBoard()
+        {
+            try
+            {
+                Thread.Sleep(6000);
+                WinApi.keybd_event(44, 0, 0, 0);
+                var img = System.Windows.Forms.Clipboard.GetImage();
+
+                //var text = Clipboard.GetText();
+                if (img == null)
+                {
+                    Console.WriteLine("fail screen img is null..");
+                    return;
+                }
+                img.Save($"{DateTime.Now:yyyyMMddhhmmss}.png");
+                Console.WriteLine("success...");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        /// <summary>
+        /// 操作航信自定义报错弹框
+        /// </summary>
+        static void OperatorCustomer()
         {
             var custoBar = WinApi.FindWindow(null, "CusMessageBox");
             var editControl =
                 UiaHelper.GetUIAutomation().ElementFromHandle(custoBar).FindFirst(UIAutomationClient.TreeScope.TreeScope_Descendants,
-                UiaHelper.GetUIAutomation().CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "rtbDescript"));
+                    UiaHelper.GetUIAutomation().CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "rtbDescript"));
 
             var pt = (IUIAutomationValuePattern)editControl.GetCurrentPattern(UIA_PatternIds.UIA_ValuePatternId);
             Console.WriteLine(pt.CurrentValue);
-
-            Console.ReadKey();
-            Console.ReadKey();
-            Console.ReadKey();
         }
 
         /// <summary>

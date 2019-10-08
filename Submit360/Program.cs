@@ -16,7 +16,7 @@ namespace Submit360
         static void Main(string[] args)
         {
             //args = new string[]{"http://imsc-prod-files.oss-cn-hangzhou.aliyuncs.com/file/client/un/xforceplus/Xforceplus-client_ac_3.4.28.0828.exe" };
-            args = new string[]{ "http://imsc-prod-files.oss-cn-hangzhou.aliyuncs.com/file/client/un/xforceplus/Xforceplus-client_ac_3.4.36.0829.exe" };
+            //args = new string[]{ "https://imsc-prod-files.oss-cn-hangzhou.aliyuncs.com/file/client/un/xforceplus/发票助手_3.4.59.0925.c_ac.exe" };
             try
             {
                 if (args == null || args.Length == 0)
@@ -34,17 +34,31 @@ namespace Submit360
                 {
                     version = args[1];
                 }
+
+                if (string.IsNullOrEmpty(version))
+                {
+                    var reg = new Regex("发票助手_.*exe");
+                    version = reg.Match(downLoadLink).ToString();
+                }
+
                 if (string.IsNullOrEmpty(version))
                 {
                     var reg = new Regex("setup_.*exe");
                     version = reg.Match(downLoadLink).ToString();
                 }
+
                 if (string.IsNullOrEmpty(version))
                 {
                     var reg = new Regex("client_.*exe");
                     version = reg.Match(downLoadLink).ToString();
                 }
-                if (!downLoadLink.StartsWith("http") || string.IsNullOrEmpty(version))
+
+                if (string.IsNullOrEmpty(version))
+                {
+                    version = "xxx";
+                }
+
+                if (!downLoadLink.Trim().StartsWith("http"))
                 {
                     Console.WriteLine("····下载链接不合法 (download illegal)····");
                     Environment.Exit(1);
@@ -64,6 +78,10 @@ namespace Submit360
                 ResponseM RM = JsonToObject<ResponseM>(jsonStr);
                 var result = Uri.UnescapeDataString(RM.message);
                 Console.WriteLine(result);
+                if (result.Contains("失败"))
+                {
+                    Environment.Exit(1);
+                }
                 Environment.Exit(0);
             }
             catch (Exception e)
