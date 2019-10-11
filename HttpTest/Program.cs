@@ -10,11 +10,12 @@ namespace HttpTest
     {
         static void Main(string[] args)
         {
+            var cc = 1 / 10;
             //testGzip();
-
+            //         http://fat-taxware-output-service-api.phoenix-t.xforceplus.com/global/taxware/v1/output/invoices/custom/print
             var url = "http://fat-taxware-output-service-api.phoenix-t.xforceplus.com/test/taxware/v1/output/invoices/custom-print";
             var str = File.ReadAllText(@"jsons/print.json");
-            HttpHelper.HttpPostZip(
+            var downLoadUrl = HttpHelper.HttpPostZip(
                 url,
                 str);
         }

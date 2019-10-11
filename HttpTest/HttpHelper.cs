@@ -51,12 +51,13 @@ namespace HttpTest
                 var request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.Timeout = 10000;
-                request.ContentType = "application/json";
-                request.Headers.Add("Content-Encoding", "gzip");
+                request.ContentType = "application/gzip";
+                //request.Headers.Add("Content-Encoding", "gzip");
                 request.Accept = "*/*";
 
                 var data = Encoding.UTF8.GetBytes(postDataStr);
                 var zipData = Compress(data);
+                //var zipStr = Encoding.UTF8.GetString(zipData);
                 request.ContentLength = zipData.Length;
 
                 using (var stream = request.GetRequestStream())
