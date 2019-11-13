@@ -27,7 +27,7 @@ namespace WpfSimulationMouseKeyboardForm
 
         private void MessageShow(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show($"Name:{((Button)sender).Name},Content:{((Button)sender).Content}");
+            MessageBox.Show($"Name:{((Button)sender).Name},Content:{((Button)sender).Content}","SiomonMessageBox");
         }
     }
 }
