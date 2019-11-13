@@ -27,18 +27,11 @@ namespace User32Test
         /// 请输入检索关键字...
         /// </summary>
         /// <param name="args"></param>
-        [STAThread]
+        //[STAThread]
         static void Main(string[] args)
         {
 
-            try
-            {
-                SpecialRedRush.Debug1();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            WpfTest.CommonControl();
             
             Console.ReadKey();
         }
