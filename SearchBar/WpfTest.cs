@@ -21,7 +21,7 @@ namespace SearchBar
 
             System.Diagnostics.Process.
                 Start(@"C:\MyDatas\VsProjects\demo\SimulationMouseKeyboard\WpfSimulationMouseKeyboardForm\bin\Debug\WpfSimulationMouseKeyboardForm.exe");
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             bar = WinApi.FindWindow(null, "MainWindow");
             WinApi.ShowWindow(bar,1);
             Thread.Sleep(1000);
@@ -39,22 +39,43 @@ namespace SearchBar
             Thread.Sleep(2000);
 
             //精确查找并点击~
-            var btn1 = AutomationElement.FromHandle(bar).FindFirst(TreeScope.Descendants,
+            var btn2 = AutomationElement.FromHandle(bar).FindFirst(TreeScope.Descendants,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, "btntwo"));
 
-            btn1.TryGetCurrentPattern(InvokePattern.Pattern, out var btnPt);
+            btn2.TryGetCurrentPattern(InvokePattern.Pattern, out var btnPt);
             ((InvokePattern)btnPt).Invoke();
 
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
 
             var msgBar = WinApi.FindWindow(null, "SiomonMessageBox");
             if (msgBar != IntPtr.Zero)
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
                 WinApi.CloseWinForm(msgBar);
+                Thread.Sleep(2000);
             }
 
-            ((ValuePattern)editPt)?.SetValue("will be Closing~");
+            //展示winform1
+            
+            var btn1 = AutomationElement.FromHandle(bar).FindFirst(TreeScope.Descendants,
+                new PropertyCondition(AutomationElement.AutomationIdProperty, "btnone"));
+            btn1.TryGetCurrentPattern(InvokePattern.Pattern, out var btn1Pt);
+            ((InvokePattern)btn1Pt).Invoke();
+            Thread.Sleep(2000);
+            var win1bar = WinApi.FindWindow(null,"Window1");
+            if (win1bar != IntPtr.Zero)
+            {
+                WinApi.ShowWindow(win1bar,3);
+                Thread.Sleep(1500);
+                WinApi.ShowWindow(win1bar, 2);
+                Thread.Sleep(1500);
+                WinApi.ShowWindow(win1bar, 1);
+                Thread.Sleep(1500);
+                WinApi.CloseWinForm(win1bar);
+                Thread.Sleep(1000);
+            }
+
+            ((ValuePattern)editPt)?.SetValue("Closing~");
             Thread.Sleep(2000);
             WinApi.CloseWinForm(bar);
         }

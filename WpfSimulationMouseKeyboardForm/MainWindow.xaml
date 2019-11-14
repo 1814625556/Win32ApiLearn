@@ -17,9 +17,9 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <StackPanel>
-            <Button Name="btnone" Content="btn1" Click="MessageShow"></Button>
+            <Button Name="btnone" Content="btn1" Click="ShowWinForm"></Button>
             <Button Name="btntwo" Content="btn2" Click="MessageShow"></Button>
-            <TextBox Name="boxone" Background="Aquamarine"></TextBox>
+            <TextBox Name="boxone" FontSize="30" Background="Aquamarine"></TextBox>
             <RichTextBox Name="RichTextBoxOne" Background="Wheat"></RichTextBox>
         </StackPanel>
         <GroupBox Grid.Row="0" Grid.Column="1">
