@@ -37,7 +37,7 @@ namespace SearchBar
             ((ValuePattern)editPt)?.SetValue("siemen cheer~");
 
             Thread.Sleep(2000);
-
+            
             //精确查找并点击~
             var btn2 = AutomationElement.FromHandle(bar).FindFirst(TreeScope.Descendants,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, "btntwo"));
