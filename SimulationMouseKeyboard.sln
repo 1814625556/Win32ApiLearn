@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.539
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationMouseKeyboard", "SimulationMouseKeyboard\SimulationMouseKeyboard.csproj", "{38C753F3-470B-41DE-A76E-82CCB05EC25A}"
 EndProject
@@ -45,6 +45,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpTest", "HttpTest\HttpTest.csproj", "{4EFFE6BE-A93E-483D-9412-A59492DDA0F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfSimulationMouseKeyboardForm", "WpfSimulationMouseKeyboardForm\WpfSimulationMouseKeyboardForm.csproj", "{AF4B8167-D921-482C-BF66-1536143E0FE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeechToText", "SpeechToText\SpeechToText.csproj", "{277D3FCF-106A-49E9-A331-0DF8525CF7C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -206,6 +208,14 @@ Global
 		{AF4B8167-D921-482C-BF66-1536143E0FE4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF4B8167-D921-482C-BF66-1536143E0FE4}.Release|x86.ActiveCfg = Release|Any CPU
 		{AF4B8167-D921-482C-BF66-1536143E0FE4}.Release|x86.Build.0 = Release|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Debug|x86.Build.0 = Debug|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Release|x86.ActiveCfg = Release|Any CPU
+		{277D3FCF-106A-49E9-A331-0DF8525CF7C7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
